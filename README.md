@@ -26,8 +26,6 @@ Petit projet de **liste de tâches** minimaliste réalisé en **HTML5**, **CSS3*
 
 ## 🚀 Démo Live
 
-**Remplace `tonusername` par ton vrai username GitHub :**
-
 ```
 https://sacez53.github.io/To-Do-List/
 ```
