@@ -1,36 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Mini To‑Do List</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="header">
-      <h1>Ma To‑Do List</h1>
-    </header>
+<head>
+  <meta charset="UTF-8">
+  <title>Mini To‑Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <h1>Ma To‑Do List</h1>
+    <p>Un petit projet HTML / CSS / JS</p>
+  </header>
 
-    <main class="container">
-      <form id="todo-form">
-        <input
-          type="text"
-          id="todo-input"
-          placeholder="Ajouter une tâche..."
-          autocomplete="on"
-        />
-        <button type="submit">Ajouter</button>
-      </form>
+  <main class="container">
+    <form id="todo-form">
+      <input
+        type="text"
+        id="todo-input"
+        placeholder="Ajouter une tâche..."
+        autocomplete="off"
+      >
+      <button type="submit">Ajouter</button>
+    </form>
 
-      <ul id="todo-list">
-        <!-- Les tâches seront ajoutées ici en JS -->
-      </ul>
-    </main>
+    <div class="stats">
+      <span id="todo-count">0 tâches</span>
+      <span id="done-count">0 terminées</span>
+    </div>
 
-    <footer class="footer">
-      <p>© 2026 - Sacha G. Photographe</p>
-    </footer>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Toutes</button>
+      <button class="filter-btn" data-filter="active">Actives</button>
+      <button class="filter-btn" data-filter="done">Terminées</button>
+    </div>
 
-    <script src="app.js"></script>
-  </body>
+    <ul id="todo-list">
+      <!-- Les tâches seront ajoutées ici en JS -->
+    </ul>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 - Sacha G. Photographe</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
 </html>
