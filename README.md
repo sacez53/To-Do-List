@@ -1,4 +1,3 @@
-```markdown
 # Mini To-Do List – HTML / CSS / JS Vanilla
 
 [![GitHub Pages](https://img.shields.io/badge/Démo-Live-brightgreen)](https://tonusername.github.io/mini-todo-list)
