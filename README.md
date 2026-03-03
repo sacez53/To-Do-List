@@ -1,8 +1,8 @@
 # Mini To-Do List – HTML / CSS / JS Vanilla
 
-[![GitHub Pages](https://img.shields.io/badge/Démo-Live-brightgreen)](https://tonusername.github.io/mini-todo-list)
-[![Vanilla JS](https://img.shields.io/badge/Vanilla%20JS-100%25-blue)](https://github.com/tonusername/mini-todo-list)
-[![Responsive](https://img.shields.io/badge/Responsive-✅-orange)](https://github.com/tonusername/mini-todo-list)
+[![GitHub Pages](https://img.shields.io/badge/Démo-Live-brightgreen)](https://sacez53.github.io/To-Do-List/)
+[![Vanilla JS](https://img.shields.io/badge/Vanilla%20JS-100%25-blue)](https://sacez53.github.io/To-Do-List/)
+[![Responsive](https://img.shields.io/badge/Responsive-✅-orange)](https://sacez53.github.io/To-Do-List/)
 
 Petit projet de **liste de tâches** minimaliste réalisé en **HTML5**, **CSS3** et **JavaScript vanilla** (sans framework).  
 **Déployé avec GitHub Pages** ✅ | **localStorage** ✅ | **Responsive** 📱
@@ -29,7 +29,7 @@ Petit projet de **liste de tâches** minimaliste réalisé en **HTML5**, **CSS3*
 **Remplace `tonusername` par ton vrai username GitHub :**
 
 ```
-https://tonusername.github.io/mini-todo-list
+https://sacez53.github.io/To-Do-List/
 ```
 
 > **Teste directement** : recharge la page, tes tâches sont sauvegardées !
@@ -52,7 +52,7 @@ Structure  Design   Logique
 
 ```bash
 # 1. Cloner le repo
-git clone https://github.com/tonusername/mini-todo-list.git
+git clone https://github.com/sacez53/To-Do-List
 cd mini-todo-list
 
 # 2. Ouvrir index.html
