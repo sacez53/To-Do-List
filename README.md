@@ -160,7 +160,7 @@ Statuts : À programmer | En cours | Livré
 
 **Sacha G. Photographe**  
 *Photographe professionnel & étudiant BUT MMI*  
-📍 **Cholet, Pays de la Loire, France**
+📍 **Laval, Pays de la Loire, France**
 
 [![GitHub](https://img.shields.io/badge/GitHub-@tonusername-black)](https://github.com/tonusername)
 [![Portfolio](https://img.shields.io/badge/Portfolio-sachag.photo-blue)](https://sachag.photo)
@@ -183,9 +183,6 @@ Utilise, modifie, intègre dans ton portfolio librement !
 - **Entretien** : Démo live en 3s
 - **Étudiant** : Projet BUT MMI parfait
 - **Freelance** : Base personnalisable client
-
-**Made with ❤️ en 2h – Vanilla JS only !**
-```
 
 ## ✅ À faire avant commit :
 
