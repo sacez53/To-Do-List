@@ -9,7 +9,7 @@
 <body>
   <header class="header">
     <h1>Ma To‑Do List</h1>
-    <p>Un petit projet HTML / CSS / JS</p>
+    <p>Un petit projet HTML / CSS / JS avec dates d'échéance</p>
   </header>
 
   <main class="container">
@@ -20,23 +20,24 @@
         placeholder="Ajouter une tâche..."
         autocomplete="off"
       >
+      <input type="date" id="due-date" />
       <button type="submit">Ajouter</button>
     </form>
 
     <div class="stats">
       <span id="todo-count">0 tâches</span>
       <span id="done-count">0 terminées</span>
+      <span id="overdue-count">0 urgentes</span>
     </div>
 
     <div class="filters">
       <button class="filter-btn active" data-filter="all">Toutes</button>
       <button class="filter-btn" data-filter="active">Actives</button>
       <button class="filter-btn" data-filter="done">Terminées</button>
+      <button class="filter-btn" data-filter="overdue">Urgentes</button>
     </div>
 
-    <ul id="todo-list">
-      <!-- Les tâches seront ajoutées ici en JS -->
-    </ul>
+    <ul id="todo-list"></ul>
   </main>
 
   <footer class="footer">
