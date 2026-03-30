@@ -1,51 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>To‑Do List</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="header">
-    <h1>Ma To‑Do List</h1>
-    <p>To-Do List Interactive stocker en LocalStorage, </p>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <title>To‑Do List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./style/style2.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>Ma To‑Do List</h1>
+      <p>To-Do List Interactive stocker en LocalStorage,</p>
+    </header>
 
-  <main class="container">
-    <form id="todo-form">
-      <input
-        type="text"
-        id="todo-input"
-        placeholder="Ajouter une tâche..."
-        autocomplete="off"
-      >
-      <input type="date" id="due-date" />
-      <button type="submit">Ajouter</button>
-    </form>
+    <main class="container">
+      <form id="todo-form">
+        <input
+          type="text"
+          id="todo-input"
+          placeholder="Ajouter une tâche..."
+          autocomplete="off"
+        />
+        <input type="date" id="due-date" />
+        <button type="submit">Ajouter</button>
+      </form>
 
-    <div class="stats">
-      <span id="todo-count">0 tâches</span>
-      <span id="done-count">0 terminées</span>
-      <span id="overdue-count">0 urgentes</span>
-    </div>
+      <div class="stats">
+        <span id="todo-count">0 tâches</span>
+        <span id="done-count">0 terminées</span>
+        <span id="overdue-count">0 urgentes</span>
+      </div>
 
-    <div class="filters">
-      <button class="filter-btn active" data-filter="all">Toutes</button>
-      <button class="filter-btn" data-filter="active">Actives</button>
-      <button class="filter-btn" data-filter="done">Terminées</button>
-      <button class="filter-btn" data-filter="overdue">Urgentes</button>
-    </div>
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">Toutes</button>
+        <button class="filter-btn" data-filter="active">Actives</button>
+        <button class="filter-btn" data-filter="done">Terminées</button>
+        <button class="filter-btn" data-filter="overdue">Urgentes</button>
+      </div>
 
-    <ul id="todo-list"></ul>
-  </main>
+      <ul id="todo-list"></ul>
+    </main>
 
-  <footer class="footer">
-    <p class="annonce">Mise a jour régulière et constante avec de nouvelles fonctionalité ou des corrections de bug.</p>
-    <p class="annonce">Changement du style (CSS) dans peux de temps, attention ca vas être puissant.</p>
-    <p>© 2026 - Sacha G. Photographe</p>
-  </footer>
+    <footer class="footer">
+      <p>Ce site est la propriété de Sacha GUITTER et est dédié à une utilisation personnelle.</p>
+      <p>© 2026 - Sacha G. Photographe</p>
+    </footer>
 
-  <script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>
