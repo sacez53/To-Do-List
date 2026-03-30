@@ -1,26 +1,34 @@
-# Mini To-Do List – HTML / CSS / JS Vanilla
+# ✅ To-Do List — Premium Multi-User Web App
 
 [![GitHub Pages](https://img.shields.io/badge/Démo-Live-brightgreen)](https://sacez53.github.io/To-Do-List/)
-[![Vanilla JS](https://img.shields.io/badge/Vanilla%20JS-100%25-blue)](https://sacez53.github.io/To-Do-List/)
-[![Responsive](https://img.shields.io/badge/Responsive-✅-orange)](https://sacez53.github.io/To-Do-List/)
+[![Firebase](https://img.shields.io/badge/Firebase-Realtime%20DB-orange)](https://firebase.google.com/)
+[![Vanilla JS](https://img.shields.io/badge/Vanilla%20JS-100%25-yellow)](https://sacez53.github.io/To-Do-List/)
+[![Responsive](https://img.shields.io/badge/Responsive-✅-blue)](https://sacez53.github.io/To-Do-List/)
 
-Petit projet de **liste de tâches** minimaliste réalisé en **HTML5**, **CSS3** et **JavaScript vanilla** (sans framework).  
-**Déployé avec GitHub Pages** ✅ | **localStorage** ✅ | **Responsive** 📱
+Application de gestion de tâches **premium** et **responsive**, conçue en **HTML5 / CSS3 / JavaScript vanilla**, avec **authentification multi-utilisateurs** et **synchronisation temps réel via Firebase Realtime Database**.
 
 ---
 
 ## ✨ Fonctionnalités
 
-| Fonctionnalité | Statut |
+| Fonctionnalité | Détail |
 |---|---|
-| ➕ Ajouter des tâches | ✅ |
-| ✅ Cocher / décocher | ✅ |
-| 🗑️ Supprimer | ✅ |
-| 💾 **Persistance localStorage** | ✅ |
-| 📊 **Compteurs** (tâches / terminées) | ✅ |
-| 🔍 **Filtres** (Toutes/Actives/Terminées) | ✅ |
-| 📱 **Responsive** mobile-first | ✅ |
-| 🎨 Design moderne sombre | ✅ |
+| 🔐 **Authentification** | Inscription / Connexion sécurisées (hash SHA-256 côté client) |
+| 👤 **Multi-utilisateurs** | Chaque compte a ses propres tâches isolées |
+| ☁️ **Sync Firebase** | Synchronisation temps réel entre appareils |
+| 💾 **Fallback localStorage** | Fonctionne hors-ligne si Firebase indisponible |
+| ➕ **CRUD complet** | Créer, lire, modifier, supprimer des tâches via modale |
+| 📋 **Statuts multiples** | À faire · En cours · En attente · Terminé · Annulé |
+| 🔴 **Priorités** | Haute / Normale / Basse |
+| 📅 **Dates d'échéance** | Alertes visuelles (En retard / Aujourd'hui / Bientôt) |
+| 📝 **Notes** | Champ de notes libre par tâche |
+| 🔍 **Recherche** | Recherche en temps réel dans les titres et notes |
+| 🗂️ **Filtres** | Par statut (Toutes / En cours / Terminées…) |
+| 🔃 **Tri** | Par date de création, priorité, échéance ou statut |
+| 📊 **Barre de progression** | Pourcentage de tâches terminées |
+| 🌑 **Design sombre premium** | Interface glassmorphism, animations fluides |
+| 📱 **Responsive** | Mobile-first, navigation optimisée |
+| 🔄 **Indicateur de sync** | Statut de synchronisation Firebase en temps réel |
 
 ---
 
@@ -30,162 +38,164 @@ Petit projet de **liste de tâches** minimaliste réalisé en **HTML5**, **CSS3*
 https://sacez53.github.io/To-Do-List/
 ```
 
-> **Teste directement** : recharge la page, tes tâches sont sauvegardées !
+> 🔐 Crée un compte, connecte-toi, et retrouve tes tâches sur n'importe quel appareil.
 
 ---
 
-## 🛠️ Technologies Stack
+## 🛠️ Stack Technique
 
-```html
-HTML5    CSS3     Vanilla JS
-  📄      🎨        ⚙️
-Structure  Design   Logique
+```
+HTML5        CSS3         Vanilla JS     Firebase
+  📄           🎨             ⚙️              ☁️
+Structure    Design        Logique      Base de données
 ```
 
-**Aucune dépendance externe** – 100% vanilla !
+| Technologie | Usage |
+|---|---|
+| **HTML5 sémantique** | Structure des pages |
+| **CSS3 custom** | Design, animations, responsive |
+| **JavaScript ES2022** | Logique, async/await, Web Crypto API |
+| **Firebase Realtime DB** | Persistance cloud & sync multi-device |
+| **localStorage** | Persistance locale & fallback offline |
+| **sessionStorage** | Gestion de session utilisateur |
+| **Web Crypto API** | Hash SHA-256 des mots de passe |
 
 ---
 
-## 📁 Installation Locale
+## 📁 Structure du Projet
+
+```
+To-Do-List/
+├── index.html          # 🔀 Redirection automatique vers login.html
+├── login.html          # 🔐 Page d'authentification (connexion + inscription)
+├── login.js            # ⚙️  Logique auth (Firebase, SHA-256, validation)
+├── app.html            # 🗂️  Interface principale de gestion des tâches
+├── app.js              # ⚙️  Logique tâches (CRUD, filtres, tri, sync Firebase)
+├── config.json         # 🔧 URL Firebase Realtime Database
+├── style/
+│   ├── style.css       # 🎨 Styles de la page de login
+│   └── style2.css      # 🎨 Styles de l'application principale
+├── logo/               # 🖼️  Assets logo
+└── README.md           # 📖 Documentation
+```
+
+---
+
+## ⚙️ Installation & Configuration
+
+### 1. Cloner le repo
 
 ```bash
-# 1. Cloner le repo
 git clone https://github.com/sacez53/To-Do-List
-cd mini-todo-list
-
-# 2. Ouvrir index.html
-# Ou utiliser Live Server (VS Code)
+cd To-Do-List
 ```
 
-**Zéro installation requise** – ouvre directement dans le navigateur !
+### 2. Configurer Firebase
 
----
+Édite `config.json` avec l'URL de ta Firebase Realtime Database :
 
-## 📂 Structure du Projet
-
-```
-mini-todo-list/
-├── index.html     # 🎨 Interface complète
-├── style.css      # 📱 Design responsive + animations
-├── app.js         # ⚙️ Logique (localStorage + filtres)
-└── README.md      # 📖 Documentation
-```
-
-**Taille totale** : ~5ko – ultra-léger !
-
----
-
-## 🎮 Comment Utiliser
-
-```
-1. Tape une tâche ➜ Entrée
-2. ✅ Coche pour terminer
-3. 🗑️ Clique "Supprimer"
-4. 🔄 Filtres : Toutes | Actives | Terminées
-5. 🔄 Recharge : tout est sauvegardé ! 💾
-```
-
----
-
-## 🎨 Personnalisation Facile
-
-### 1. **Changer les couleurs** (CSS variables)
-
-```css
-:root {
-  --primary: #22c55e;   /* Vert actuel */
-  --bg: #0f172a;        /* Fond sombre */
-  --card: #020617;      /* Cartes tâches */
+```json
+{
+  "firebaseUrl": "https://ton-projet-default-rtdb.europe-west1.firebasedatabase.app/"
 }
 ```
 
-### 2. **Pour photographe** – Thème "Shooting List"
+> **Sans Firebase** : laisse `firebaseUrl` vide ou supprime-le – l'app fonctionne en mode local (localStorage uniquement).
+
+### 3. Règles Firebase recommandées
+
+```json
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+```
+
+> ⚠️ Pour la production, restreindre les règles d'accès Firebase.
+
+### 4. Lancer
+
+Ouvre `index.html` dans le navigateur ou utilise **Live Server** (VS Code).
+
+---
+
+## 🔐 Système d'Authentification
+
+- **Inscription** : username (3–20 caractères alphanumériques) + mot de passe (min. 5 caractères)
+- **Hachage** : le mot de passe est hashé en SHA-256 via la **Web Crypto API** avant envoi
+- **Stockage** : `{ password: hash, todos: [...] }` dans Firebase sous `/users/{username}/`
+- **Session** : gérée par `sessionStorage` (expirée à la fermeture du navigateur)
+- **Isolation** : les tâches de chaque utilisateur sont strictement séparées
+
+---
+
+## 🗄️ Structure des Données Firebase
+
+```json
+{
+  "users": {
+    "sacha": {
+      "password": "<sha256_hash>",
+      "todos": [
+        {
+          "id": 1711800000000,
+          "text": "Livraison album client Dupont",
+          "status": "inprogress",
+          "priority": "high",
+          "due": "2026-04-01",
+          "notes": "Exporter en JPEG 72dpi pour le web",
+          "created": "2026-03-30T17:00:00.000Z"
+        }
+      ]
+    }
+  }
+}
+```
+
+---
+
+## 🎮 Utilisation
 
 ```
-"Liste de shoots" au lieu de "To-Do List"
-Tâches : "Portrait Mme Dupont" | "Paysage Cholet"
-Statuts : À programmer | En cours | Livré
-```
-
-### 3. **Ajouter ton logo**
-
-```html
-<header class="header">
-  <img src="logo.png" alt="Sacha G. Photographe" class="logo">
-  <h1>Liste de Shoots</h1>
-</header>
+1. 🔐 Connexion / Inscription sur login.html
+2. ➕ Cliquer sur le bouton + pour créer une tâche
+3. 📋 Renseigner : titre, statut, priorité, date d'échéance, notes
+4. 🔍 Rechercher une tâche via la barre de recherche
+5. 🗂️  Filtrer par statut via les boutons de filtre
+6. 🔃 Trier par date, priorité, échéance ou statut
+7. 📊 Suivre la progression globale via la barre de progression
+8. 🔄 Toutes les modifications se synchronisent automatiquement avec Firebase
+9. 🚪 Se déconnecter via le bouton de déconnexion
 ```
 
 ---
 
 ## 📱 Responsive Design
 
-| Écran | Layout |
+| Écran | Comportement |
 |---|---|
-| **Mobile** <480px | Tâches pleine largeur |
-| **Tablette** <768px | Compteurs centrés |
-| **Desktop** >1024px | Max-width 600px |
-
----
-
-## 🚀 Déployé avec GitHub Pages
-
-```
-1. repo: tonusername/mini-todo-list
-2. Settings > Pages > Deploy from branch: main
-3. URL automatique : https://tonusername.github.io/mini-todo-list
-```
-
-✅ **localStorage fonctionne parfaitement**  
-✅ **HTTPS automatique**  
-✅ **Gratuit & rapide**
-
----
-
-## 🔮 Prochaines Améliorations
-
-| Feature | Difficulté | Temps |
-|---|---|---|
-| ✏️ **Édition inline** | 🟡 Moyenne | 2h |
-| 📅 **Dates échéance** | 🟡 Moyenne | 3h |
-| 🌙 **Thème jour/nuit** | 🟢 Facile | 1h |
-| ♻️ **Drag & Drop** | 🔴 Avancé | 5h |
-| 📊 **Stats graphiques** | 🔴 Avancé | 6h |
+| **Mobile** < 480px | Navigation compacte, tâches pleine largeur |
+| **Tablette** < 768px | Layout adaptatif, compteurs centrés |
+| **Desktop** > 1024px | Interface centrée, max-width optimisée |
 
 ---
 
 ## 👨‍💻 Auteur
 
-**Sacha G. Photographe**  
-*Photographe professionnel & étudiant BUT MMI*  
-📍 **Laval, Pays de la Loire, France**
+**Sacha G.**
+*Étudiant BUT MMI · Photographe professionnel*
+📍 Laval, Pays de la Loire, France
 
-[![GitHub](https://img.shields.io/badge/GitHub-@tonusername-black)](https://github.com/tonusername)
-[![Portfolio](https://img.shields.io/badge/Portfolio-sachag.photo-blue)](https://sachag.photo)
+[![GitHub](https://img.shields.io/badge/GitHub-sacez53-black)](https://github.com/sacez53)
 
 ---
 
 ## 📄 Licence
 
 ```
-MIT License © 2026 Sacha G. Photographe
-Utilise, modifie, intègre dans ton portfolio librement !
-⭐ Star le repo si utile
+MIT License © 2026 Sacha G.
+Libre d'utilisation, modification et intégration.
+⭐ N'hésite pas à star le repo si le projet t'est utile !
 ```
-
----
-
-## 🎯 Pourquoi ce projet ?
-
-- **Portfolio** : Montre tes skills HTML/CSS/JS
-- **Entretien** : Démo live en 3s
-- **Étudiant** : Projet BUT MMI parfait
-- **Freelance** : Base personnalisable client
-
-## ✅ À faire avant commit :
-
-1. **Remplace `tonusername`** partout par ton vrai GitHub username
-2. **Ajoute tes vrais liens** LinkedIn/Portfolio
-3. **Commit/push** → GitHub Pages se met à jour automatiquement
-
-**Ton README est maintenant pro et complet !** 🚀
