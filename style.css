@@ -246,3 +246,8 @@ body {
     order: 3;
   }
 }
+
+.annonce {
+  font-size: 15px;
+  color: yellow;
+}
