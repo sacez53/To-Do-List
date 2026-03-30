@@ -624,3 +624,262 @@ button { -webkit-appearance: none; }
     height: 52px;
   }
 }
+
+/* ════════════════════════════════════════
+   BARRE DE PROGRESSION
+════════════════════════════════════════ */
+.progress-wrap {
+  position: relative;
+  height: 3px;
+  background: var(--line);
+  margin-bottom: 1.1rem;
+  border-radius: 2px;
+  overflow: visible;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--white);
+  border-radius: 2px;
+  transition: width 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+}
+
+.progress-label {
+  position: absolute;
+  right: 0;
+  top: -1.4rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+/* ════════════════════════════════════════
+   TOOLBAR — Recherche + Tri
+════════════════════════════════════════ */
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+  align-items: center;
+}
+
+.search-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.65rem;
+  font-size: 1rem;
+  color: var(--text-faint);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 2.2rem 0.5rem 2rem;
+  height: var(--tap-sm);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.8rem;
+  transition: border-color var(--transition);
+}
+.search-input:focus {
+  outline: none;
+  border-color: var(--line-strong);
+}
+.search-input::placeholder { color: var(--text-faint); }
+.search-input::-webkit-search-cancel-button { display: none; }
+
+.search-clear {
+  position: absolute;
+  right: 0.4rem;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color var(--transition), background var(--transition);
+}
+.search-clear:hover { color: var(--white); background: var(--surface-3); }
+
+.sort-select {
+  height: var(--tap-sm);
+  padding: 0 1.8rem 0 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  transition: border-color var(--transition);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sort-select:focus { outline: none; border-color: var(--line-strong); }
+.sort-select option { background: #111; }
+
+/* ════════════════════════════════════════
+   PRIORITÉ — badges dans la carte
+════════════════════════════════════════ */
+.todo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.1rem;
+}
+
+.priority-badge,
+.due-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.58rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.priority-badge.priority-high {
+  color: #ff6b6b;
+  border-color: rgba(255,107,107,0.25);
+  background: rgba(255,107,107,0.06);
+}
+
+.priority-badge.priority-low {
+  color: #74b9ff;
+  border-color: rgba(116,185,255,0.25);
+  background: rgba(116,185,255,0.06);
+}
+
+/* ════════════════════════════════════════
+   ÉCHÉANCE — badges
+════════════════════════════════════════ */
+.due-badge {
+  color: var(--text-faint);
+  border-color: var(--line);
+}
+
+.due-badge.due-overdue {
+  color: #ff6b6b;
+  border-color: rgba(255,107,107,0.3);
+  background: rgba(255,107,107,0.07);
+  animation: duePulse 2s ease infinite;
+}
+
+.due-badge.due-today {
+  color: #ffd43b;
+  border-color: rgba(255,212,59,0.3);
+  background: rgba(255,212,59,0.06);
+}
+
+.due-badge.due-soon {
+  color: #f39c12;
+  border-color: rgba(243,156,18,0.25);
+  background: rgba(243,156,18,0.05);
+}
+
+.due-badge.due-ok {
+  color: var(--text-faint);
+  border-color: var(--line);
+}
+
+@keyframes duePulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+/* ════════════════════════════════════════
+   MODALE — champs côte à côte
+════════════════════════════════════════ */
+.modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.label-opt {
+  font-size: 0.55rem;
+  color: var(--text-faint);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ════════════════════════════════════════
+   MODALE DE CONFIRMATION
+════════════════════════════════════════ */
+.confirm-modal {
+  max-width: 340px !important;
+  gap: 0.75rem !important;
+  padding: 1.5rem 1.25rem 1.5rem !important;
+  border-radius: var(--radius-sm) !important;
+  border-bottom: 1px solid var(--line-strong) !important;
+}
+
+.confirm-modal::before { display: none; }
+
+.confirm-text {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  line-height: 1.5;
+}
+
+.btn-delete-confirm {
+  min-height: var(--tap);
+  padding: 0.6rem 1rem;
+  border: 1px solid #ff6b6b;
+  border-radius: var(--radius-sm);
+  background: rgba(255,107,107,0.1);
+  color: #ff6b6b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.btn-delete-confirm:hover { background: #ff6b6b; color: #000; }
+
+.btn-cancel-confirm {
+  min-height: var(--tap);
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-faint);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+.btn-cancel-confirm:hover { border-color: var(--white); color: var(--white); }
+
+@media (min-width: 768px) {
+  .confirm-modal {
+    animation: slideUp 180ms ease;
+  }
+}
