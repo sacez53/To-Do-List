@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Connexion — To‑Do List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="./logo/Check-green.svg.png">
+    <link rel="stylesheet" href="./style/style2.css" />
+    <style>
+      /* ── Override body pour la page login ── */
+      body {
+        justify-content: space-between;
+        background-image: radial-gradient(circle, #181818 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+
+      /* ── Zone centrale ── */
+      .login-wrap {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+      }
+
+      /* ── Carte ── */
+      .login-box {
+        width: 100%;
+        max-width: 340px;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        animation: appear 400ms ease both;
+      }
+
+      @keyframes appear {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ── Logo / Titre ── */
+      .login-logo {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .login-logo-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border: 1px solid #2a2a2a;
+        margin-bottom: 1.1rem;
+        font-size: 1.4rem;
+        position: relative;
+      }
+
+      .login-logo-icon::before {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border: 1px solid #1e1e1e;
+      }
+
+      .login-logo h1 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #efefef;
+        margin-bottom: 0.3rem;
+      }
+
+      .login-logo p {
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #444;
+      }
+
+      /* ── Formulaire ── */
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border: 1px solid #222;
+        background: #0f0f0f;
+        position: relative;
+      }
+
+      .login-form::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 1.25rem;
+        right: 1.25rem;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+      }
+
+      .login-inner {
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+
+      .login-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #555;
+        margin-bottom: 0.1rem;
+      }
+
+      .login-input-wrap {
+        position: relative;
+      }
+
+      .login-input-wrap input {
+        width: 100%;
+        min-height: 48px;
+        padding: 0.85rem 0.9rem;
+        border: 1px solid #222;
+        border-radius: 3px;
+        background: #000;
+        color: #efefef;
+        font-size: 15px;
+        letter-spacing: 0.18em;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+        -webkit-text-security: disc;
+      }
+
+      .login-input-wrap input::placeholder {
+        color: #333;
+        letter-spacing: normal;
+        -webkit-text-security: none;
+      }
+
+      .login-input-wrap input:focus {
+        outline: none;
+        border-color: #fff;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+      }
+
+      /* Toggle visibilité */
+      .toggle-vis {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #444;
+        cursor: pointer;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 0.25rem;
+        transition: color 160ms ease;
+      }
+
+      .toggle-vis:hover {
+        color: #fff;
+      }
+
+      .login-submit {
+        width: 100%;
+        min-height: 48px;
+        padding: 0.85rem 1rem;
+        border: none;
+        border-top: 1px solid #1e1e1e;
+        border-radius: 0;
+        background: #fff;
+        color: #000;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: background 160ms ease, color 160ms ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .login-submit:hover {
+        background: #000;
+        color: #fff;
+      }
+
+      .login-submit::after {
+        content: "→";
+        position: absolute;
+        right: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 160ms ease, right 160ms ease;
+      }
+
+      .login-submit:hover::after {
+        opacity: 1;
+        right: 1rem;
+      }
+
+      /* ── Message d'erreur ── */
+      .login-error {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #888;
+        text-align: center;
+        padding: 0.65rem 0.875rem;
+        border: 1px solid #2a2a2a;
+        border-top: none;
+        background: #0a0a0a;
+        display: none;
+        animation: shake 300ms ease;
+      }
+
+      .login-error.visible {
+        display: block;
+      }
+
+      @keyframes shake {
+        0%,100% { transform: translateX(0); }
+        25%      { transform: translateX(-6px); }
+        75%      { transform: translateX(6px); }
+      }
+
+      /* ── Hint bas de page ── */
+      .login-hint {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.62rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header" style="border-bottom: 1px solid #181818;">
+      <h1 style="font-size:0.75rem; letter-spacing:0.2em; color:#333;">TO‑DO LIST</h1>
+    </header>
+
+    <div class="login-wrap">
+      <div class="login-box">
+
+        <div class="login-logo">
+          <div class="login-logo-icon">✓</div>
+          <h1>Accès privé</h1>
+          <p>Entrez votre code</p>
+        </div>
+
+        <form class="login-form" id="login-form" autocomplete="off">
+          <div class="login-inner">
+            <span class="login-label">Code d'accès</span>
+            <div class="login-input-wrap">
+              <input
+                type="password"
+                id="code-input"
+                placeholder="••••••"
+                autocomplete="current-password"
+              />
+              <button type="button" class="toggle-vis" id="toggle-vis" tabindex="-1">voir</button>
+            </div>
+          </div>
+          <button type="submit" class="login-submit">Entrer</button>
+        </form>
+
+        <div class="login-error" id="login-error">Code incorrect</div>
+
+        <p class="login-hint">Accès restreint · Usage personnel</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>© 2026 — Sacha G.</p>
+    </footer>
+
+    <script src="login.js"></script>
+    <script>
+      // Toggle visibilité du code
+      const toggleBtn = document.getElementById("toggle-vis");
+      const codeField = document.getElementById("code-input");
+      toggleBtn.addEventListener("click", () => {
+        const isPass = codeField.type === "password";
+        codeField.type = isPass ? "text" : "password";
+        toggleBtn.textContent = isPass ? "cacher" : "voir";
+      });
+    </script>
+  </body>
+</html>
