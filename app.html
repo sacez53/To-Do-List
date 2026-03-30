@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>To‑Do List — App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#080808" />
+    <link rel="icon" href="./logo/Check-green.svg.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style/style2.css" />
+    <script>
+      // Garde d'authentification — redirection si non connecté
+      if (!sessionStorage.getItem("auth")) {
+        window.location.replace("./login.html");
+      }
+    </script>
+  </head>
+  <body>
+
+    <!-- ── Header ── -->
+    <header class="header">
+      <h1>Ma To‑Do List</h1>
+      <p>Statuts · Notes · Sync</p>
+      <div class="header-actions">
+        <span class="user-badge" id="user-label" title="Compte connecté"></span>
+        <span class="sync-indicator" id="sync-indicator" title="État de la synchronisation">
+          <span class="sync-dot" id="sync-dot"></span>
+          <span class="sync-label" id="sync-label">Chargement...</span>
+        </span>
+        <button id="logout-btn">Déconnexion</button>
+      </div>
+    </header>
+
+    <!-- ── Contenu principal ── -->
+    <main class="container">
+
+      <!-- Statistiques -->
+      <div class="stats">
+        <span id="todo-count">0 tâches</span>
+        <span id="done-count">0 terminées</span>
+        <span id="inprogress-count">0 en cours</span>
+      </div>
+
+      <!-- Filtres par statut -->
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">Toutes</button>
+        <button class="filter-btn" data-filter="todo">À faire</button>
+        <button class="filter-btn" data-filter="inprogress">En cours</button>
+        <button class="filter-btn" data-filter="waiting">En attente</button>
+        <button class="filter-btn" data-filter="done">Terminées</button>
+        <button class="filter-btn" data-filter="cancelled">Annulées</button>
+      </div>
+
+      <!-- Liste -->
+      <ul id="todo-list"></ul>
+    </main>
+
+    <footer class="footer">
+      <p>© 2026 · Sacha G. · Usage personnel</p>
+    </footer>
+
+    <!-- ── FAB — Ajouter une tâche ── -->
+    <button class="fab" id="fab-add" aria-label="Ajouter une tâche">
+      <span class="fab-icon">+</span>
+    </button>
+
+    <!-- ══════════════════════════════════
+         MODALE UNIFIÉE (ajout + édition)
+    ══════════════════════════════════ -->
+    <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+      <div class="modal">
+
+        <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+
+        <h2 class="modal-heading" id="modal-heading">Nouvelle tâche</h2>
+
+        <div class="modal-field">
+          <label for="modal-text">Titre</label>
+          <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tâche..." />
+        </div>
+
+        <div class="modal-field">
+          <label for="modal-status">Statut</label>
+          <select id="modal-status" class="modal-select">
+            <option value="todo">📋 À faire</option>
+            <option value="inprogress">⚡ En cours</option>
+            <option value="waiting">⏳ En attente</option>
+            <option value="done">✅ Terminé</option>
+            <option value="cancelled">❌ Annulé</option>
+          </select>
+        </div>
+
+        <div class="modal-field">
+          <label for="modal-notes">Notes</label>
+          <textarea id="modal-notes" class="modal-textarea" placeholder="Ajouter une note..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-save"   id="modal-save">Créer</button>
+          <button class="btn-delete" id="modal-delete">Supprimer</button>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

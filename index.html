@@ -2,113 +2,298 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>To‑Do List</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Application de gestion de tâches avec statuts et notes, synchronisée sur tous les appareils via Firebase." />
+    <title>Ma To‑Do List — Accueil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#080808" />
+    <meta name="description" content="Application personnelle de gestion de tâches avec statuts, notes et synchronisation multi-appareils." />
     <link rel="icon" href="./logo/Check-green.svg.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./style/style2.css" />
-    <script>
-      // Garde d'authentification — redirection si non connecté
-      if (!sessionStorage.getItem("auth")) {
-        window.location.replace("./login.html");
+    <style>
+      :root {
+        --bg:          #080808;
+        --surface:     #0f0f0f;
+        --line:        #1e1e1e;
+        --line-strong: #2e2e2e;
+        --text:        #efefef;
+        --text-muted:  #888;
+        --text-faint:  #3a3a3a;
+        --white:       #fff;
+        --black:       #000;
       }
-    </script>
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: "IBM Plex Mono", "Courier New", monospace; }
+
+      html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
+
+      body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        color: var(--text);
+        background-image: radial-gradient(circle, #161616 1px, transparent 1px);
+        background-size: 22px 22px;
+        overflow-x: hidden;
+      }
+
+      /* ── Nav minimaliste ── */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav-logo {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+      }
+
+      .nav-cta {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.4rem 0.75rem;
+        border: 1px solid var(--line-strong);
+        border-radius: 2px;
+        transition: color 160ms ease, border-color 160ms ease;
+      }
+      .nav-cta:hover { color: var(--white); border-color: var(--white); }
+
+      /* ── Hero ── */
+      .hero {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1.25rem 2rem;
+        text-align: center;
+        position: relative;
+      }
+
+      /* Ligne déco centrale */
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 1px;
+        height: 60px;
+        background: linear-gradient(to bottom, transparent, var(--line-strong));
+      }
+
+      .hero-tag {
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--line);
+        padding: 0.3rem 0.7rem;
+        border-radius: 2px;
+        animation: fadeUp 500ms ease both;
+      }
+
+      .hero-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        border: 1px solid var(--line-strong);
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        position: relative;
+        animation: fadeUp 500ms 80ms ease both;
+      }
+      .hero-icon::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border: 1px solid var(--line);
+      }
+
+      .hero h1 {
+        font-size: clamp(1.8rem, 8vw, 3.5rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        line-height: 1.05;
+        margin-bottom: 1rem;
+        animation: fadeUp 500ms 150ms ease both;
+      }
+
+      .hero-sub {
+        font-size: clamp(0.72rem, 2.5vw, 0.88rem);
+        color: var(--text-muted);
+        max-width: 36ch;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+        animation: fadeUp 500ms 220ms ease both;
+      }
+
+      .hero-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.9rem 2rem;
+        border: 1px solid var(--white);
+        border-radius: 2px;
+        background: var(--white);
+        color: var(--black);
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        text-decoration: none;
+        transition: background 160ms ease, color 160ms ease;
+        animation: fadeUp 500ms 300ms ease both;
+      }
+      .hero-btn:hover { background: var(--black); color: var(--white); }
+      .hero-btn .arrow { transition: transform 160ms ease; }
+      .hero-btn:hover .arrow { transform: translateX(4px); }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ── Séparateur ── */
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0 1.25rem;
+        max-width: 640px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .divider::before,
+      .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+      .divider span { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); white-space: nowrap; }
+
+      /* ── Features ── */
+      .features {
+        max-width: 640px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 2rem 1.25rem 3rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        border-left: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        animation: fadeUp 500ms 380ms ease both;
+      }
+
+      .feature-item {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--line);
+        transition: background 160ms ease;
+      }
+      .feature-item:first-child { border-top: 1px solid var(--line); }
+      .feature-item:hover { background: #0f0f0f; }
+
+      .feature-key {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+      }
+
+      .feature-val {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        line-height: 1.45;
+      }
+
+      /* ── Footer ── */
+      footer {
+        text-align: center;
+        padding: 1.25rem 1rem;
+        border-top: 1px solid var(--line);
+        font-size: 0.62rem;
+        letter-spacing: 0.06em;
+        color: var(--text-faint);
+      }
+
+      @media (min-width: 560px) {
+        .features { grid-template-columns: 1fr 1fr; }
+        .feature-item { grid-template-columns: 1fr; }
+        .feature-item:nth-child(odd) { border-right: 1px solid var(--line); }
+      }
+    </style>
   </head>
   <body>
-    <header class="header">
-      <h1>Ma To‑Do List</h1>
-      <p>Gestion de tâches avec statuts et notes</p>
-      <div class="header-actions">
-        <span class="sync-indicator" id="sync-indicator" title="État de la synchronisation">
-          <span class="sync-dot" id="sync-dot"></span>
-          <span class="sync-label" id="sync-label">Chargement...</span>
-        </span>
-        <button id="logout-btn" onclick="sessionStorage.removeItem('auth'); window.location.href='./login.html';">Déconnexion</button>
+
+    <nav>
+      <span class="nav-logo">To‑Do List</span>
+      <a class="nav-cta" href="./login.html">Connexion →</a>
+    </nav>
+
+    <section class="hero">
+      <span class="hero-tag">Usage personnel · v2.0</span>
+      <div class="hero-icon" aria-hidden="true">✓</div>
+      <h1>Ma To‑Do<br>List</h1>
+      <p class="hero-sub">Gérez vos tâches avec des statuts, des notes et une synchronisation multi-appareils via Firebase.</p>
+      <a class="hero-btn" href="./login.html">
+        Accéder à l'app
+        <span class="arrow">→</span>
+      </a>
+    </section>
+
+    <div class="divider"><span>Fonctionnalités</span></div>
+
+    <div class="features">
+      <div class="feature-item">
+        <span class="feature-key">Statuts</span>
+        <span class="feature-val">5 statuts : à faire, en cours, en attente, terminé, annulé</span>
       </div>
-    </header>
-
-    <main class="container">
-      <!-- Formulaire d'ajout -->
-      <form id="todo-form">
-        <input
-          type="text"
-          id="todo-input"
-          placeholder="Ajouter une tâche..."
-          autocomplete="off"
-        />
-        <select id="status-select">
-          <option value="todo">📋 À faire</option>
-          <option value="inprogress">⚡ En cours</option>
-          <option value="waiting">⏳ En attente</option>
-          <option value="done">✅ Terminé</option>
-          <option value="cancelled">❌ Annulé</option>
-        </select>
-        <button type="submit" id="add-btn">Ajouter</button>
-      </form>
-
-      <!-- Statistiques -->
-      <div class="stats">
-        <span id="todo-count">0 tâches</span>
-        <span id="done-count">0 terminées</span>
-        <span id="inprogress-count">0 en cours</span>
+      <div class="feature-item">
+        <span class="feature-key">Notes</span>
+        <span class="feature-val">Annotez chaque tâche librement</span>
       </div>
-
-      <!-- Filtres par statut -->
-      <div class="filters">
-        <button class="filter-btn active" data-filter="all">Toutes</button>
-        <button class="filter-btn" data-filter="todo">À faire</button>
-        <button class="filter-btn" data-filter="inprogress">En cours</button>
-        <button class="filter-btn" data-filter="waiting">En attente</button>
-        <button class="filter-btn" data-filter="done">Terminées</button>
-        <button class="filter-btn" data-filter="cancelled">Annulées</button>
+      <div class="feature-item">
+        <span class="feature-key">Sync</span>
+        <span class="feature-val">Synchronisation Firebase multi-appareils en temps réel</span>
       </div>
-
-      <ul id="todo-list"></ul>
-    </main>
-
-    <footer class="footer">
-      <p>Ce site est la propriété de Sacha GUITTER et est dédié à une utilisation personnelle.</p>
-      <p>© 2026 - Sacha G. Photographe</p>
-    </footer>
-
-    <!-- Modale de détail / édition -->
-    <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div class="modal">
-        <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
-
-        <h2 id="modal-title" class="modal-heading">Détail de la tâche</h2>
-
-        <div class="modal-field">
-          <label for="modal-text">Titre</label>
-          <input type="text" id="modal-text" class="modal-input" />
-        </div>
-
-        <div class="modal-field">
-          <label for="modal-status">Statut</label>
-          <select id="modal-status" class="modal-select">
-            <option value="todo">📋 À faire</option>
-            <option value="inprogress">⚡ En cours</option>
-            <option value="waiting">⏳ En attente</option>
-            <option value="done">✅ Terminé</option>
-            <option value="cancelled">❌ Annulé</option>
-          </select>
-        </div>
-
-        <div class="modal-field">
-          <label for="modal-notes">Notes</label>
-          <textarea id="modal-notes" class="modal-textarea" placeholder="Ajouter une note..."></textarea>
-        </div>
-
-        <div class="modal-actions">
-          <button class="btn-save" id="modal-save">Enregistrer</button>
-          <button class="btn-delete" id="modal-delete">Supprimer</button>
-        </div>
+      <div class="feature-item">
+        <span class="feature-key">Sécurisé</span>
+        <span class="feature-val">Accès protégé par un code personnel</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Filtres</span>
+        <span class="feature-val">Affichez les tâches par statut en un clic</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Responsive</span>
+        <span class="feature-val">Optimisé mobile, tablette et desktop</span>
       </div>
     </div>
 
-    <script src="app.js"></script>
+    <footer>
+      <p>© 2026 · Sacha G. Photographe · Usage personnel</p>
+    </footer>
+
   </body>
 </html>

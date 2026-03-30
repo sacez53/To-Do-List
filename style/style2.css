@@ -1,29 +1,34 @@
+/* ════════════════════════════════════════
+   VARIABLES
+════════════════════════════════════════ */
 :root {
-  --bg: #080808;
-  --surface: #0f0f0f;
-  --surface-2: #141414;
-  --surface-3: #1c1c1c;
-  --line: #222222;
-  --line-strong: #333333;
+  --bg:           #080808;
+  --surface:      #0f0f0f;
+  --surface-2:    #141414;
+  --surface-3:    #1c1c1c;
+  --line:         #222222;
+  --line-strong:  #333333;
 
-  --text: #efefef;
-  --text-muted: #888888;
-  --text-faint: #444444;
+  --text:         #efefef;
+  --text-muted:   #888888;
+  --text-faint:   #444444;
 
   --white: #ffffff;
   --black: #000000;
 
   --radius-sm: 3px;
-  --radius-md: 5px;
 
   --transition: 160ms ease;
-  --max-width: 680px;
+  --max-width:  680px;
+
+  --tap:    48px;
+  --tap-sm: 40px;
 }
 
-/* ── Reset ── */
-*,
-*::before,
-*::after {
+/* ════════════════════════════════════════
+   RESET
+════════════════════════════════════════ */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -33,279 +38,195 @@
 html {
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
-  /* Subtle dot-grid background */
-  background-image: radial-gradient(circle, #1f1f1f 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-image: radial-gradient(circle, #181818 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-body.modal-open {
-  overflow: hidden;
-}
+body.modal-open { overflow: hidden; }
 
-button, input, textarea, select {
-  font: inherit;
-}
+button, input, textarea, select { font: inherit; }
+button { -webkit-appearance: none; }
 
-/* ── Header ── */
+/* ════════════════════════════════════════
+   HEADER
+════════════════════════════════════════ */
 .header {
   text-align: center;
-  padding: 2.5rem 1rem 1.25rem;
+  padding: 1.5rem 1rem 1rem;
   border-bottom: 1px solid var(--line);
   position: relative;
 }
 
-.header::before {
+.header::after {
   content: "";
   position: absolute;
   bottom: -1px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
+  width: 48px;
   height: 1px;
   background: var(--white);
 }
 
 .header h1 {
-  font-size: clamp(1.4rem, 5vw, 2.1rem);
+  font-size: clamp(1.1rem, 5vw, 1.9rem);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   line-height: 1.1;
 }
 
 .header p {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-faint);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 0.875rem;
+  margin-top: 0.875rem;
   flex-wrap: wrap;
 }
 
-/* Indicateur de synchronisation */
-.sync-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: default;
-}
+/* ── Sync ── */
+.sync-indicator { display: inline-flex; align-items: center; gap: 0.35rem; cursor: default; }
 
 .sync-dot {
-  width: 6px;
-  height: 6px;
+  width: 6px; height: 6px;
   border-radius: 50%;
   background: var(--text-faint);
   flex-shrink: 0;
   transition: background var(--transition);
 }
+.sync-dot.sync-syncing { background: var(--text-muted); animation: pulse 900ms ease infinite; }
+.sync-dot.sync-synced  { background: var(--white); }
+.sync-dot.sync-error   { background: #666; }
+.sync-dot.sync-offline { background: var(--text-faint); }
 
-.sync-dot.sync-syncing {
-  background: var(--text-muted);
-  animation: pulse 900ms ease infinite;
-}
-
-.sync-dot.sync-synced {
-  background: var(--white);
-}
-
-.sync-dot.sync-error {
-  background: #888;
-}
-
-.sync-dot.sync-offline {
-  background: var(--text-faint);
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.2; }
-}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.2} }
 
 .sync-label {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-faint);
 }
 
-
+/* ── Bouton déconnexion ── */
 #logout-btn {
-  margin-top: 1rem;
   padding: 0.3rem 0.75rem;
+  min-height: var(--tap-sm);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-faint);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
   transition: color var(--transition), border-color var(--transition);
 }
+#logout-btn:hover, #logout-btn:active { color: var(--white); border-color: var(--white); }
 
-#logout-btn:hover {
-  color: var(--white);
-  border-color: var(--line-strong);
+/* ── Badge utilisateur ── */
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+.user-badge::before {
+  content: "@";
+  color: var(--text-faint);
+  font-size: 0.55rem;
 }
 
-/* ── Container ── */
+/* ════════════════════════════════════════
+   CONTAINER
+════════════════════════════════════════ */
 .container {
   width: 100%;
   max-width: var(--max-width);
-  margin: 1.5rem auto 0;
-  padding: 0 0.875rem 2rem;
+  margin: 0 auto;
+  padding: 1rem 0.875rem 6rem;   /* 6rem = espace pour le FAB */
   flex: 1;
 }
 
-/* ── Formulaire d'ajout ── */
-#todo-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  position: relative;
-}
-
-#todo-form::before {
-  content: "NOUVELLE TÂCHE";
-  position: absolute;
-  top: -0.55rem;
-  left: 0.875rem;
-  background: var(--surface);
-  padding: 0 0.4rem;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  color: var(--text-faint);
-}
-
-#todo-input,
-#status-select {
-  width: 100%;
-  min-height: 46px;
-  padding: 0.8rem 0.9rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--black);
-  color: var(--text);
-  font-size: 15px;
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-
-#status-select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.9rem center;
-  padding-right: 2.5rem;
-}
-
-#status-select option {
-  background: #111;
-  color: var(--text);
-}
-
-#todo-input::placeholder {
-  color: var(--text-faint);
-}
-
-#todo-input:focus,
-#status-select:focus {
-  outline: none;
-  border-color: var(--white);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
-}
-
-#todo-form button[type="submit"] {
-  width: 100%;
-  min-height: 46px;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--white);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--black);
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: background var(--transition), color var(--transition);
-}
-
-#todo-form button[type="submit"]:hover {
-  background: var(--black);
-  color: var(--white);
-}
-
-/* ── Stats ── */
+/* ════════════════════════════════════════
+   STATS
+════════════════════════════════════════ */
 .stats {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.4rem;
-  margin-bottom: 1.25rem;
-  padding: 0.75rem 0;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.7rem 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   color: var(--text-faint);
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.05em;
 }
 
-/* ── Filtres ── */
+/* ════════════════════════════════════════
+   FILTRES — scroll horizontal sur mobile
+════════════════════════════════════════ */
 .filters {
   display: flex;
   gap: 0.4rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
 }
+.filters::-webkit-scrollbar { display: none; }
 
 .filter-btn {
-  min-height: 36px;
-  padding: 0.4rem 0.75rem;
+  flex-shrink: 0;
+  min-height: var(--tap-sm);
+  padding: 0.35rem 0.8rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-faint);
   cursor: pointer;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
   transition: border-color var(--transition), color var(--transition), background var(--transition);
 }
+.filter-btn:hover  { border-color: var(--line-strong); color: var(--text-muted); }
+.filter-btn.active { border-color: var(--white); color: var(--white); background: var(--surface-2); }
 
-.filter-btn:hover {
-  border-color: var(--line-strong);
-  color: var(--text-muted);
-}
-
-.filter-btn.active {
-  border-color: var(--white);
-  color: var(--white);
-  background: var(--surface-2);
-}
-
-/* ── Liste ── */
+/* ════════════════════════════════════════
+   LISTE
+════════════════════════════════════════ */
 #todo-list {
   list-style: none;
   display: flex;
@@ -317,52 +238,53 @@ button, input, textarea, select {
   padding: 3rem 0;
   text-align: center;
   color: var(--text-faint);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
+/* Item — entrée animée */
 .todo-item {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 0.65rem;
-  padding: 1rem 0;
+  gap: 0.6rem;
+  padding: 0.9rem 0;
   border-bottom: 1px solid var(--line);
-  background: transparent;
   cursor: pointer;
   position: relative;
   transition: background var(--transition), padding var(--transition);
+  animation: itemIn 250ms ease both;
 }
 
+@keyframes itemIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Trait gauche au survol */
 .todo-item::before {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+  left: 0; top: 0; bottom: 0;
   width: 2px;
   background: var(--white);
   opacity: 0;
   transition: opacity var(--transition);
 }
 
-.todo-item:hover {
+.todo-item:hover, .todo-item:active {
   background: var(--surface);
-  padding-left: 1rem;
+  padding-left: 0.75rem;
   padding-right: 0.5rem;
 }
-
-.todo-item:hover::before {
-  opacity: 1;
-}
+.todo-item:hover::before, .todo-item:active::before { opacity: 1; }
 
 .todo-left {
   display: flex;
   align-items: flex-start;
-  gap: 0.65rem;
+  gap: 0.6rem;
   min-width: 0;
-  width: 100%;
+  flex: 1;
 }
 
 .todo-text-wrap {
@@ -374,128 +296,159 @@ button, input, textarea, select {
 }
 
 .todo-text {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--text);
   word-break: break-word;
+  line-height: 1.45;
 }
+.todo-text.done      { text-decoration: line-through; color: var(--text-faint); }
+.todo-text.cancelled { text-decoration: line-through; opacity: 0.3; }
 
-.todo-text.done {
-  text-decoration: line-through;
-  color: var(--text-faint);
-}
-
-.todo-text.cancelled {
-  text-decoration: line-through;
-  opacity: 0.3;
-}
-
-/* Badge statut monochrome */
 .todo-badge {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
   margin-top: 0.15rem;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   padding: 0.15rem 0.4rem;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   color: var(--text-faint);
   background: transparent;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
-/* Note preview */
 .todo-note-preview {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-faint);
   word-break: break-word;
   font-style: italic;
   border-left: 1px solid var(--line-strong);
   padding-left: 0.5rem;
+  line-height: 1.4;
 }
 
-/* ── Bouton Détails ── */
 .todo-edit {
   align-self: flex-end;
-  min-height: 36px;
-  padding: 0.3rem 0.6rem;
+  min-height: var(--tap-sm);
+  padding: 0.3rem 0.65rem;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-faint);
   cursor: pointer;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   transition: color var(--transition), border-color var(--transition);
 }
+.todo-edit:hover, .todo-edit:active { color: var(--white); border-color: var(--line-strong); }
 
-.todo-edit:hover {
-  color: var(--white);
-  border-color: var(--line-strong);
+/* ════════════════════════════════════════
+   FAB — Bouton flottant d'ajout
+════════════════════════════════════════ */
+.fab {
+  position: fixed;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  right: 1.25rem;
+  z-index: 50;
+
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--white);
+  background: var(--white);
+  color: var(--black);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5);
+  transition: background var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
-/* ── Modale ── */
+.fab-icon {
+  font-size: 1.6rem;
+  font-weight: 300;
+  line-height: 1;
+  margin-top: -1px;
+}
+
+.fab:hover, .fab:active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--white);
+  transform: scale(1.08);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.8);
+}
+
+/* ════════════════════════════════════════
+   MODALE
+   Mobile : bottom sheet
+   Desktop : dialog centré
+════════════════════════════════════════ */
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.88);
+  background: rgba(0,0,0,0.85);
   z-index: 100;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: 1rem;
   animation: fadeIn 140ms ease;
 }
+.modal-overlay.open { display: flex; }
 
-.modal-overlay.open {
-  display: flex;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
 .modal {
   position: relative;
   width: 100%;
-  max-width: 520px;
+  max-width: 100%;
   background: var(--surface);
   border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  padding: 1.75rem 1.5rem 1.5rem;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  padding: 1.5rem 1.1rem 2rem;
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04);
-  animation: slideUp 180ms ease;
-  background-image: radial-gradient(circle at top right, rgba(255,255,255,0.02), transparent 60%);
+  gap: 1rem;
+  box-shadow: 0 -20px 60px rgba(0,0,0,0.9);
+  animation: slideUpSheet 200ms ease;
+  max-height: 92dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-image: radial-gradient(circle at top, rgba(255,255,255,0.015), transparent 50%);
 }
 
-@keyframes slideUp {
-  from { transform: translateY(14px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-
+/* Handle de drag */
 .modal::before {
   content: "";
-  position: absolute;
-  top: 0;
-  left: 1.5rem;
-  right: 1.5rem;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(255,255,255,0.12), transparent);
+  display: block;
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line-strong);
+  margin: 0 auto 0.25rem;
+  flex-shrink: 0;
+}
+
+@keyframes slideUpSheet {
+  from { transform: translateY(28px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 .modal-close {
   position: absolute;
-  top: 0.9rem;
-  right: 0.9rem;
-  width: 28px;
-  height: 28px;
+  top: 0.875rem;
+  right: 0.875rem;
+  width: 32px;
+  height: 32px;
   border: none;
   background: transparent;
   color: var(--text-faint);
@@ -506,30 +459,23 @@ button, input, textarea, select {
   justify-content: center;
   transition: color var(--transition);
 }
-
-.modal-close:hover {
-  color: var(--white);
-}
+.modal-close:hover { color: var(--white); }
 
 .modal-heading {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--text-muted);
-  padding-right: 2rem;
+  padding-right: 2.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--line);
 }
 
-.modal-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
+.modal-field { display: flex; flex-direction: column; gap: 0.35rem; }
 
 .modal-field label {
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-faint);
@@ -539,57 +485,49 @@ button, input, textarea, select {
 .modal-select,
 .modal-textarea {
   width: 100%;
-  padding: 0.7rem 0.875rem;
+  padding: 0.75rem 0.875rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--black);
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: 16px;
   transition: border-color var(--transition), box-shadow var(--transition);
 }
-
 .modal-input:focus,
 .modal-select:focus,
 .modal-textarea:focus {
   outline: none;
   border-color: var(--white);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
 }
 
+.modal-input::placeholder,
+.modal-textarea::placeholder { color: var(--text-faint); }
+
 .modal-select {
+  -webkit-appearance: none;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.9rem center;
+  background-position: right 0.875rem center;
   padding-right: 2.5rem;
   cursor: pointer;
 }
+.modal-select option { background: #111; }
 
-.modal-select option {
-  background: #111;
-}
-
-.modal-textarea {
-  min-height: 110px;
-  resize: vertical;
-  line-height: 1.6;
-}
-
-.modal-textarea::placeholder {
-  color: var(--text-faint);
-}
+.modal-textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
 
 .modal-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-  justify-content: flex-end;
   padding-top: 0.5rem;
   border-top: 1px solid var(--line);
 }
 
 .btn-save {
-  min-height: 40px;
-  padding: 0.5rem 1.2rem;
+  min-height: var(--tap);
+  padding: 0.6rem 1rem;
   border: 1px solid var(--white);
   border-radius: var(--radius-sm);
   background: var(--white);
@@ -601,15 +539,11 @@ button, input, textarea, select {
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
 }
-
-.btn-save:hover {
-  background: var(--black);
-  color: var(--white);
-}
+.btn-save:hover, .btn-save:active { background: var(--black); color: var(--white); }
 
 .btn-delete {
-  min-height: 40px;
-  padding: 0.5rem 0.9rem;
+  min-height: var(--tap);
+  padding: 0.6rem 1rem;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   background: transparent;
@@ -620,73 +554,73 @@ button, input, textarea, select {
   cursor: pointer;
   transition: border-color var(--transition), color var(--transition);
 }
+.btn-delete:hover, .btn-delete:active { border-color: var(--white); color: var(--white); }
 
-.btn-delete:hover {
-  border-color: var(--white);
-  color: var(--white);
-}
-
-/* ── Footer ── */
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
 .footer {
   text-align: center;
   padding: 1rem 0.75rem;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   color: var(--text-faint);
   border-top: 1px solid var(--line);
   letter-spacing: 0.04em;
 }
 
-/* ── Responsive tablette+ ── */
+/* ════════════════════════════════════════
+   RESPONSIVE — TABLETTE (≥ 560px)
+════════════════════════════════════════ */
 @media (min-width: 560px) {
-  .container {
-    margin-top: 1.75rem;
-    padding: 0 1.25rem 2rem;
-  }
-
-  #todo-form {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    align-items: center;
-  }
-
-  #todo-input {
-    min-width: 0;
-  }
-
-  #status-select {
-    width: 165px;
-  }
-
-  #todo-form button[type="submit"] {
-    width: auto;
-    min-width: 110px;
-  }
-
-  .stats {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    text-align: center;
-  }
+  .container { padding: 1.25rem 1.25rem 5rem; }
 
   .todo-item {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.875rem;
   }
 
-  .todo-left {
-    align-items: center;
-  }
-
-  .todo-edit {
-    align-self: center;
-    flex-shrink: 0;
-  }
+  .todo-left { align-items: center; }
+  .todo-edit { align-self: center; flex-shrink: 0; }
 }
 
+/* ════════════════════════════════════════
+   RESPONSIVE — DESKTOP (≥ 768px)
+   Modal redevient un dialog centré
+════════════════════════════════════════ */
 @media (min-width: 768px) {
-  .header {
-    padding: 3.5rem 1rem 1.5rem;
+  .header { padding: 2.5rem 1rem 1.25rem; }
+  .container { padding: 1.75rem 1.5rem 3rem; max-width: 720px; }
+
+  .modal-overlay { align-items: center; padding: 1.5rem; }
+
+  .modal {
+    max-width: 520px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 1.75rem 1.5rem 1.5rem;
+    max-height: 85vh;
+    animation: slideUp 180ms ease;
+  }
+
+  .modal::before { display: none; }
+
+  @keyframes slideUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-actions {
+    grid-template-columns: auto auto;
+    justify-content: flex-end;
+  }
+  .btn-save, .btn-delete { min-width: 110px; }
+
+  .fab {
+    bottom: 2rem;
+    right: 2rem;
+    width: 52px;
+    height: 52px;
   }
 }

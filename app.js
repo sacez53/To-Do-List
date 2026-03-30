@@ -1,20 +1,27 @@
 // ──────────────────────────────────────────────
+// Session utilisateur
+// ──────────────────────────────────────────────
+const currentUser = sessionStorage.getItem("username") || "compte";
+
+// ──────────────────────────────────────────────
 // Références DOM
 // ──────────────────────────────────────────────
-const form             = document.getElementById("todo-form");
-const input            = document.getElementById("todo-input");
-const statusSelect     = document.getElementById("status-select");
-const list             = document.getElementById("todo-list");
-const todoCountEl      = document.getElementById("todo-count");
-const doneCountEl      = document.getElementById("done-count");
+const list              = document.getElementById("todo-list");
+const todoCountEl       = document.getElementById("todo-count");
+const doneCountEl       = document.getElementById("done-count");
 const inprogressCountEl = document.getElementById("inprogress-count");
-const filterBtns       = document.querySelectorAll(".filter-btn");
-const syncDot          = document.getElementById("sync-dot");
-const syncLabel        = document.getElementById("sync-label");
+const filterBtns        = document.querySelectorAll(".filter-btn");
+const fabAdd            = document.getElementById("fab-add");
+const userLabel         = document.getElementById("user-label");
+
+// Sync
+const syncDot   = document.getElementById("sync-dot");
+const syncLabel = document.getElementById("sync-label");
 
 // Modale
 const modalOverlay = document.getElementById("modal-overlay");
 const modalClose   = document.getElementById("modal-close");
+const modalHeading = document.getElementById("modal-heading");
 const modalText    = document.getElementById("modal-text");
 const modalStatus  = document.getElementById("modal-status");
 const modalNotes   = document.getElementById("modal-notes");
@@ -24,16 +31,19 @@ const modalDelete  = document.getElementById("modal-delete");
 // ──────────────────────────────────────────────
 // État
 // ──────────────────────────────────────────────
-let todos         = JSON.parse(localStorage.getItem("todos")) || [];
+let todos         = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
 let currentFilter = "all";
 let editingId     = null;
 let firebaseUrl   = null;
 let syncTimeout   = null;
 
 // ──────────────────────────────────────────────
-// Initialisation (charge config puis Firebase)
+// Init
 // ──────────────────────────────────────────────
 async function init() {
+  // Afficher le nom d'utilisateur
+  if (userLabel) userLabel.textContent = currentUser;
+
   try {
     const res    = await fetch("./config.json");
     const config = await res.json();
@@ -48,51 +58,53 @@ async function init() {
     console.warn("Erreur config.json :", e);
     setSyncStatus("offline");
   }
-
   render();
 }
 
 // ──────────────────────────────────────────────
-// Sync Firebase — Chargement
+// Chemin Firebase = /users/{username}/todos
+// ──────────────────────────────────────────────
+function userTodosPath() {
+  return `${firebaseUrl}/users/${encodeURIComponent(currentUser)}/todos.json`;
+}
+
+// ──────────────────────────────────────────────
+// Chargement Firebase
 // ──────────────────────────────────────────────
 async function loadFromFirebase() {
   setSyncStatus("syncing");
   try {
-    const res  = await fetch(`${firebaseUrl}/todos.json`);
+    const res  = await fetch(userTodosPath());
     const data = await res.json();
 
     if (Array.isArray(data) && data.length > 0) {
       todos = data;
-      localStorage.setItem("todos", JSON.stringify(todos));
     } else if (data && typeof data === "object" && !Array.isArray(data)) {
-      // Firebase peut retourner un objet au lieu d'un tableau
       todos = Object.values(data);
-      localStorage.setItem("todos", JSON.stringify(todos));
     }
+    // Si null/vide → garde le localStorage ou vide
 
+    localStorage.setItem(`todos_${currentUser}`, JSON.stringify(todos));
     setSyncStatus("synced");
   } catch (e) {
     console.warn("Erreur chargement Firebase :", e);
     setSyncStatus("error");
-    // Fallback localStorage déjà chargé
   }
 }
 
 // ──────────────────────────────────────────────
-// Sync Firebase — Sauvegarde (debounce 800ms)
+// Sauvegarde (debounce 800ms)
 // ──────────────────────────────────────────────
 async function saveToFirebase() {
   if (!firebaseUrl) return;
-
   clearTimeout(syncTimeout);
   setSyncStatus("syncing");
-
   syncTimeout = setTimeout(async () => {
     try {
-      await fetch(`${firebaseUrl}/todos.json`, {
-        method: "PUT",
+      await fetch(userTodosPath(), {
+        method:  "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(todos)
+        body:    JSON.stringify(todos)
       });
       setSyncStatus("synced");
     } catch (e) {
@@ -102,53 +114,20 @@ async function saveToFirebase() {
   }, 800);
 }
 
+function saveTodos() {
+  localStorage.setItem(`todos_${currentUser}`, JSON.stringify(todos));
+  saveToFirebase();
+}
+
 // ──────────────────────────────────────────────
 // Indicateur de sync
 // ──────────────────────────────────────────────
 function setSyncStatus(status) {
   if (!syncDot || !syncLabel) return;
-
-  syncDot.className   = `sync-dot sync-${status}`;
-  const labels = {
-    syncing: "Sync...",
-    synced:  "Synchronisé",
-    error:   "Hors ligne",
-    offline: "Local"
-  };
+  syncDot.className = `sync-dot sync-${status}`;
+  const labels = { syncing: "Sync...", synced: "Synchronisé", error: "Hors ligne", offline: "Local" };
   syncLabel.textContent = labels[status] || "";
 }
-
-// ──────────────────────────────────────────────
-// Sauvegarde locale + Firebase
-// ──────────────────────────────────────────────
-function saveTodos() {
-  localStorage.setItem("todos", JSON.stringify(todos));
-  saveToFirebase();
-}
-
-// ──────────────────────────────────────────────
-// Ajout d'une tâche
-// ──────────────────────────────────────────────
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
-  const text = input.value.trim();
-  if (!text) return;
-
-  const todo = {
-    id:      Date.now(),
-    text:    text,
-    status:  statusSelect.value,
-    notes:   "",
-    created: new Date().toISOString()
-  };
-
-  todos.push(todo);
-  saveTodos();
-  render();
-  form.reset();
-  statusSelect.value = "todo";
-  input.focus();
-});
 
 // ──────────────────────────────────────────────
 // Filtres
@@ -172,10 +151,7 @@ const STATUS_LABELS = {
   done:       { label: "Terminé",    icon: "✅" },
   cancelled:  { label: "Annulé",     icon: "❌" }
 };
-
-function getStatusInfo(status) {
-  return STATUS_LABELS[status] || STATUS_LABELS["todo"];
-}
+function getStatusInfo(s) { return STATUS_LABELS[s] || STATUS_LABELS["todo"]; }
 
 // ──────────────────────────────────────────────
 // Rendu de la liste
@@ -183,26 +159,28 @@ function getStatusInfo(status) {
 function render() {
   list.innerHTML = "";
 
-  const filtered = todos.filter(todo => {
-    if (currentFilter === "all") return true;
-    return todo.status === currentFilter;
-  });
+  const filtered = todos.filter(t =>
+    currentFilter === "all" ? true : t.status === currentFilter
+  );
 
   if (filtered.length === 0) {
     const empty = document.createElement("li");
     empty.className = "todo-empty";
-    empty.textContent = "Aucune tâche dans cette catégorie.";
+    empty.textContent = currentFilter === "all"
+      ? "Aucune tâche. Cliquez sur + pour en ajouter."
+      : "Aucune tâche dans cette catégorie.";
     list.appendChild(empty);
     updateCounters();
     return;
   }
 
-  filtered.forEach(todo => {
+  filtered.forEach((todo, i) => {
     const info = getStatusInfo(todo.status);
 
     const li = document.createElement("li");
     li.className = "todo-item";
     li.dataset.id = todo.id;
+    li.style.animationDelay = `${i * 35}ms`;
 
     const left = document.createElement("div");
     left.className = "todo-left";
@@ -215,17 +193,21 @@ function render() {
     textWrap.className = "todo-text-wrap";
 
     const span = document.createElement("span");
-    span.className = `todo-text ${todo.status === "done" ? "done" : ""} ${todo.status === "cancelled" ? "cancelled" : ""}`;
+    span.className = [
+      "todo-text",
+      todo.status === "done"      ? "done"      : "",
+      todo.status === "cancelled" ? "cancelled" : ""
+    ].join(" ").trim();
     span.textContent = todo.text;
     textWrap.appendChild(span);
 
     if (todo.notes && todo.notes.trim()) {
-      const notePreview = document.createElement("span");
-      notePreview.className = "todo-note-preview";
-      notePreview.textContent = todo.notes.length > 70
+      const note = document.createElement("span");
+      note.className = "todo-note-preview";
+      note.textContent = todo.notes.length > 70
         ? todo.notes.slice(0, 70) + "…"
         : todo.notes;
-      textWrap.appendChild(notePreview);
+      textWrap.appendChild(note);
     }
 
     left.appendChild(badge);
@@ -234,7 +216,7 @@ function render() {
     const editBtn = document.createElement("button");
     editBtn.className = "todo-edit";
     editBtn.textContent = "Détails";
-    editBtn.setAttribute("aria-label", `Voir les détails de "${todo.text}"`);
+    editBtn.setAttribute("aria-label", `Modifier "${todo.text}"`);
 
     editBtn.addEventListener("click", e => { e.stopPropagation(); openModal(todo.id); });
     li.addEventListener("click", () => openModal(todo.id));
@@ -255,49 +237,77 @@ function updateCounters() {
   const done       = todos.filter(t => t.status === "done").length;
   const inprogress = todos.filter(t => t.status === "inprogress").length;
 
-  todoCountEl.textContent      = `${total} tâche${total > 1 ? "s" : ""}`;
-  doneCountEl.textContent      = `${done} terminée${done > 1 ? "s" : ""}`;
+  todoCountEl.textContent       = `${total} tâche${total > 1 ? "s" : ""}`;
+  doneCountEl.textContent       = `${done} terminée${done > 1 ? "s" : ""}`;
   inprogressCountEl.textContent = `${inprogress} en cours`;
 }
 
 // ──────────────────────────────────────────────
-// Modale
+// Modale — Ouvrir (null = ajout, id = édition)
 // ──────────────────────────────────────────────
-function openModal(id) {
-  const todo = todos.find(t => t.id === id);
-  if (!todo) return;
-
-  editingId          = id;
-  modalText.value    = todo.text;
-  modalStatus.value  = todo.status;
-  modalNotes.value   = todo.notes || "";
+function openModal(id = null) {
+  if (id === null) {
+    editingId = null;
+    modalHeading.textContent  = "Nouvelle tâche";
+    modalSave.textContent     = "Créer";
+    modalText.value           = "";
+    modalStatus.value         = "todo";
+    modalNotes.value          = "";
+    modalDelete.style.display = "none";
+  } else {
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+    editingId = id;
+    modalHeading.textContent  = "Modifier la tâche";
+    modalSave.textContent     = "Enregistrer";
+    modalText.value           = todo.text;
+    modalStatus.value         = todo.status;
+    modalNotes.value          = todo.notes || "";
+    modalDelete.style.display = "";
+  }
 
   modalOverlay.classList.add("open");
   document.body.classList.add("modal-open");
-  modalText.focus();
+  setTimeout(() => modalText.focus(), 60);
 }
 
+// ──────────────────────────────────────────────
+// Modale — Fermer
+// ──────────────────────────────────────────────
 function closeModal() {
   modalOverlay.classList.remove("open");
   document.body.classList.remove("modal-open");
   editingId = null;
 }
 
+// ──────────────────────────────────────────────
+// Événements
+// ──────────────────────────────────────────────
+fabAdd.addEventListener("click", () => openModal(null));
 modalClose.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
 modalSave.addEventListener("click", () => {
-  if (!editingId) return;
-  const idx = todos.findIndex(t => t.id === editingId);
-  if (idx === -1) return;
-
   const newText = modalText.value.trim();
-  if (!newText) return;
+  if (!newText) { modalText.focus(); return; }
 
-  todos[idx].text   = newText;
-  todos[idx].status = modalStatus.value;
-  todos[idx].notes  = modalNotes.value.trim();
+  if (editingId === null) {
+    todos.push({
+      id:      Date.now(),
+      text:    newText,
+      status:  modalStatus.value,
+      notes:   modalNotes.value.trim(),
+      created: new Date().toISOString()
+    });
+  } else {
+    const idx = todos.findIndex(t => t.id === editingId);
+    if (idx !== -1) {
+      todos[idx].text   = newText;
+      todos[idx].status = modalStatus.value;
+      todos[idx].notes  = modalNotes.value.trim();
+    }
+  }
 
   saveTodos();
   render();
@@ -306,10 +316,18 @@ modalSave.addEventListener("click", () => {
 
 modalDelete.addEventListener("click", () => {
   if (!editingId) return;
+  if (!confirm("Supprimer cette tâche ?")) return;
   todos = todos.filter(t => t.id !== editingId);
   saveTodos();
   render();
   closeModal();
+});
+
+// Déconnexion
+document.getElementById("logout-btn").addEventListener("click", () => {
+  sessionStorage.removeItem("auth");
+  sessionStorage.removeItem("username");
+  window.location.href = "./login.html";
 });
 
 // ──────────────────────────────────────────────

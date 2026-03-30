@@ -3,293 +3,332 @@
   <head>
     <meta charset="UTF-8" />
     <title>Connexion — To‑Do List</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#080808" />
     <link rel="icon" href="./logo/Check-green.svg.png">
-    <link rel="stylesheet" href="./style/style2.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-      /* ── Override body pour la page login ── */
+      :root {
+        --bg:#080808; --surface:#0f0f0f; --line:#1e1e1e; --line-strong:#2e2e2e;
+        --text:#efefef; --text-muted:#888; --text-faint:#3a3a3a;
+        --white:#fff; --black:#000; --radius:3px; --tr:160ms ease;
+      }
+      *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; font-family:"IBM Plex Mono","Courier New",monospace; }
+      html { color-scheme:dark; -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent; }
+
       body {
-        justify-content: space-between;
-        background-image: radial-gradient(circle, #181818 1px, transparent 1px);
-        background-size: 24px 24px;
+        min-height:100vh; min-height:100dvh;
+        display:flex; flex-direction:column;
+        background:var(--bg); color:var(--text);
+        background-image:radial-gradient(circle,#161616 1px,transparent 1px);
+        background-size:22px 22px;
       }
 
+      /* ── Top bar ── */
+      .top-bar {
+        display:flex; align-items:center; justify-content:space-between;
+        padding:.875rem 1.25rem;
+        border-bottom:1px solid var(--line);
+      }
+      .top-logo { font-size:.62rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--text-faint); text-decoration:none; }
+      .top-logo:hover { color:var(--text-muted); }
+      .top-back { font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); text-decoration:none; transition:color var(--tr); }
+      .top-back:hover { color:var(--white); }
+
       /* ── Zone centrale ── */
-      .login-wrap {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem 1rem;
+      .wrap {
+        flex:1; display:flex; align-items:center; justify-content:center;
+        padding:1.5rem 1rem;
+        padding-bottom:max(1.5rem, env(safe-area-inset-bottom));
       }
 
       /* ── Carte ── */
-      .login-box {
-        width: 100%;
-        max-width: 340px;
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        animation: appear 400ms ease both;
+      .card {
+        width:100%; max-width:360px;
+        display:flex; flex-direction:column;
+        animation:appear 360ms ease both;
       }
+      @keyframes appear { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
-      @keyframes appear {
-        from { opacity: 0; transform: translateY(20px); }
-        to   { opacity: 1; transform: translateY(0); }
+      /* ── Entête de carte ── */
+      .card-header { text-align:center; margin-bottom:1.75rem; }
+      .card-icon {
+        display:inline-flex; align-items:center; justify-content:center;
+        width:48px; height:48px;
+        border:1px solid #222; margin-bottom:1rem; font-size:1.2rem; position:relative;
       }
+      .card-icon::before { content:""; position:absolute; inset:4px; border:1px solid #1a1a1a; }
+      .card-title { font-size:.9rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; margin-bottom:.3rem; }
+      .card-sub   { font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); }
 
-      /* ── Logo / Titre ── */
-      .login-logo {
-        text-align: center;
-        margin-bottom: 2rem;
+      /* ── Onglets ── */
+      .tabs {
+        display:grid; grid-template-columns:1fr 1fr;
+        border:1px solid var(--line-strong);
+        border-bottom:none;
+        margin-bottom:0;
       }
-
-      .login-logo-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 52px;
-        height: 52px;
-        border: 1px solid #2a2a2a;
-        margin-bottom: 1.1rem;
-        font-size: 1.4rem;
-        position: relative;
+      .tab-btn {
+        padding:.7rem .5rem;
+        background:transparent;
+        border:none;
+        border-bottom:1px solid var(--line-strong);
+        color:var(--text-faint);
+        font-size:.68rem; font-weight:700;
+        text-transform:uppercase; letter-spacing:.08em;
+        cursor:pointer;
+        transition:color var(--tr), background var(--tr), border-color var(--tr);
       }
-
-      .login-logo-icon::before {
-        content: "";
-        position: absolute;
-        inset: 4px;
-        border: 1px solid #1e1e1e;
+      .tab-btn:first-child { border-right:1px solid var(--line-strong); }
+      .tab-btn.active {
+        color:var(--white);
+        background:var(--surface);
+        border-bottom-color:var(--surface);
       }
-
-      .login-logo h1 {
-        font-size: 0.9rem;
-        font-weight: 700;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: #efefef;
-        margin-bottom: 0.3rem;
-      }
-
-      .login-logo p {
-        font-size: 0.65rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: #444;
-      }
+      .tab-btn:not(.active):hover { color:var(--text-muted); }
 
       /* ── Formulaire ── */
-      .login-form {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        border: 1px solid #222;
-        background: #0f0f0f;
-        position: relative;
+      .auth-form {
+        display:none; flex-direction:column; gap:0;
+        border:1px solid var(--line-strong);
+        border-top:none;
+        background:var(--surface);
+        position:relative;
+      }
+      .auth-form.active { display:flex; }
+
+      /* Reflet haut */
+      .auth-form::before {
+        content:""; position:absolute; top:0; left:1.25rem; right:1.25rem; height:1px;
+        background:linear-gradient(to right, transparent, rgba(255,255,255,.07), transparent);
       }
 
-      .login-form::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 1.25rem;
-        right: 1.25rem;
-        height: 1px;
-        background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+      .form-inner { padding:1.25rem 1.1rem; display:flex; flex-direction:column; gap:.75rem; }
+
+      /* ── Field ── */
+      .field { display:flex; flex-direction:column; gap:.3rem; }
+      .field label { font-size:.6rem; text-transform:uppercase; letter-spacing:.1em; color:#555; }
+
+      .input-wrap { position:relative; }
+      .input-wrap input {
+        width:100%; min-height:48px;
+        padding:.85rem 2.75rem .85rem .9rem;
+        border:1px solid #1e1e1e; border-radius:var(--radius);
+        background:#000; color:var(--text); font-size:16px;
+        transition:border-color var(--tr), box-shadow var(--tr);
+      }
+      .input-wrap input::placeholder { color:#2a2a2a; }
+      .input-wrap input:focus { outline:none; border-color:#fff; box-shadow:0 0 0 1px rgba(255,255,255,.05); }
+      .input-wrap input.error { border-color:#666; }
+
+      /* Icône dans input */
+      .input-icon {
+        position:absolute; right:.75rem; top:50%; transform:translateY(-50%);
+        color:#333; font-size:.75rem; line-height:1; pointer-events:none;
       }
 
-      .login-inner {
-        padding: 1.5rem 1.25rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.65rem;
-      }
-
-      .login-label {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: #555;
-        margin-bottom: 0.1rem;
-      }
-
-      .login-input-wrap {
-        position: relative;
-      }
-
-      .login-input-wrap input {
-        width: 100%;
-        min-height: 48px;
-        padding: 0.85rem 0.9rem;
-        border: 1px solid #222;
-        border-radius: 3px;
-        background: #000;
-        color: #efefef;
-        font-size: 15px;
-        letter-spacing: 0.18em;
-        transition: border-color 160ms ease, box-shadow 160ms ease;
-        -webkit-text-security: disc;
-      }
-
-      .login-input-wrap input::placeholder {
-        color: #333;
-        letter-spacing: normal;
-        -webkit-text-security: none;
-      }
-
-      .login-input-wrap input:focus {
-        outline: none;
-        border-color: #fff;
-        box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
-      }
-
-      /* Toggle visibilité */
+      /* Toggle visibilité mdp */
       .toggle-vis {
-        position: absolute;
-        right: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #444;
-        cursor: pointer;
-        font-size: 0.8rem;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        padding: 0.25rem;
-        transition: color 160ms ease;
+        position:absolute; right:.75rem; top:50%; transform:translateY(-50%);
+        background:none; border:none; color:#3a3a3a; cursor:pointer;
+        font-size:.62rem; letter-spacing:.04em; text-transform:uppercase;
+        padding:.25rem; min-height:30px;
+        transition:color var(--tr);
       }
+      .toggle-vis:hover { color:#fff; }
 
-      .toggle-vis:hover {
-        color: #fff;
+      /* Règles de validation */
+      .rules {
+        font-size:.6rem; color:var(--text-faint); letter-spacing:.04em;
+        line-height:1.6; padding:.5rem .75rem;
+        border:1px solid var(--line); background:#090909; border-radius:var(--radius);
+        display:none;
       }
+      .rules.visible { display:block; }
 
-      .login-submit {
-        width: 100%;
-        min-height: 48px;
-        padding: 0.85rem 1rem;
-        border: none;
-        border-top: 1px solid #1e1e1e;
-        border-radius: 0;
-        background: #fff;
-        color: #000;
-        font-size: 0.8rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        cursor: pointer;
-        transition: background 160ms ease, color 160ms ease;
-        position: relative;
-        overflow: hidden;
+      /* ── Bouton submit ── */
+      .submit-btn {
+        width:100%; min-height:52px;
+        padding:.9rem 1rem;
+        border:none; border-top:1px solid #1a1a1a;
+        background:#fff; color:#000;
+        font-size:.82rem; font-weight:700;
+        text-transform:uppercase; letter-spacing:.1em;
+        cursor:pointer;
+        position:relative; overflow:hidden;
+        transition:background var(--tr), color var(--tr), opacity var(--tr);
       }
-
-      .login-submit:hover {
-        background: #000;
-        color: #fff;
+      .submit-btn:hover { background:#000; color:#fff; }
+      .submit-btn:disabled { opacity:.4; cursor:not-allowed; }
+      .submit-btn::after {
+        content:"→"; position:absolute; right:1.1rem; top:50%; transform:translateY(-50%);
+        opacity:0; transition:opacity var(--tr), right var(--tr);
       }
+      .submit-btn:not(:disabled):hover::after { opacity:1; right:.9rem; }
 
-      .login-submit::after {
-        content: "→";
-        position: absolute;
-        right: 1.25rem;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1rem;
-        opacity: 0;
-        transition: opacity 160ms ease, right 160ms ease;
+      /* ── Messages ── */
+      .msg {
+        font-size:.68rem; text-transform:uppercase; letter-spacing:.06em;
+        text-align:center; padding:.65rem .875rem;
+        border:1px solid var(--line-strong); border-top:none;
+        background:#0a0a0a; display:none;
       }
+      .msg.error.visible   { display:block; color:#888; animation:shake 280ms ease; }
+      .msg.success.visible { display:block; color:var(--text-muted); }
 
-      .login-submit:hover::after {
-        opacity: 1;
-        right: 1rem;
-      }
+      @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
-      /* ── Message d'erreur ── */
-      .login-error {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #888;
-        text-align: center;
-        padding: 0.65rem 0.875rem;
-        border: 1px solid #2a2a2a;
-        border-top: none;
-        background: #0a0a0a;
-        display: none;
-        animation: shake 300ms ease;
-      }
+      /* ── Hint bas ── */
+      .hint { margin-top:1.25rem; text-align:center; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color:#282828; }
 
-      .login-error.visible {
-        display: block;
-      }
+      /* Footer */
+      footer { text-align:center; padding:.875rem; border-top:1px solid var(--line); font-size:.6rem; color:var(--text-faint); letter-spacing:.04em; }
 
-      @keyframes shake {
-        0%,100% { transform: translateX(0); }
-        25%      { transform: translateX(-6px); }
-        75%      { transform: translateX(6px); }
-      }
-
-      /* ── Hint bas de page ── */
-      .login-hint {
-        margin-top: 1.5rem;
-        text-align: center;
-        font-size: 0.62rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: #333;
+      /* Petits écrans */
+      @media(max-height:600px) {
+        .card-header { margin-bottom:1rem; }
+        .card-icon { display:none; }
+        .wrap { padding:.75rem 1rem; }
       }
     </style>
   </head>
   <body>
-    <header class="header" style="border-bottom: 1px solid #181818;">
-      <h1 style="font-size:0.75rem; letter-spacing:0.2em; color:#333;">TO‑DO LIST</h1>
-    </header>
 
-    <div class="login-wrap">
-      <div class="login-box">
+    <div class="top-bar">
+      <a class="top-logo" href="./index.html">To‑Do List</a>
+      <a class="top-back" href="./index.html">← Accueil</a>
+    </div>
 
-        <div class="login-logo">
-          <div class="login-logo-icon">✓</div>
-          <h1>Accès privé</h1>
-          <p>Entrez votre code</p>
+    <div class="wrap">
+      <div class="card">
+
+        <!-- En-tête -->
+        <div class="card-header">
+          <div class="card-icon" aria-hidden="true">✓</div>
+          <p class="card-title">Mon espace</p>
+          <p class="card-sub">Connexion ou inscription</p>
         </div>
 
-        <form class="login-form" id="login-form" autocomplete="off">
-          <div class="login-inner">
-            <span class="login-label">Code d'accès</span>
-            <div class="login-input-wrap">
-              <input
-                type="password"
-                id="code-input"
-                placeholder="••••••"
-                autocomplete="current-password"
-              />
-              <button type="button" class="toggle-vis" id="toggle-vis" tabindex="-1">voir</button>
+        <!-- Onglets -->
+        <div class="tabs" role="tablist">
+          <button class="tab-btn active" id="tab-login"    role="tab" aria-selected="true"  aria-controls="form-login">Connexion</button>
+          <button class="tab-btn"        id="tab-register" role="tab" aria-selected="false" aria-controls="form-register">Créer un compte</button>
+        </div>
+
+        <!-- ═══ FORMULAIRE CONNEXION ═══ -->
+        <form class="auth-form active" id="form-login" role="tabpanel" autocomplete="off" novalidate>
+          <div class="form-inner">
+
+            <div class="field">
+              <label for="login-user">Identifiant</label>
+              <div class="input-wrap">
+                <input type="text" id="login-user" placeholder="votre_identifiant" autocomplete="username" inputmode="text" />
+                <span class="input-icon">@</span>
+              </div>
             </div>
+
+            <div class="field">
+              <label for="login-pass">Mot de passe</label>
+              <div class="input-wrap">
+                <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+                <button type="button" class="toggle-vis" id="toggle-login-pass" tabindex="-1">voir</button>
+              </div>
+            </div>
+
           </div>
-          <button type="submit" class="login-submit">Entrer</button>
+          <button type="submit" class="submit-btn" id="login-btn">Se connecter</button>
         </form>
+        <div class="msg error" id="login-error"></div>
 
-        <div class="login-error" id="login-error">Code incorrect</div>
+        <!-- ═══ FORMULAIRE INSCRIPTION ═══ -->
+        <form class="auth-form" id="form-register" role="tabpanel" autocomplete="off" novalidate>
+          <div class="form-inner">
 
-        <p class="login-hint">Accès restreint · Usage personnel</p>
+            <div class="field">
+              <label for="reg-user">Identifiant</label>
+              <div class="input-wrap">
+                <input type="text" id="reg-user" placeholder="votre_identifiant" autocomplete="username" inputmode="text" />
+                <span class="input-icon">@</span>
+              </div>
+              <div class="rules" id="user-rules">
+                3 à 20 caractères · lettres, chiffres, _ et - uniquement
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="reg-pass">Mot de passe</label>
+              <div class="input-wrap">
+                <input type="password" id="reg-pass" placeholder="min. 6 caractères" autocomplete="new-password" />
+                <button type="button" class="toggle-vis" id="toggle-reg-pass" tabindex="-1">voir</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="reg-confirm">Confirmer le mot de passe</label>
+              <div class="input-wrap">
+                <input type="password" id="reg-confirm" placeholder="••••••••" autocomplete="new-password" />
+                <button type="button" class="toggle-vis" id="toggle-reg-confirm" tabindex="-1">voir</button>
+              </div>
+            </div>
+
+          </div>
+          <button type="submit" class="submit-btn" id="register-btn">Créer mon compte</button>
+        </form>
+        <div class="msg error"   id="register-error"></div>
+        <div class="msg success" id="register-success"></div>
+
+        <p class="hint">Chaque compte dispose de ses propres tâches</p>
       </div>
     </div>
 
-    <footer class="footer">
-      <p>© 2026 — Sacha G.</p>
-    </footer>
+    <footer>© 2026 · Sacha G. · Usage personnel</footer>
 
     <script src="login.js"></script>
     <script>
-      // Toggle visibilité du code
-      const toggleBtn = document.getElementById("toggle-vis");
-      const codeField = document.getElementById("code-input");
-      toggleBtn.addEventListener("click", () => {
-        const isPass = codeField.type === "password";
-        codeField.type = isPass ? "text" : "password";
-        toggleBtn.textContent = isPass ? "cacher" : "voir";
+      // ── Onglets ──
+      const tabLogin    = document.getElementById("tab-login");
+      const tabRegister = document.getElementById("tab-register");
+      const formLogin   = document.getElementById("form-login");
+      const formRegister= document.getElementById("form-register");
+
+      function switchTab(active) {
+        const isLogin = active === "login";
+        tabLogin.classList.toggle("active", isLogin);
+        tabRegister.classList.toggle("active", !isLogin);
+        formLogin.classList.toggle("active", isLogin);
+        formRegister.classList.toggle("active", !isLogin);
+        tabLogin.setAttribute("aria-selected", isLogin);
+        tabRegister.setAttribute("aria-selected", !isLogin);
+      }
+
+      tabLogin.addEventListener("click",    () => switchTab("login"));
+      tabRegister.addEventListener("click", () => switchTab("register"));
+
+      // ── Toggle visibilité mots de passe ──
+      function togglePass(btnId, inputId) {
+        const btn   = document.getElementById(btnId);
+        const field = document.getElementById(inputId);
+        btn.addEventListener("click", () => {
+          const isPass = field.type === "password";
+          field.type = isPass ? "text" : "password";
+          btn.textContent = isPass ? "cacher" : "voir";
+        });
+      }
+      togglePass("toggle-login-pass",   "login-pass");
+      togglePass("toggle-reg-pass",     "reg-pass");
+      togglePass("toggle-reg-confirm",  "reg-confirm");
+
+      // ── Règles identifiant ──
+      document.getElementById("reg-user").addEventListener("focus", () => {
+        document.getElementById("user-rules").classList.add("visible");
+      });
+      document.getElementById("reg-user").addEventListener("blur", () => {
+        document.getElementById("user-rules").classList.remove("visible");
       });
     </script>
   </body>
