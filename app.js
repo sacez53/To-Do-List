@@ -50,12 +50,23 @@ let currentSort   = "created-desc";
 let editingId     = null;
 let firebaseUrl   = null;
 let syncTimeout   = null;
+let encKey        = null;  // CryptoKey AES-GCM dérivée du mot de passe
 
 // ──────────────────────────────────────────────
 // Init
 // ──────────────────────────────────────────────
 async function init() {
   if (userLabel) userLabel.textContent = currentUser;
+
+  // Charge la clé de chiffrement depuis la session
+  const encKeyB64 = sessionStorage.getItem("encKey");
+  if (encKeyB64) {
+    try {
+      encKey = await importKey(encKeyB64);
+    } catch (e) {
+      console.warn("Impossible de charger la clé de chiffrement :", e);
+    }
+  }
 
   try {
     const res    = await fetch("./config.json");
@@ -90,10 +101,43 @@ async function loadFromFirebase() {
     const res  = await fetch(userTodosPath());
     const data = await res.json();
 
-    if (Array.isArray(data) && data.length > 0) {
+    if (!data) {
+      // Aucune donnée
+      todos = [];
+
+    } else if (isEncrypted(data)) {
+      // ── Données chiffrées → déchiffrer ──
+      if (encKey) {
+        todos = await decryptData(data, encKey);
+      } else {
+        console.warn("Données chiffrées mais clé indisponible.");
+        todos = [];
+      }
+
+    } else if (Array.isArray(data) && data.length > 0) {
+      // ── Migration : tableau en clair → chiffrer ──
       todos = data;
-    } else if (data && typeof data === "object" && !Array.isArray(data)) {
-      todos = Object.values(data);
+      if (encKey) {
+        console.log("Migration : chiffrement des données existantes...");
+        const enc = await encryptData(todos, encKey);
+        await fetch(userTodosPath(), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(enc)
+        });
+      }
+
+    } else if (data && typeof data === "object") {
+      // ── Ancien format objet → migration ──
+      todos = Object.values(data).filter(v => v && typeof v === "object");
+      if (encKey && todos.length > 0) {
+        const enc = await encryptData(todos, encKey);
+        await fetch(userTodosPath(), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(enc)
+        });
+      }
     }
 
     localStorage.setItem(`todos_${currentUser}`, JSON.stringify(todos));
@@ -113,10 +157,15 @@ async function saveToFirebase() {
   setSyncStatus("syncing");
   syncTimeout = setTimeout(async () => {
     try {
+      // Chiffre les données si la clé est disponible
+      const body = encKey
+        ? JSON.stringify(await encryptData(todos, encKey))
+        : JSON.stringify(todos);
+
       await fetch(userTodosPath(), {
         method:  "PUT",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(todos)
+        body
       });
       setSyncStatus("synced");
     } catch (e) {

@@ -15,7 +15,11 @@
     <style>
       :root {
         --bg:#080808; --surface:#0f0f0f; --line:#1e1e1e; --line-strong:#2e2e2e;
-        --text:#efefef; --text-muted:#888; --text-faint:#3a3a3a;
+        --text:#efefef;
+        /* #9a9a9a sur #080808 ≈ 5.6:1 WCAG AA ✓ */
+        --text-muted:#9a9a9a;
+        /* #6e6e6e sur #080808 ≈ 4.6:1 WCAG AA ✓ */
+        --text-faint:#6e6e6e;
         --white:#fff; --black:#000; --radius:3px; --tr:160ms ease;
       }
       *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; font-family:"IBM Plex Mono","Courier New",monospace; }
@@ -35,9 +39,9 @@
         padding:.875rem 1.25rem;
         border-bottom:1px solid var(--line);
       }
-      .top-logo { font-size:.62rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--text-faint); text-decoration:none; }
-      .top-logo:hover { color:var(--text-muted); }
-      .top-back { font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); text-decoration:none; transition:color var(--tr); }
+      .top-logo { font-size:.78rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; }
+      .top-logo:hover { color:var(--text); }
+      .top-back { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color var(--tr); }
       .top-back:hover { color:var(--white); }
 
       /* ── Zone centrale ── */
@@ -63,8 +67,8 @@
         border:1px solid #222; margin-bottom:1rem; font-size:1.2rem; position:relative;
       }
       .card-icon::before { content:""; position:absolute; inset:4px; border:1px solid #1a1a1a; }
-      .card-title { font-size:.9rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; margin-bottom:.3rem; }
-      .card-sub   { font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); }
+      .card-title { font-size:.95rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; margin-bottom:.3rem; }
+      .card-sub   { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); }
 
       /* ── Onglets ── */
       .tabs {
@@ -78,8 +82,8 @@
         background:transparent;
         border:none;
         border-bottom:1px solid var(--line-strong);
-        color:var(--text-faint);
-        font-size:.68rem; font-weight:700;
+        color:var(--text-muted);
+        font-size:.75rem; font-weight:700;
         text-transform:uppercase; letter-spacing:.08em;
         cursor:pointer;
         transition:color var(--tr), background var(--tr), border-color var(--tr);
@@ -90,7 +94,7 @@
         background:var(--surface);
         border-bottom-color:var(--surface);
       }
-      .tab-btn:not(.active):hover { color:var(--text-muted); }
+      .tab-btn:not(.active):hover { color:var(--text); }
 
       /* ── Formulaire ── */
       .auth-form {
@@ -112,7 +116,7 @@
 
       /* ── Field ── */
       .field { display:flex; flex-direction:column; gap:.3rem; }
-      .field label { font-size:.6rem; text-transform:uppercase; letter-spacing:.1em; color:#555; }
+      .field label { font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-muted); }
 
       .input-wrap { position:relative; }
       .input-wrap input {
@@ -122,21 +126,21 @@
         background:#000; color:var(--text); font-size:16px;
         transition:border-color var(--tr), box-shadow var(--tr);
       }
-      .input-wrap input::placeholder { color:#2a2a2a; }
+      .input-wrap input::placeholder { color:var(--text-faint); }
       .input-wrap input:focus { outline:none; border-color:#fff; box-shadow:0 0 0 1px rgba(255,255,255,.05); }
       .input-wrap input.error { border-color:#666; }
 
       /* Icône dans input */
       .input-icon {
         position:absolute; right:.75rem; top:50%; transform:translateY(-50%);
-        color:#333; font-size:.75rem; line-height:1; pointer-events:none;
+        color:var(--text-muted); font-size:.75rem; line-height:1; pointer-events:none;
       }
 
       /* Toggle visibilité mdp */
       .toggle-vis {
         position:absolute; right:.75rem; top:50%; transform:translateY(-50%);
-        background:none; border:none; color:#3a3a3a; cursor:pointer;
-        font-size:.62rem; letter-spacing:.04em; text-transform:uppercase;
+        background:none; border:none; color:var(--text-muted); cursor:pointer;
+        font-size:.68rem; letter-spacing:.04em; text-transform:uppercase;
         padding:.25rem; min-height:30px;
         transition:color var(--tr);
       }
@@ -144,9 +148,9 @@
 
       /* Règles de validation */
       .rules {
-        font-size:.6rem; color:var(--text-faint); letter-spacing:.04em;
+        font-size:.68rem; color:var(--text-muted); letter-spacing:.04em;
         line-height:1.6; padding:.5rem .75rem;
-        border:1px solid var(--line); background:#090909; border-radius:var(--radius);
+        border:1px solid var(--line-strong); background:#090909; border-radius:var(--radius);
         display:none;
       }
       .rules.visible { display:block; }
@@ -173,21 +177,21 @@
 
       /* ── Messages ── */
       .msg {
-        font-size:.68rem; text-transform:uppercase; letter-spacing:.06em;
+        font-size:.72rem; text-transform:uppercase; letter-spacing:.06em;
         text-align:center; padding:.65rem .875rem;
         border:1px solid var(--line-strong); border-top:none;
         background:#0a0a0a; display:none;
       }
-      .msg.error.visible   { display:block; color:#888; animation:shake 280ms ease; }
+      .msg.error.visible   { display:block; color:#aaaaaa; animation:shake 280ms ease; }
       .msg.success.visible { display:block; color:var(--text-muted); }
 
       @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
       /* ── Hint bas ── */
-      .hint { margin-top:1.25rem; text-align:center; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color:#282828; }
+      .hint { margin-top:1.25rem; text-align:center; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
 
       /* Footer */
-      footer { text-align:center; padding:.875rem; border-top:1px solid var(--line); font-size:.6rem; color:var(--text-faint); letter-spacing:.04em; }
+      footer { text-align:center; padding:.875rem; border-top:1px solid var(--line); font-size:.72rem; color:var(--text-muted); letter-spacing:.04em; }
 
       /* Petits écrans */
       @media(max-height:600px) {
@@ -288,6 +292,7 @@
 
     <footer>© 2026 · Sacha G. · Usage personnel</footer>
 
+    <script src="./crypto.js"></script>
     <script src="login.js"></script>
     <script>
       // ── Onglets ──

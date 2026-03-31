@@ -20,8 +20,10 @@
         --line:        #1e1e1e;
         --line-strong: #2e2e2e;
         --text:        #efefef;
-        --text-muted:  #888;
-        --text-faint:  #3a3a3a;
+        /* #9a9a9a sur #080808 ≈ 5.6:1 WCAG AA ✓ */
+        --text-muted:  #9a9a9a;
+        /* #6e6e6e sur #080808 ≈ 4.6:1 WCAG AA ✓ */
+        --text-faint:  #6e6e6e;
         --white:       #fff;
         --black:       #000;
       }
@@ -52,15 +54,15 @@
       }
 
       .nav-logo {
-        font-size: 0.65rem;
+        font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0.18em;
         text-transform: uppercase;
-        color: var(--text-faint);
+        color: var(--text-muted);
       }
 
       .nav-cta {
-        font-size: 0.65rem;
+        font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -98,12 +100,12 @@
       }
 
       .hero-tag {
-        font-size: 0.6rem;
+        font-size: 0.72rem;
         letter-spacing: 0.2em;
         text-transform: uppercase;
-        color: var(--text-faint);
+        color: var(--text-muted);
         margin-bottom: 1.5rem;
-        border: 1px solid var(--line);
+        border: 1px solid var(--line-strong);
         padding: 0.3rem 0.7rem;
         border-radius: 2px;
         animation: fadeUp 500ms ease both;
@@ -139,7 +141,7 @@
       }
 
       .hero-sub {
-        font-size: clamp(0.72rem, 2.5vw, 0.88rem);
+        font-size: clamp(0.82rem, 2.5vw, 0.95rem);
         color: var(--text-muted);
         max-width: 36ch;
         line-height: 1.6;
@@ -185,7 +187,7 @@
       }
       .divider::before,
       .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-      .divider span { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); white-space: nowrap; }
+      .divider span { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
 
       /* ── Features ── */
       .features {
@@ -214,16 +216,16 @@
       .feature-item:hover { background: #0f0f0f; }
 
       .feature-key {
-        font-size: 0.65rem;
+        font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: var(--text-faint);
+        color: var(--text-muted);
       }
 
       .feature-val {
-        font-size: 0.82rem;
-        color: var(--text-muted);
+        font-size: 0.85rem;
+        color: var(--text);
         line-height: 1.45;
       }
 
@@ -232,9 +234,9 @@
         text-align: center;
         padding: 1.25rem 1rem;
         border-top: 1px solid var(--line);
-        font-size: 0.62rem;
+        font-size: 0.72rem;
         letter-spacing: 0.06em;
-        color: var(--text-faint);
+        color: var(--text-muted);
       }
 
       @media (min-width: 560px) {
