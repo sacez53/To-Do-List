@@ -7,7 +7,7 @@
 
 /** Charge la config et retourne l'URL Firebase nettoyée */
 async function getFirebaseUrl() {
-  const res    = await fetch("./config.json");
+  const res    = await fetch("../json/config.json");
   const config = await res.json();
   if (!config.firebaseUrl || !config.firebaseUrl.trim()) {
     throw new Error("Firebase non configuré dans config.json");

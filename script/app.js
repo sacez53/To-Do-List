@@ -69,7 +69,7 @@ async function init() {
   }
 
   try {
-    const res    = await fetch("./config.json");
+    const res    = await fetch("../json/config.json");
     const config = await res.json();
 
     if (config.firebaseUrl && config.firebaseUrl.trim() !== "") {
