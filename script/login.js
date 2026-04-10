@@ -184,7 +184,7 @@ registerForm.addEventListener("submit", async (e) => {
     sessionStorage.setItem("encSalt",  salt);
 
     showSuccess(registerSuccess, "Compte créé ! Redirection...");
-    setTimeout(() => { window.location.href = "./app.html"; }, 900);
+    setTimeout(() => { window.location.href = "../html/app.html"; }, 900);
 
   } catch (err) {
     console.error(err);
