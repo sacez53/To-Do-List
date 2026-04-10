@@ -1,309 +1,426 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Ma To‑Do List — Accueil</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#080808" />
-    <meta name="description" content="Application personnelle de gestion de tâches avec statuts, notes et synchronisation multi-appareils." />
-    <link rel="icon" href="./logo/Check-green.svg.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        --bg:          #080808;
-        --surface:     #0f0f0f;
-        --line:        #1e1e1e;
-        --line-strong: #2e2e2e;
-        --text:        #efefef;
-        /* #9a9a9a sur #080808 ≈ 5.6:1 WCAG AA ✓ */
-        --text-muted:  #9a9a9a;
-        /* #6e6e6e sur #080808 ≈ 4.6:1 WCAG AA ✓ */
-        --text-faint:  #6e6e6e;
-        --white:       #fff;
-        --black:       #000;
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Ma To‑Do List — Accueil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#080808" />
+  <meta name="description"
+    content="Application personnelle de gestion de tâches avec statuts, notes et synchronisation multi-appareils." />
+  <link rel="icon" href="./logo/Check-green.svg.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #0f0f0f;
+      --line: #1e1e1e;
+      --line-strong: #2e2e2e;
+      --text: #efefef;
+      /* #9a9a9a sur #080808 ≈ 5.6:1 WCAG AA ✓ */
+      --text-muted: #9a9a9a;
+      /* #6e6e6e sur #080808 ≈ 4.6:1 WCAG AA ✓ */
+      --text-faint: #6e6e6e;
+      --white: #fff;
+      --black: #000;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+    }
+
+    html {
+      color-scheme: dark;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--text);
+      background-image: radial-gradient(circle, #161616 1px, transparent 1px);
+      background-size: 22px 22px;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav minimaliste ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-logo {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Bouton fantôme discret (À propos) */
+    .nav-ghost {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+
+    .nav-ghost:hover {
+      color: var(--white);
+      border-color: var(--text-faint);
+    }
+
+    /* Bouton principal plein (Connexion) */
+    .nav-cta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      background: var(--white);
+      border: 1px solid var(--white);
+      border-radius: 2px;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .nav-cta:hover {
+      background: transparent;
+      color: var(--white);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.25rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    /* Ligne déco centrale */
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--line-strong));
+    }
+
+    .hero-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--line-strong);
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+      animation: fadeUp 500ms ease both;
+    }
+
+    .hero-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border: 1px solid var(--line-strong);
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+      position: relative;
+      animation: fadeUp 500ms 80ms ease both;
+    }
+
+    .hero-icon::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border: 1px solid var(--line);
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 8vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+      animation: fadeUp 500ms 150ms ease both;
+    }
+
+    .hero-sub {
+      font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+      color: var(--text-muted);
+      max-width: 36ch;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 500ms 220ms ease both;
+    }
+
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.9rem 2rem;
+      border: 1px solid var(--white);
+      border-radius: 2px;
+      background: var(--white);
+      color: var(--black);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      transition: background 160ms ease, color 160ms ease;
+      animation: fadeUp 500ms 300ms ease both;
+    }
+
+    .hero-btn:hover {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .hero-btn .arrow {
+      transition: transform 160ms ease;
+    }
+
+    .hero-btn:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
       }
 
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: "IBM Plex Mono", "Courier New", monospace; }
-
-      html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
-
-      body {
-        min-height: 100vh;
-        min-height: 100dvh;
-        display: flex;
-        flex-direction: column;
-        background: var(--bg);
-        color: var(--text);
-        background-image: radial-gradient(circle, #161616 1px, transparent 1px);
-        background-size: 22px 22px;
-        overflow-x: hidden;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
+    }
 
-      /* ── Nav minimaliste ── */
-      nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--line);
-      }
+    /* ── Séparateur ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0 1.25rem;
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-      .nav-logo {
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-      }
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
 
-      .nav-cta {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        text-decoration: none;
-        padding: 0.4rem 0.75rem;
-        border: 1px solid var(--line-strong);
-        border-radius: 2px;
-        transition: color 160ms ease, border-color 160ms ease;
-      }
-      .nav-cta:hover { color: var(--white); border-color: var(--white); }
+    .divider span {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
 
-      /* ── Hero ── */
-      .hero {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 3rem 1.25rem 2rem;
-        text-align: center;
-        position: relative;
-      }
+    /* ── Features ── */
+    .features {
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2rem 1.25rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      animation: fadeUp 500ms 380ms ease both;
+    }
 
-      /* Ligne déco centrale */
-      .hero::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 1px;
-        height: 60px;
-        background: linear-gradient(to bottom, transparent, var(--line-strong));
-      }
+    .feature-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--line);
+      transition: background 160ms ease;
+    }
 
-      .hero-tag {
-        font-size: 0.72rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: 1.5rem;
-        border: 1px solid var(--line-strong);
-        padding: 0.3rem 0.7rem;
-        border-radius: 2px;
-        animation: fadeUp 500ms ease both;
-      }
+    .feature-item:first-child {
+      border-top: 1px solid var(--line);
+    }
 
-      .hero-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 64px;
-        height: 64px;
-        border: 1px solid var(--line-strong);
-        margin-bottom: 1.5rem;
-        font-size: 1.6rem;
-        position: relative;
-        animation: fadeUp 500ms 80ms ease both;
-      }
-      .hero-icon::before {
-        content: "";
-        position: absolute;
-        inset: 5px;
-        border: 1px solid var(--line);
-      }
+    .feature-item:hover {
+      background: #0f0f0f;
+    }
 
-      .hero h1 {
-        font-size: clamp(1.8rem, 8vw, 3.5rem);
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        line-height: 1.05;
-        margin-bottom: 1rem;
-        animation: fadeUp 500ms 150ms ease both;
-      }
+    .feature-key {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
 
-      .hero-sub {
-        font-size: clamp(0.82rem, 2.5vw, 0.95rem);
-        color: var(--text-muted);
-        max-width: 36ch;
-        line-height: 1.6;
-        margin-bottom: 2.5rem;
-        animation: fadeUp 500ms 220ms ease both;
-      }
+    .feature-val {
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.45;
+    }
 
-      .hero-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.9rem 2rem;
-        border: 1px solid var(--white);
-        border-radius: 2px;
-        background: var(--white);
-        color: var(--black);
-        font-size: 0.82rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        text-decoration: none;
-        transition: background 160ms ease, color 160ms ease;
-        animation: fadeUp 500ms 300ms ease both;
-      }
-      .hero-btn:hover { background: var(--black); color: var(--white); }
-      .hero-btn .arrow { transition: transform 160ms ease; }
-      .hero-btn:hover .arrow { transform: translateX(4px); }
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.25rem 1rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
 
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(18px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
 
-      /* ── Séparateur ── */
-      .divider {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 0 1.25rem;
-        max-width: 640px;
-        margin: 0 auto;
-        width: 100%;
-      }
-      .divider::before,
-      .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-      .divider span { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
+    .footer-links a {
+      color: var(--text-faint);
+      text-decoration: none;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 160ms ease;
+    }
 
-      /* ── Features ── */
+    .footer-links a:hover { color: var(--text); }
+
+    @media (min-width: 560px) {
       .features {
-        max-width: 640px;
-        margin: 0 auto;
-        width: 100%;
-        padding: 2rem 1.25rem 3rem;
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0;
-        border-left: 1px solid var(--line);
-        border-right: 1px solid var(--line);
-        animation: fadeUp 500ms 380ms ease both;
+        grid-template-columns: 1fr 1fr;
       }
 
       .feature-item {
-        display: grid;
-        grid-template-columns: 100px 1fr;
-        align-items: baseline;
-        gap: 1rem;
-        padding: 0.85rem 1rem;
-        border-bottom: 1px solid var(--line);
-        transition: background 160ms ease;
-      }
-      .feature-item:first-child { border-top: 1px solid var(--line); }
-      .feature-item:hover { background: #0f0f0f; }
-
-      .feature-key {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-muted);
+        grid-template-columns: 1fr;
       }
 
-      .feature-val {
-        font-size: 0.85rem;
-        color: var(--text);
-        line-height: 1.45;
+      .feature-item:nth-child(odd) {
+        border-right: 1px solid var(--line);
       }
+    }
+  </style>
+</head>
 
-      /* ── Footer ── */
-      footer {
-        text-align: center;
-        padding: 1.25rem 1rem;
-        border-top: 1px solid var(--line);
-        font-size: 0.72rem;
-        letter-spacing: 0.06em;
-        color: var(--text-muted);
-      }
+<body>
 
-      @media (min-width: 560px) {
-        .features { grid-template-columns: 1fr 1fr; }
-        .feature-item { grid-template-columns: 1fr; }
-        .feature-item:nth-child(odd) { border-right: 1px solid var(--line); }
-      }
-    </style>
-  </head>
-  <body>
-
-    <nav>
-      <span class="nav-logo">To‑Do List</span>
-      <a class="nav-cta" href="./html/login.html">Connexion →</a>
-    </nav>
-
-    <section class="hero">
-      <span class="hero-tag">Usage personnel · v2.0</span>
-      <div class="hero-icon" aria-hidden="true">✓</div>
-      <h1>Ma To‑Do<br>List</h1>
-      <p class="hero-sub">Gérez vos tâches avec statuts, priorités, échéances et synchronisation multi-appareils via Firebase.</p>
-      <a class="hero-btn" href="./html/login.html">
-        Accéder à l'app
-        <span class="arrow">→</span>
-      </a>
-    </section>
-
-    <div class="divider"><span>Fonctionnalités</span></div>
-
-    <div class="features">
-      <div class="feature-item">
-        <span class="feature-key">Statuts</span>
-        <span class="feature-val">5 statuts : à faire, en cours, en attente, terminé, annulé</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-key">Priorités</span>
-        <span class="feature-val">Haute, normale ou basse — badge coloré sur chaque tâche</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-key">Échéances</span>
-        <span class="feature-val">Date limite avec indicateur visuel (retard, aujourd'hui, bientôt)</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-key">Recherche</span>
-        <span class="feature-val">Filtrage instantané par texte sur titre et notes</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-key">Tri</span>
-        <span class="feature-val">Par date, priorité, échéance ou statut</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-key">Progression</span>
-        <span class="feature-val">Barre de progression en temps réel sur les tâches terminées</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-key">Sync</span>
-        <span class="feature-val">Synchronisation Firebase multi-appareils en temps réel</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-key">Sécurisé</span>
-        <span class="feature-val">Accès protégé par un code personnel</span>
-      </div>
+  <nav>
+    <span class="nav-logo">To‑Do List</span>
+    <div class="nav-links">
+      <a class="nav-ghost" href="./html/apropos.html">À propos</a>
+      <a class="nav-cta" href="./html/login.html" id="nav-connexion">Connexion →</a>
     </div>
+  </nav>
 
-    <footer>
-      <p>© 2026 · Sacha G. Photographe</p>
-    </footer>
+  <section class="hero">
+    <span class="hero-tag">Usage personnel · v2.0</span>
+    <div class="hero-icon" aria-hidden="true">✓</div>
+    <h1>Ma To‑Do<br>List</h1>
+    <p class="hero-sub">Gérez vos tâches avec statuts, priorités, échéances et synchronisation multi-appareils via
+      Firebase.</p>
+    <a class="hero-btn" href="./html/login.html">
+      Accéder à l'app
+      <span class="arrow">→</span>
+    </a>
+  </section>
 
-  </body>
+  <div class="divider"><span>Fonctionnalités</span></div>
+
+  <div class="features">
+    <div class="feature-item">
+      <span class="feature-key">Statuts</span>
+      <span class="feature-val">5 statuts : à faire, en cours, en attente, terminé, annulé</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-key">Priorités</span>
+      <span class="feature-val">Haute, normale ou basse — badge coloré sur chaque tâche</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-key">Échéances</span>
+      <span class="feature-val">Date limite avec indicateur visuel (retard, aujourd'hui, bientôt)</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-key">Recherche</span>
+      <span class="feature-val">Filtrage instantané par texte sur titre et notes</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-key">Tri</span>
+      <span class="feature-val">Par date, priorité, échéance ou statut</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-key">Progression</span>
+      <span class="feature-val">Barre de progression en temps réel sur les tâches terminées</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-key">Sync</span>
+      <span class="feature-val">Synchronisation Firebase multi-appareils en temps réel</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-key">Sécurisé</span>
+      <span class="feature-val">Accès protégé par un code personnel</span>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="./html/apropos.html">À propos</a>
+      <a href="./html/confidentialite.html">Confidentialité</a>
+      <a href="./html/donnees.html">Gestion des données</a>
+    </div>
+    <p>© 2026 · Sacha G. Photographe</p>
+  </footer>
+
+</body>
+
 </html>

@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>À propos — Ma To‑Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#080808" />
+  <meta name="description"
+    content="À propos de Ma To‑Do List — présentation du projet et de son créateur, Sacha G., photographe et développeur." />
+  <link rel="icon" href="../logo/Check-green.svg.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #0f0f0f;
+      --line: #1e1e1e;
+      --line-strong: #2e2e2e;
+      --text: #efefef;
+      --text-muted: #9a9a9a;
+      --text-faint: #6e6e6e;
+      --white: #fff;
+      --black: #000;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+    }
+
+    html {
+      color-scheme: dark;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--text);
+      background-image: radial-gradient(circle, #161616 1px, transparent 1px);
+      background-size: 22px 22px;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-logo {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+
+    .nav-logo:hover {
+      color: var(--white);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-link {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+
+    .nav-link:hover {
+      color: var(--white);
+      border-color: var(--line-strong);
+    }
+
+    .nav-cta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      background: var(--white);
+      border: 1px solid var(--white);
+      border-radius: 2px;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .nav-cta:hover {
+      background: transparent;
+      color: var(--white);
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3.5rem 1.25rem 2.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .page-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--line-strong));
+    }
+
+    .page-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--line-strong);
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+      animation: fadeUp 500ms ease both;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.6rem, 6vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      animation: fadeUp 500ms 80ms ease both;
+    }
+
+    .page-header p {
+      font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+      color: var(--text-muted);
+      max-width: 44ch;
+      line-height: 1.65;
+      animation: fadeUp 500ms 160ms ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Wrapper ── */
+    .wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 1.25rem 4rem;
+      flex: 1;
+    }
+
+    /* ── Section block ── */
+    .block {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      animation: fadeUp 500ms 240ms ease both;
+    }
+
+    .block + .block {
+      margin-top: 2rem;
+    }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .block-num {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      min-width: 2ch;
+    }
+
+    .block-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .block-body {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .block-body p {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .block-body p + p {
+      margin-top: 0.9rem;
+    }
+
+    /* ── Row list (clé / valeur) ── */
+    .row-list {
+      list-style: none;
+    }
+
+    .row-list li {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--line);
+      transition: background 160ms ease;
+    }
+
+    .row-list li:hover {
+      background: var(--surface);
+    }
+
+    .row-key {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .row-val {
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* ── Tag chips ── */
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chip {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--line-strong);
+      padding: 0.25rem 0.55rem;
+      border-radius: 2px;
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      list-style: none;
+    }
+
+    .timeline li {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 1rem;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--line);
+      transition: background 160ms ease;
+    }
+
+    .timeline li:hover {
+      background: var(--surface);
+    }
+
+    .tl-date {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+      padding-top: 0.15rem;
+    }
+
+    .tl-text {
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .tl-text strong {
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    /* ── CTA bas ── */
+    .cta-row {
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+      border: 1px solid var(--line);
+      margin-top: 2rem;
+      animation: fadeUp 500ms 320ms ease both;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.9rem 2rem;
+      border: 1px solid var(--white);
+      border-radius: 2px;
+      background: var(--white);
+      color: var(--black);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .cta-btn:hover {
+      background: transparent;
+      color: var(--white);
+    }
+
+    .cta-btn .arrow {
+      transition: transform 160ms ease;
+    }
+
+    .cta-btn:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.25rem 1rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .row-list li {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+      }
+
+      .timeline li {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-logo" href="../index.html">To‑Do List</a>
+    <div class="nav-links">
+      <a class="nav-link" href="../index.html">Accueil</a>
+      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <span class="page-tag">Documentation · v2.0</span>
+    <h1>À propos</h1>
+    <p>Présentation du projet et de son créateur — une application personnelle née d'un besoin simple : mieux organiser
+      chaque journée.</p>
+  </header>
+
+  <main class="wrapper">
+
+    <!-- 01 — Le projet -->
+    <section class="block" aria-labelledby="section-projet">
+      <div class="block-header">
+        <span class="block-num">01</span>
+        <span class="block-title" id="section-projet">Le projet</span>
+      </div>
+      <div class="block-body">
+        <p>
+          <strong>Ma To‑Do List</strong> est une application web personnelle de gestion de tâches, conçue pour être
+          rapide, claire et accessible depuis n'importe quel appareil. L'objectif était de disposer d'un outil
+          minimaliste mais complet : pas de superflu, juste l'essentiel pour rester concentré sur ce qui compte.
+        </p>
+        <p>
+          L'application repose sur <strong>Firebase</strong> pour l'authentification et la persistance des données en
+          temps réel. Chaque tâche peut être accompagnée d'un statut, d'une priorité, d'une date d'échéance et de notes
+          libres. Un tableau de bord affiche la progression globale d'un coup d'œil.
+        </p>
+        <p>
+          Le design suit une esthétique monochrome inspirée des interfaces terminal : typographie IBM Plex Mono, grille
+          sur fond sombre, micro-animations sobres. Pensé pour durer, pas pour impressionner.
+        </p>
+      </div>
+    </section>
+
+    <!-- 02 — Fonctionnalités clés -->
+    <section class="block" aria-labelledby="section-features">
+      <div class="block-header">
+        <span class="block-num">02</span>
+        <span class="block-title" id="section-features">Fonctionnalités clés</span>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Statuts</span>
+          <span class="row-val">5 états — à faire, en cours, en attente, terminé, annulé</span>
+        </li>
+        <li>
+          <span class="row-key">Priorités</span>
+          <span class="row-val">Haute, normale, basse · badge coloré visible d'un coup d'œil</span>
+        </li>
+        <li>
+          <span class="row-key">Échéances</span>
+          <span class="row-val">Date limite avec alerte visuelle : retard, aujourd'hui, bientôt</span>
+        </li>
+        <li>
+          <span class="row-key">Recherche</span>
+          <span class="row-val">Filtrage instantané en temps réel sur titre et notes</span>
+        </li>
+        <li>
+          <span class="row-key">Tri</span>
+          <span class="row-val">Par date de création, priorité, échéance ou statut</span>
+        </li>
+        <li>
+          <span class="row-key">Progression</span>
+          <span class="row-val">Barre de complétion recalculée à chaque action</span>
+        </li>
+        <li>
+          <span class="row-key">Sync temps réel</span>
+          <span class="row-val">Données Firebase partagées sur tous les appareils connectés</span>
+        </li>
+        <li>
+          <span class="row-key">Sécurité</span>
+          <span class="row-val">Accès protégé par authentification Firebase (email + mot de passe)</span>
+        </li>
+        <li>
+          <span class="row-key">Paramètres</span>
+          <span class="row-val">Modification du nom, email, mot de passe et suppression de compte</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 03 — Stack technique -->
+    <section class="block" aria-labelledby="section-stack">
+      <div class="block-header">
+        <span class="block-num">03</span>
+        <span class="block-title" id="section-stack">Stack technique</span>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Front-end</span>
+          <span class="row-val">HTML5 · CSS3 Vanilla · JavaScript ES2022 (modules natifs)</span>
+        </li>
+        <li>
+          <span class="row-key">Auth &amp; BDD</span>
+          <span class="row-val">Firebase Authentication + Firestore (temps réel)</span>
+        </li>
+        <li>
+          <span class="row-key">Typographie</span>
+          <span class="row-val">IBM Plex Mono via Google Fonts</span>
+        </li>
+        <li>
+          <span class="row-key">Hébergement</span>
+          <span class="row-val">Projet local · déploiement possible via Firebase Hosting</span>
+        </li>
+        <li>
+          <span class="row-key">Dépôt</span>
+          <span class="row-val">GitHub — sacez53/To-Do-List</span>
+        </li>
+      </ul>
+      <div class="chip-list" aria-label="Technologies utilisées">
+        <span class="chip">HTML</span>
+        <span class="chip">CSS</span>
+        <span class="chip">JavaScript</span>
+        <span class="chip">Firebase</span>
+        <span class="chip">Firestore</span>
+        <span class="chip">IBM Plex Mono</span>
+        <span class="chip">Git</span>
+      </div>
+    </section>
+
+    <!-- 04 — Qui suis‑je ? -->
+    <section class="block" aria-labelledby="section-auteur">
+      <div class="block-header">
+        <span class="block-num">04</span>
+        <span class="block-title" id="section-auteur">Qui suis‑je ?</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Je m'appelle <strong>Sacha G.</strong>, photographe professionnel et autodidacte du développement web.
+          Passionné à la fois par l'image et par le code, je conçois mes propres outils numériques pour optimiser mon
+          organisation au quotidien.
+        </p>
+        <p>
+          Ce projet est né d'une frustration simple : les applications de tâches existantes étaient soit trop complexes,
+          soit trop limitées. J'ai donc choisi de construire la mienne — from scratch, à mon rythme, selon mes besoins
+          exacts.
+        </p>
+        <p>
+          La photographie m'a appris la rigueur du cadrage et de la lumière ; le développement, celle de la logique et
+          de l'architecture. Les deux se rejoignent dans un goût commun pour les détails qui font la différence.
+        </p>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Métier</span>
+          <span class="row-val">Photographe professionnel</span>
+        </li>
+        <li>
+          <span class="row-key">Code</span>
+          <span class="row-val">Autodidacte · web front-end &amp; Firebase</span>
+        </li>
+        <li>
+          <span class="row-key">Intérêts</span>
+          <span class="row-val">Design minimaliste · IA · outils personnels</span>
+        </li>
+        <li>
+          <span class="row-key">GitHub</span>
+          <span class="row-val">github.com/sacez53</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 05 — Historique -->
+    <section class="block" aria-labelledby="section-history">
+      <div class="block-header">
+        <span class="block-num">05</span>
+        <span class="block-title" id="section-history">Historique des versions</span>
+      </div>
+      <ul class="timeline">
+        <li>
+          <span class="tl-date">Avr. 2026</span>
+          <span class="tl-text"><strong>v2.0</strong> — Refonte complète : design monochrome terminal, page À propos,
+            paramètres compte, authentification Firebase, synchronisation multi-appareils.</span>
+        </li>
+        <li>
+          <span class="tl-date">Mars 2026</span>
+          <span class="tl-text"><strong>v1.5</strong> — Ajout des statuts avancés, des priorités colorées, de la barre
+            de progression et des filtres en temps réel.</span>
+        </li>
+        <li>
+          <span class="tl-date">Fév. 2026</span>
+          <span class="tl-text"><strong>v1.0</strong> — Première version opérationnelle avec ajout/suppression de
+            tâches, dates d'échéance et filtres basiques.</span>
+        </li>
+        <li>
+          <span class="tl-date">Jan. 2026</span>
+          <span class="tl-text"><strong>v0.1</strong> — Prototype initial : liste de tâches locale sans persistance.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-row">
+      <a class="cta-btn" href="./login.html" id="cta-connexion">
+        Accéder à l'application
+        <span class="arrow">→</span>
+      </a>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>© 2026 · Sacha G. Photographe</p>
+  </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestion des données — Ma To‑Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#080808" />
+  <meta name="description"
+    content="Gérez, exportez et supprimez vos données personnelles depuis Ma To‑Do List." />
+  <link rel="icon" href="../logo/Check-green.svg.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #0f0f0f;
+      --line: #1e1e1e;
+      --line-strong: #2e2e2e;
+      --text: #efefef;
+      --text-muted: #9a9a9a;
+      --text-faint: #6e6e6e;
+      --white: #fff;
+      --black: #000;
+      --danger: #7a2828;
+      --danger-text: #d07070;
+      --danger-line: #3a1818;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+    }
+
+    html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--text);
+      background-image: radial-gradient(circle, #161616 1px, transparent 1px);
+      background-size: 22px 22px;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-logo {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+    .nav-logo:hover { color: var(--white); }
+
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+
+    .nav-ghost {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .nav-ghost:hover { color: var(--white); border-color: var(--text-faint); }
+
+    .nav-cta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      background: var(--white);
+      border: 1px solid var(--white);
+      border-radius: 2px;
+      transition: background 160ms ease, color 160ms ease;
+    }
+    .nav-cta:hover { background: transparent; color: var(--white); }
+
+    /* ── Page header ── */
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3.5rem 1.25rem 2.5rem;
+      text-align: center;
+      position: relative;
+    }
+    .page-header::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--line-strong));
+    }
+
+    .page-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--line-strong);
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+      animation: fadeUp 500ms ease both;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.6rem, 6vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      animation: fadeUp 500ms 80ms ease both;
+    }
+
+    .page-header p {
+      font-size: clamp(0.82rem, 2.5vw, 0.92rem);
+      color: var(--text-muted);
+      max-width: 44ch;
+      line-height: 1.65;
+      animation: fadeUp 500ms 160ms ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Wrapper ── */
+    .wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 1.25rem 4rem;
+      flex: 1;
+    }
+
+    /* ── Bloc section ── */
+    .block {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      animation: fadeUp 500ms 220ms ease both;
+    }
+    .block + .block { margin-top: 2rem; }
+    .block-danger {
+      border-left-color: var(--danger-line);
+      border-right-color: var(--danger-line);
+    }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .block-danger .block-header {
+      border-top-color: var(--danger-line);
+      border-bottom-color: var(--danger-line);
+    }
+
+    .block-num {
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-faint); min-width: 2ch;
+    }
+    .block-title {
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .block-danger .block-title { color: var(--danger-text); }
+
+    .block-body {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .block-danger .block-body { border-bottom-color: var(--danger-line); }
+
+    .block-body p {
+      font-size: 0.87rem;
+      color: var(--text);
+      line-height: 1.8;
+    }
+    .block-body p + p { margin-top: 0.9rem; }
+
+    /* ── Row list ── */
+    .row-list { list-style: none; }
+    .row-list li {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--line);
+      transition: background 160ms ease;
+    }
+    .row-list li:hover { background: var(--surface); }
+    .block-danger .row-list li { border-bottom-color: var(--danger-line); }
+    .row-key {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-faint);
+    }
+    .row-val { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
+
+    /* ── Action card ── */
+    .action-card {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .block-danger .action-card { border-bottom-color: var(--danger-line); }
+
+    .action-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* Bouton action standard */
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+      align-self: flex-start;
+    }
+    .btn-action:hover {
+      background: var(--surface);
+      border-color: var(--text-faint);
+      color: var(--white);
+    }
+
+    /* Bouton danger */
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border: 1px solid var(--danger-line);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--danger-text);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease;
+      align-self: flex-start;
+    }
+    .btn-danger:hover {
+      background: rgba(122, 40, 40, 0.15);
+      border-color: var(--danger-text);
+    }
+
+    /* ── Notice ── */
+    .notice {
+      margin: 0;
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    /* ── Tag status ── */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #5a9a6a;
+      flex-shrink: 0;
+    }
+    .status-dot.warn { background: #9a8a4a; }
+    .status-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Modale de confirmation ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      padding: 2rem;
+      max-width: 380px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .modal-box h2 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--danger-text);
+    }
+    .modal-box p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .btn-confirm-danger {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--danger-line);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--danger-text);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 160ms ease;
+    }
+    .btn-confirm-danger:hover { background: rgba(122, 40, 40, 0.2); }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .btn-cancel:hover { color: var(--white); border-color: var(--text-faint); }
+
+    /* ── Feedback toast ── */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      padding: 0.7rem 1.25rem;
+      border-radius: 2px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease, transform 200ms ease;
+      white-space: nowrap;
+      z-index: 200;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.25rem 1rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .footer-links a {
+      color: var(--text-faint);
+      text-decoration: none;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 160ms ease;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .row-list li { grid-template-columns: 1fr; gap: 0.2rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-logo" href="../index.html">To‑Do List</a>
+    <div class="nav-links">
+      <a class="nav-ghost" href="../index.html">Accueil</a>
+      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <span class="page-tag">Compte &amp; Données · v2.0</span>
+    <h1>Gestion des<br>données</h1>
+    <p>Consultez, exportez ou supprimez vos données — vous gardez le contrôle total.</p>
+  </header>
+
+  <main class="wrapper">
+
+    <!-- 01 — Vue d'ensemble -->
+    <section class="block" aria-labelledby="s-overview">
+      <div class="block-header">
+        <span class="block-num">01</span>
+        <span class="block-title" id="s-overview">Vos données en un coup d'œil</span>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">E-mail</span>
+          <span class="row-val">Utilisé pour la connexion. Modifiable depuis les <a href="./settings.html" style="color:var(--text-muted)">Paramètres</a>.</span>
+        </li>
+        <li>
+          <span class="row-key">Nom d'utilisateur</span>
+          <span class="row-val">Pseudonyme libre, visible dans l'interface. Modifiable à tout moment.</span>
+        </li>
+        <li>
+          <span class="row-key">Tâches</span>
+          <span class="row-val">Titres, notes, statuts, priorités et dates. Stockés dans Firestore sous votre UID Firebase.</span>
+        </li>
+        <li>
+          <span class="row-key">Mot de passe</span>
+          <span class="row-val">Jamais stocké en clair — géré exclusivement par Firebase Authentication.</span>
+        </li>
+        <li>
+          <span class="row-key">Localisation</span>
+          <span class="row-val">Non collectée. Aucun tracking géographique.</span>
+        </li>
+      </ul>
+      <div class="status-row">
+        <span class="status-dot"></span>
+        <span class="status-label">Données hébergées sur Firebase (Google), région Europe</span>
+      </div>
+      <div class="status-row" style="border-bottom: none;">
+        <span class="status-dot warn"></span>
+        <span class="status-label">Métadonnées techniques conservées par Firebase selon leur politique (30–180 jours)</span>
+      </div>
+    </section>
+
+    <!-- 02 — Exporter les tâches -->
+    <section class="block" aria-labelledby="s-export">
+      <div class="block-header">
+        <span class="block-num">02</span>
+        <span class="block-title" id="s-export">Exporter mes tâches</span>
+      </div>
+      <div class="action-card">
+        <p class="action-desc">
+          Téléchargez une copie complète de toutes vos tâches au format <strong>JSON</strong> lisible. Ce fichier
+          contient les titres, notes, statuts, priorités et dates d'échéance. Il peut être réimporté ou archivé.
+        </p>
+        <button class="btn-action" id="btn-export-json" aria-label="Exporter les tâches en JSON">
+          ↓ Exporter en JSON
+        </button>
+      </div>
+      <div class="action-card" style="border-bottom: none;">
+        <p class="action-desc">
+          Exportez également vos tâches au format <strong>CSV</strong> (tableur) — compatible Excel, LibreOffice Calc
+          et Google Sheets.
+        </p>
+        <button class="btn-action" id="btn-export-csv" aria-label="Exporter les tâches en CSV">
+          ↓ Exporter en CSV
+        </button>
+      </div>
+    </section>
+
+    <!-- 03 — Modifier mes informations -->
+    <section class="block" aria-labelledby="s-modifier">
+      <div class="block-header">
+        <span class="block-num">03</span>
+        <span class="block-title" id="s-modifier">Modifier mes informations</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Toutes les données personnelles modifiables sont accessibles depuis la page <strong>Paramètres</strong> :
+          nom d'utilisateur, adresse e-mail et mot de passe. Les modifications sont appliquées immédiatement
+          dans Firebase.
+        </p>
+      </div>
+      <div class="action-card" style="border-bottom: none;">
+        <a class="btn-action" href="./settings.html" id="link-settings" aria-label="Accéder aux Paramètres">
+          → Accéder aux Paramètres
+        </a>
+      </div>
+    </section>
+
+    <!-- 04 — Droit à l'oubli / Suppression -->
+    <section class="block block-danger" aria-labelledby="s-suppression">
+      <div class="block-header">
+        <span class="block-num">04</span>
+        <span class="block-title" id="s-suppression">Suppression des données</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Vous pouvez supprimer uniquement vos tâches (en conservant votre compte), ou supprimer
+          <strong>intégralement</strong> votre compte et toutes les données associées. Ces actions sont
+          <strong>irréversibles</strong>.
+        </p>
+      </div>
+      <div class="action-card">
+        <p class="action-desc">
+          Supprimer toutes les tâches sans supprimer le compte. Votre accès reste actif mais la liste sera vide.
+        </p>
+        <button class="btn-danger" id="btn-delete-tasks" aria-label="Supprimer toutes les tâches">
+          ✕ Supprimer toutes les tâches
+        </button>
+      </div>
+      <div class="action-card" style="border-bottom: none;">
+        <p class="action-desc">
+          Supprimer le compte et toutes les données (tâches, profil, authentification). L'accès sera immédiatement
+          révoqué.
+        </p>
+        <a class="btn-danger" href="./settings.html#danger" id="btn-delete-account" aria-label="Supprimer mon compte">
+          ✕ Supprimer mon compte
+        </a>
+      </div>
+    </section>
+
+    <!-- 05 — Liens légaux -->
+    <section class="block" aria-labelledby="s-legal">
+      <div class="block-header">
+        <span class="block-num">05</span>
+        <span class="block-title" id="s-legal">Documents légaux</span>
+      </div>
+      <ul class="row-list" style="border-bottom: none;">
+        <li>
+          <span class="row-key">Confidentialité</span>
+          <span class="row-val"><a href="./confidentialite.html" style="color:var(--text-muted)">Politique de confidentialité complète →</a></span>
+        </li>
+        <li>
+          <span class="row-key">Firebase / Google</span>
+          <span class="row-val">firebase.google.com/support/privacy</span>
+        </li>
+        <li>
+          <span class="row-key">RGPD</span>
+          <span class="row-val">Règlement (UE) 2016/679 du Parlement européen</span>
+        </li>
+        <li style="border-bottom: none;">
+          <span class="row-key">Contact</span>
+          <span class="row-val">Via GitHub — github.com/sacez53/To-Do-List</span>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="../index.html">Accueil</a>
+      <a href="./apropos.html">À propos</a>
+      <a href="./donnees.html" aria-current="page">Gestion des données</a>
+      <a href="./confidentialite.html">Confidentialité</a>
+    </div>
+    <p>© 2026 · Sacha G. Photographe</p>
+  </footer>
+
+  <!-- Modale suppression tâches -->
+  <div class="modal-overlay" id="modal-delete-tasks" role="alertdialog" aria-modal="true" aria-labelledby="modal-dt-title">
+    <div class="modal-box">
+      <h2 id="modal-dt-title">Supprimer toutes les tâches ?</h2>
+      <p>Cette action supprimera définitivement toutes vos tâches. Votre compte reste actif. Vous devez être connecté pour effectuer cette action.</p>
+      <div class="modal-actions">
+        <button class="btn-confirm-danger" id="modal-dt-confirm">Supprimer</button>
+        <button class="btn-cancel" id="modal-dt-cancel">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast feedback -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+    // ── Utilitaire toast ──
+    function showToast(msg, duration = 3000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    // ── Firebase (lazy import — doit correspondre à votre config) ──
+    // Ces actions nécessitent une session active.
+    // Elles redirigent vers login si non connecté.
+    function requireAuth(cb) {
+      import('../script/app.js').catch(() => {});
+      const auth = sessionStorage.getItem('auth');
+      if (!auth) {
+        window.location.href = './login.html';
+        return;
+      }
+      cb();
+    }
+
+    // ── Export JSON ──
+    document.getElementById('btn-export-json').addEventListener('click', () => {
+      requireAuth(async () => {
+        try {
+          const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+          const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+          const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+
+          const configRaw = sessionStorage.getItem('fbConfig');
+          if (!configRaw) { showToast('Configuration Firebase introuvable.'); return; }
+          const app = initializeApp(JSON.parse(configRaw), 'export-instance-' + Date.now());
+          const auth = getAuth(app);
+          const user = auth.currentUser || JSON.parse(sessionStorage.getItem('auth') || 'null');
+          if (!user?.uid) { showToast('Connectez-vous pour exporter.'); return; }
+
+          const db = getFirestore(app);
+          const snap = await getDocs(collection(db, 'users', user.uid, 'tasks'));
+          const tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+          const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `todo-export-${new Date().toISOString().slice(0,10)}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast('Export JSON téléchargé ✓');
+        } catch (e) {
+          showToast('Connectez-vous à l\'application pour exporter.');
+        }
+      });
+    });
+
+    // ── Export CSV ──
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      requireAuth(async () => {
+        try {
+          const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+          const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+          const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+
+          const configRaw = sessionStorage.getItem('fbConfig');
+          if (!configRaw) { showToast('Configuration Firebase introuvable.'); return; }
+          const app = initializeApp(JSON.parse(configRaw), 'export-csv-' + Date.now());
+          const auth = getAuth(app);
+          const user = auth.currentUser || JSON.parse(sessionStorage.getItem('auth') || 'null');
+          if (!user?.uid) { showToast('Connectez-vous pour exporter.'); return; }
+
+          const db = getFirestore(app);
+          const snap = await getDocs(collection(db, 'users', user.uid, 'tasks'));
+          const tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+          const headers = ['id', 'title', 'status', 'priority', 'dueDate', 'notes', 'createdAt'];
+          const rows = tasks.map(t =>
+            headers.map(h => JSON.stringify(t[h] ?? '')).join(',')
+          );
+          const csv = [headers.join(','), ...rows].join('\n');
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `todo-export-${new Date().toISOString().slice(0,10)}.csv`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast('Export CSV téléchargé ✓');
+        } catch (e) {
+          showToast('Connectez-vous à l\'application pour exporter.');
+        }
+      });
+    });
+
+    // ── Suppression de toutes les tâches ──
+    const modalDT = document.getElementById('modal-delete-tasks');
+
+    document.getElementById('btn-delete-tasks').addEventListener('click', () => {
+      requireAuth(() => { modalDT.classList.add('open'); });
+    });
+
+    document.getElementById('modal-dt-cancel').addEventListener('click', () => {
+      modalDT.classList.remove('open');
+    });
+
+    modalDT.addEventListener('click', (e) => {
+      if (e.target === modalDT) modalDT.classList.remove('open');
+    });
+
+    document.getElementById('modal-dt-confirm').addEventListener('click', async () => {
+      modalDT.classList.remove('open');
+      try {
+        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+        const { getFirestore, collection, getDocs, deleteDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+        const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+
+        const configRaw = sessionStorage.getItem('fbConfig');
+        if (!configRaw) { showToast('Configuration Firebase introuvable.'); return; }
+        const app = initializeApp(JSON.parse(configRaw), 'delete-tasks-' + Date.now());
+        const auth = getAuth(app);
+        const user = auth.currentUser || JSON.parse(sessionStorage.getItem('auth') || 'null');
+        if (!user?.uid) { showToast('Session expirée — reconnectez-vous.'); return; }
+
+        const db = getFirestore(app);
+        const snap = await getDocs(collection(db, 'users', user.uid, 'tasks'));
+        const batch = snap.docs.map(d => deleteDoc(doc(db, 'users', user.uid, 'tasks', d.id)));
+        await Promise.all(batch);
+        showToast('Toutes les tâches ont été supprimées ✓');
+      } catch (e) {
+        showToast('Erreur — connectez-vous à l\'application d\'abord.');
+      }
+    });
+  </script>
+
+</body>
+</html>

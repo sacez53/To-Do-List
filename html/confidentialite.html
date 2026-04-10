@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Confidentialité — Ma To‑Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#080808" />
+  <meta name="description"
+    content="Politique de confidentialité de Ma To‑Do List — quelles données sont collectées, comment elles sont utilisées et protégées." />
+  <link rel="icon" href="../logo/Check-green.svg.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #0f0f0f;
+      --line: #1e1e1e;
+      --line-strong: #2e2e2e;
+      --text: #efefef;
+      --text-muted: #9a9a9a;
+      --text-faint: #6e6e6e;
+      --white: #fff;
+      --black: #000;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+    }
+
+    html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--text);
+      background-image: radial-gradient(circle, #161616 1px, transparent 1px);
+      background-size: 22px 22px;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-logo {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+    .nav-logo:hover { color: var(--white); }
+
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+
+    .nav-ghost {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .nav-ghost:hover { color: var(--white); border-color: var(--text-faint); }
+
+    .nav-cta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      background: var(--white);
+      border: 1px solid var(--white);
+      border-radius: 2px;
+      transition: background 160ms ease, color 160ms ease;
+    }
+    .nav-cta:hover { background: transparent; color: var(--white); }
+
+    /* ── Page header ── */
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3.5rem 1.25rem 2.5rem;
+      text-align: center;
+      position: relative;
+    }
+    .page-header::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--line-strong));
+    }
+
+    .page-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--line-strong);
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+      animation: fadeUp 500ms ease both;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.6rem, 6vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      animation: fadeUp 500ms 80ms ease both;
+    }
+
+    .page-header p {
+      font-size: clamp(0.82rem, 2.5vw, 0.92rem);
+      color: var(--text-muted);
+      max-width: 44ch;
+      line-height: 1.65;
+      animation: fadeUp 500ms 160ms ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Wrapper ── */
+    .wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 1.25rem 4rem;
+      flex: 1;
+    }
+
+    /* ── Bloc section ── */
+    .block {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      animation: fadeUp 500ms 220ms ease both;
+    }
+    .block + .block { margin-top: 2rem; }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .block-num {
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-faint); min-width: 2ch;
+    }
+    .block-title {
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .block-body {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .block-body p {
+      font-size: 0.87rem;
+      color: var(--text);
+      line-height: 1.8;
+    }
+    .block-body p + p { margin-top: 0.9rem; }
+
+    /* ── Row list ── */
+    .row-list { list-style: none; }
+    .row-list li {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--line);
+      transition: background 160ms ease;
+    }
+    .row-list li:hover { background: var(--surface); }
+    .row-key {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-faint);
+    }
+    .row-val { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
+
+    /* ── Notice (encadré info) ── */
+    .notice {
+      margin: 0;
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    /* ── Badge statut ── */
+    .chip-list {
+      display: flex; flex-wrap: wrap;
+      gap: 0.4rem; padding: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .chip {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--line-strong);
+      padding: 0.25rem 0.55rem; border-radius: 2px;
+    }
+    .chip-ok {
+      color: #5a9a6a;
+      border-color: #1e3a26;
+    }
+    .chip-warn {
+      color: #9a8a4a;
+      border-color: #3a3018;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.25rem 1rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .footer-links a {
+      color: var(--text-faint);
+      text-decoration: none;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 160ms ease;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .row-list li { grid-template-columns: 1fr; gap: 0.2rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-logo" href="../index.html">To‑Do List</a>
+    <div class="nav-links">
+      <a class="nav-ghost" href="../index.html">Accueil</a>
+      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <span class="page-tag">Légal · v2.0</span>
+    <h1>Confidentialité</h1>
+    <p>Comment vos données sont collectées, utilisées et protégées dans cette application.</p>
+  </header>
+
+  <main class="wrapper">
+
+    <!-- 01 — Qui est responsable -->
+    <section class="block" aria-labelledby="s-responsable">
+      <div class="block-header">
+        <span class="block-num">01</span>
+        <span class="block-title" id="s-responsable">Responsable du traitement</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Cette application est un projet personnel développé et exploité par <strong>Sacha G.</strong>, photographe
+          professionnel et développeur indépendant. Elle n'est pas destinée à un usage commercial et ne collecte pas de
+          données à des fins publicitaires ou de revente.
+        </p>
+        <p>
+          Toute question relative à la vie privée peut être adressée directement via le dépôt GitHub du projet :
+          <strong>github.com/sacez53/To-Do-List</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- 02 — Données collectées -->
+    <section class="block" aria-labelledby="s-donnees">
+      <div class="block-header">
+        <span class="block-num">02</span>
+        <span class="block-title" id="s-donnees">Données collectées</span>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Adresse e-mail</span>
+          <span class="row-val">Utilisée pour l'authentification Firebase. N'est jamais affichée publiquement.</span>
+        </li>
+        <li>
+          <span class="row-key">Mot de passe</span>
+          <span class="row-val">Jamais stocké en clair. Géré exclusivement par Firebase Authentication (hachage bcrypt).</span>
+        </li>
+        <li>
+          <span class="row-key">Nom d'utilisateur</span>
+          <span class="row-val">Pseudonyme choisi librement, affiché dans l'interface. Modifiable à tout moment.</span>
+        </li>
+        <li>
+          <span class="row-key">Tâches &amp; notes</span>
+          <span class="row-val">Contenu saisi dans l'application (titres, notes, statuts, dates). Stocké dans Firestore sous votre identifiant unique.</span>
+        </li>
+        <li>
+          <span class="row-key">Données techniques</span>
+          <span class="row-val">Firebase collecte automatiquement des métadonnées (IP, navigateur, horodatage) à des fins de sécurité — conformément à la politique Firebase/Google.</span>
+        </li>
+      </ul>
+      <div class="notice">
+        ⚠ Cette application ne collecte aucun cookie de tracking, ne recourt à aucune régie publicitaire et n'installe
+        aucun outil d'analyse tiers (Analytics, Hotjar, etc.).
+      </div>
+    </section>
+
+    <!-- 03 — Finalités du traitement -->
+    <section class="block" aria-labelledby="s-finalites">
+      <div class="block-header">
+        <span class="block-num">03</span>
+        <span class="block-title" id="s-finalites">Finalités du traitement</span>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Authentification</span>
+          <span class="row-val">Permettre à l'utilisateur de se connecter de façon sécurisée et d'accéder à ses données.</span>
+        </li>
+        <li>
+          <span class="row-key">Persistance</span>
+          <span class="row-val">Sauvegarder et synchroniser les tâches sur tous les appareils connectés.</span>
+        </li>
+        <li>
+          <span class="row-key">Sécurité</span>
+          <span class="row-val">Détecter et prévenir les accès non autorisés (mécanisme Firebase).</span>
+        </li>
+      </ul>
+      <div class="chip-list" aria-label="Usage des données">
+        <span class="chip chip-ok">✓ Usage personnel uniquement</span>
+        <span class="chip chip-ok">✓ Pas de revente</span>
+        <span class="chip chip-ok">✓ Pas de publicité ciblée</span>
+        <span class="chip chip-warn">⚡ Firebase/Google sous-traitant</span>
+      </div>
+    </section>
+
+    <!-- 04 — Hébergement & sous-traitants -->
+    <section class="block" aria-labelledby="s-hebergement">
+      <div class="block-header">
+        <span class="block-num">04</span>
+        <span class="block-title" id="s-hebergement">Hébergement &amp; sous-traitants</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Les données sont hébergées sur l'infrastructure <strong>Google Firebase</strong> (Firestore &amp;
+          Authentication), dont les serveurs sont localisés en Europe (région <code>europe-west</code> selon la
+          configuration du projet). Google est sous-traitant au sens du RGPD et opère dans le cadre du Data Processing
+          Amendment de Google Cloud.
+        </p>
+        <p>
+          Pour en savoir plus sur les pratiques de Google en matière de données :
+          <strong>firebase.google.com/support/privacy</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- 05 — Durée de conservation -->
+    <section class="block" aria-labelledby="s-duree">
+      <div class="block-header">
+        <span class="block-num">05</span>
+        <span class="block-title" id="s-duree">Durée de conservation</span>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Compte actif</span>
+          <span class="row-val">Données conservées tant que le compte existe.</span>
+        </li>
+        <li>
+          <span class="row-key">Suppression compte</span>
+          <span class="row-val">À la suppression du compte (depuis les Paramètres), toutes les tâches et le profil sont définitivement effacés de Firestore.</span>
+        </li>
+        <li>
+          <span class="row-key">Logs Firebase</span>
+          <span class="row-val">Les journaux techniques de Firebase sont conservés selon la politique de Google (en général 30 à 180 jours).</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 06 — Droits -->
+    <section class="block" aria-labelledby="s-droits">
+      <div class="block-header">
+        <span class="block-num">06</span>
+        <span class="block-title" id="s-droits">Vos droits (RGPD)</span>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Accès</span>
+          <span class="row-val">Vous pouvez visualiser l'intégralité de vos données directement dans l'application.</span>
+        </li>
+        <li>
+          <span class="row-key">Rectification</span>
+          <span class="row-val">Modifiable à tout moment depuis l'interface (tâches, nom d'utilisateur, e-mail).</span>
+        </li>
+        <li>
+          <span class="row-key">Suppression</span>
+          <span class="row-val">Supprimable intégralement depuis la page <a href="./donnees.html" style="color:var(--text-muted)">Gestion des données</a> ou les Paramètres du compte.</span>
+        </li>
+        <li>
+          <span class="row-key">Portabilité</span>
+          <span class="row-val">Export de vos tâches disponible depuis la page Gestion des données.</span>
+        </li>
+        <li>
+          <span class="row-key">Opposition</span>
+          <span class="row-val">Vous pouvez cesser d'utiliser l'application et supprimer votre compte à tout moment.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 07 — Mises à jour -->
+    <section class="block" aria-labelledby="s-maj">
+      <div class="block-header">
+        <span class="block-num">07</span>
+        <span class="block-title" id="s-maj">Mises à jour de cette politique</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Cette politique peut être mise à jour à tout moment. La date de dernière révision est indiquée ci-dessous.
+          En continuant à utiliser l'application après une modification, vous acceptez la politique révisée.
+        </p>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Dernière révision</span>
+          <span class="row-val">Avril 2026</span>
+        </li>
+        <li>
+          <span class="row-key">Version app</span>
+          <span class="row-val">v2.0</span>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="../index.html">Accueil</a>
+      <a href="./apropos.html">À propos</a>
+      <a href="./donnees.html">Gestion des données</a>
+      <a href="./confidentialite.html" aria-current="page">Confidentialité</a>
+    </div>
+    <p>© 2026 · Sacha G. Photographe</p>
+  </footer>
+
+</body>
+</html>
