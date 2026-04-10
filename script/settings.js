@@ -41,7 +41,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
   sessionStorage.removeItem("username");
   sessionStorage.removeItem("encKey");
   sessionStorage.removeItem("encSalt");
-  window.location.href = "../html/login.html";
+  window.location.href = "./login.html";
 });
 
 // ─── Utilitaires UI ────────────────────────────────────
@@ -132,7 +132,7 @@ btnChangeUsername.addEventListener("click", async () => {
     localStorage.removeItem(`todos_${previous}`);
 
     showMsg(msgEl, `✓ Identifiant changé en « ${newName} ». Redirection...`);
-    setTimeout(() => { window.location.href = "../html/app.html"; }, 1800);
+    setTimeout(() => { window.location.href = "./app.html"; }, 1800);
 
   } catch (err) {
     console.error(err);

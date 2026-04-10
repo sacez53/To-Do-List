@@ -101,7 +101,7 @@ loginForm.addEventListener("submit", async (e) => {
     sessionStorage.setItem("username", username);
     sessionStorage.setItem("encKey",   keyB64);
     sessionStorage.setItem("encSalt",  salt);
-    window.location.href = "./app.html";
+    window.location.href = "../html/app.html";
 
   } catch (err) {
     console.error(err);
