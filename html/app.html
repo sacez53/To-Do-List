@@ -25,14 +25,17 @@
 
     <!-- ── Header ── -->
     <header class="header">
-      <h1>Ma To‑Do List</h1>
-      <p>Statuts · Notes · Sync</p>
-      <div class="header-actions">
-        <span class="user-badge" id="user-label" title="Compte connecté"></span>
+      <h1>To‑Do List</h1>
+      <p style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; text-transform: none;">
+        <span>Espace de <strong id="user-label" style="color: var(--white); font-weight: 500;"></strong></span>
+        <span style="opacity: 0.5;">·</span>
         <span class="sync-indicator" id="sync-indicator" title="État de la synchronisation">
           <span class="sync-dot" id="sync-dot"></span>
-          <span class="sync-label" id="sync-label">Chargement...</span>
+          <span class="sync-label" id="sync-label" style="text-transform: none;">Chargement...</span>
         </span>
+      </p>
+      <div class="header-actions">
+        <a id="btn-calendar" class="btn-settings" href="calendar.html" title="Voir le calendrier">📅 Calendrier</a>
         <a class="btn-settings" href="settings.html" title="Paramètres du compte">⛯ Paramètres</a>
         <button id="logout-btn">Déconnexion</button>
       </div>

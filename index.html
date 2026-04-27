@@ -365,7 +365,7 @@
   </nav>
 
   <section class="hero">
-    <span class="hero-tag">Usage personnel · v2.0</span>
+    <span class="hero-tag">Usage personnel · <span id="app-version">v2.0</span></span>
     <div class="hero-icon" aria-hidden="true">✓</div>
     <h1>Ma To‑Do<br>List</h1>
     <p class="hero-sub">Gérez vos tâches avec statuts, priorités, échéances et synchronisation multi-appareils via
@@ -423,6 +423,16 @@
     <a  class="nav-cta" href="https://github.com/sacez53/To-Do-List" target="_blank">Lien vers le projet Github</a>
   </footer>
 
+  <script>
+    fetch('./json/version.json')
+      .then(r => r.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('app-version').textContent = data.version;
+        }
+      })
+      .catch(e => console.error('Erreur chargement version:', e));
+  </script>
 </body>
 
 </html>

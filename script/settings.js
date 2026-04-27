@@ -240,7 +240,31 @@ btnChangePassword.addEventListener("click", async () => {
 });
 
 // ══════════════════════════════════════════════════════
-//  3. SUPPRIMER LE COMPTE
+//  3. PRÉFÉRENCES D'AFFICHAGE
+// ══════════════════════════════════════════════════════
+const btnSaveDisplay   = document.getElementById("btn-save-display");
+const selectCalendarView = document.getElementById("setting-calendar-view");
+
+// Chargement initial
+const currentCalendarPref = localStorage.getItem(`calendarView_${currentUser}`) || "grid";
+if (selectCalendarView) {
+  selectCalendarView.value = currentCalendarPref;
+}
+
+if (btnSaveDisplay) {
+  btnSaveDisplay.addEventListener("click", () => {
+    const msgEl = document.getElementById("msg-display");
+    clearMsg(msgEl);
+    
+    const selectedView = selectCalendarView.value;
+    localStorage.setItem(`calendarView_${currentUser}`, selectedView);
+    
+    showMsg(msgEl, "✓ Préférences enregistrées avec succès !");
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  4. SUPPRIMER LE COMPTE
 // ══════════════════════════════════════════════════════
 const btnDeleteAccount = document.getElementById("btn-delete-account");
 const deleteOverlay    = document.getElementById("delete-overlay");

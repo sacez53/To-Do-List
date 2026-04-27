@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Calendrier — To‑Do List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#080808" />
+    <meta name="description" content="Calendrier de vos tâches." />
+    <link rel="icon" href="../logo/Check-green.svg.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style/style2.css" />
+    <script src="../script/transitions.js"></script>
+    <script>
+      // Garde d'authentification
+      if (!sessionStorage.getItem("auth")) {
+        window.location.replace("./login.html");
+      }
+    </script>
+  </head>
+  <body>
+
+    <!-- ── Header ── -->
+    <header class="header">
+      <h1>Calendrier</h1>
+      <p style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; text-transform: none;">
+        <span>Espace de <strong id="user-label" style="color: var(--white); font-weight: 500;"></strong></span>
+        <span style="opacity: 0.5;">·</span>
+        <span>Vue d'ensemble</span>
+      </p>
+      <div class="header-actions">
+        <a class="btn-settings" href="app.html" id="back-btn">← Retour à l'App</a>
+      </div>
+    </header>
+
+    <!-- ── Contenu principal ── -->
+    <main class="container">
+      <div class="calendar-page-content">
+        <div class="calendar-view-toggles" style="margin-bottom: 2rem;">
+          <button id="calendar-view-grid" class="calendar-view-btn active" title="Vue Mois">Mois</button>
+          <button id="calendar-view-planning" class="calendar-view-btn" title="Vue Planning">Planning</button>
+        </div>
+
+        <div id="calendar-grid-container">
+          <div class="calendar-header">
+            <button id="calendar-prev" class="calendar-nav" aria-label="Mois précédent">◀</button>
+            <h2 class="modal-heading" id="calendar-heading" style="margin: 0; font-size: 1.2rem;">Mois</h2>
+            <button id="calendar-next" class="calendar-nav" aria-label="Mois suivant">▶</button>
+          </div>
+          <div class="calendar-weekdays" style="font-size: 0.8rem; margin-bottom: 1rem;">
+            <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>
+          </div>
+          <div id="calendar-grid" class="calendar-grid" style="gap: 4px;">
+            <!-- Les jours seront générés par JavaScript -->
+          </div>
+        </div>
+
+        <div id="calendar-planning-container" style="display: none;">
+          <div id="calendar-planning-list" class="calendar-planning-list" style="max-height: none;">
+            <!-- La liste chronologique sera générée par JavaScript -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>© 2026 · Sacha G.</p>
+    </footer>
+
+    <script src="../script/crypto.js"></script>
+    <script src="../script/calendar.js"></script>
+  </body>
+</html>

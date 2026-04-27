@@ -27,10 +27,13 @@
     <!-- ── Header ── -->
     <header class="header">
       <h1>Paramètres</h1>
-      <p>Compte &amp; Sécurité</p>
+      <p style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; text-transform: none;">
+        <span>Espace de <strong id="user-label" style="color: var(--white); font-weight: 500;"></strong></span>
+        <span style="opacity: 0.5;">·</span>
+        <span>Compte & Sécurité</span>
+      </p>
       <div class="header-actions">
-        <span class="user-badge" id="user-label" title="Compte connecté"></span>
-        <a class="btn-settings" href="app.html" id="back-btn">← App</a>
+        <a class="btn-settings" href="app.html" id="back-btn">← Retour à l'App</a>
         <button id="logout-btn">Déconnexion</button>
       </div>
     </header>
@@ -123,6 +126,31 @@
           <div class="settings-msg" id="msg-password" role="alert" aria-live="polite"></div>
           <button class="btn-save settings-btn" id="btn-change-password">
             Changer le mot de passe
+          </button>
+        </div>
+      </section>
+
+      <!-- ══ Section : Affichage ══ -->
+      <section class="settings-section" aria-labelledby="section-display-title">
+        <div class="settings-section-header">
+          <span class="settings-section-icon" aria-hidden="true">👁️</span>
+          <div>
+            <h2 class="settings-section-title" id="section-display-title">Préférences d'affichage</h2>
+            <p class="settings-section-sub">Personnaliser l'apparence de l'application</p>
+          </div>
+        </div>
+
+        <div class="settings-form">
+          <div class="modal-field">
+            <label for="setting-calendar-view">Vue par défaut du calendrier</label>
+            <select id="setting-calendar-view" class="modal-select">
+              <option value="grid">Mois (Grille)</option>
+              <option value="planning">Planning (Liste chronologique)</option>
+            </select>
+          </div>
+          <div class="settings-msg" id="msg-display" role="alert" aria-live="polite"></div>
+          <button class="btn-save settings-btn" id="btn-save-display">
+            Enregistrer les préférences
           </button>
         </div>
       </section>

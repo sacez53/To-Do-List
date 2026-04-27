@@ -83,6 +83,18 @@ async function init() {
     setSyncStatus("offline");
   }
   render();
+
+  // Ouvre automatiquement la modale si on vient de calendar.html
+  const urlParams = new URLSearchParams(window.location.search);
+  const editTaskId = urlParams.get("editTask");
+  if (editTaskId) {
+    const taskIdNum = parseInt(editTaskId, 10);
+    setTimeout(() => {
+      openModal(taskIdNum);
+      // Nettoie l'URL
+      window.history.replaceState({}, document.title, "app.html");
+    }, 100);
+  }
 }
 
 // ──────────────────────────────────────────────
@@ -325,7 +337,14 @@ function render() {
 
     const badge = document.createElement("span");
     badge.className = "todo-badge";
+    badge.title = "Cliquez pour marquer comme terminé/à faire";
     badge.textContent = `${info.icon} ${info.label}`;
+    badge.addEventListener("click", e => {
+      e.stopPropagation(); // Empêche l'ouverture de la modale
+      todo.status = todo.status === "done" ? "todo" : "done";
+      saveTodos();
+      render();
+    });
 
     const textWrap = document.createElement("div");
     textWrap.className = "todo-text-wrap";
@@ -483,7 +502,13 @@ confirmOverlay.addEventListener("click", e => {
     document.body.classList.remove("modal-open");
   }
 });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); confirmOverlay.classList.remove("open"); } });
+
+document.addEventListener("keydown", e => { 
+  if (e.key === "Escape") { 
+    closeModal(); 
+    confirmOverlay.classList.remove("open");
+  } 
+});
 
 modalSave.addEventListener("click", () => {
   const newText = modalText.value.trim();
