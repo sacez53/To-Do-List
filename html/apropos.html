@@ -404,7 +404,7 @@
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Documentation · v2.0</span>
+    <span class="page-tag">Documentation · <span id="app-version">v2.0</span></span>
     <h1>À propos</h1>
     <p>Présentation du projet et de son créateur — une application personnelle née d'un besoin simple : mieux organiser
       chaque journée.</p>
@@ -478,6 +478,14 @@
         <li>
           <span class="row-key">Paramètres</span>
           <span class="row-val">Modification du nom, email, mot de passe et suppression de compte</span>
+        </li>
+        <li>
+          <span class="row-key">Calendrier</span>
+          <span class="row-val">Vue mensuelle et planning chronologique sur une page dédiée</span>
+        </li>
+        <li>
+          <span class="row-key">Ergonomie</span>
+          <span class="row-val">Cochez rapidement vos tâches d'un simple clic sur leur statut</span>
         </li>
       </ul>
     </section>
@@ -571,6 +579,10 @@
       </div>
       <ul class="timeline">
         <li>
+          <span class="tl-date">Mai 2026</span>
+          <span class="tl-text"><strong>v3.0</strong> — Intégration de la vue Calendrier sur page dédiée, de la vue Planning chronologique et des actions rapides.</span>
+        </li>
+        <li>
           <span class="tl-date">Avr. 2026</span>
           <span class="tl-text"><strong>v2.0</strong> — Refonte complète : design monochrome terminal, page À propos,
             paramètres compte, authentification Firebase, synchronisation multi-appareils.</span>
@@ -606,6 +618,16 @@
     <p>© 2026 · Sacha G. Photographe</p>
   </footer>
 
+  <script>
+    fetch('../json/version.json')
+      .then(r => r.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('app-version').textContent = data.version;
+        }
+      })
+      .catch(e => console.error('Erreur chargement version:', e));
+  </script>
 </body>
 
 </html>
