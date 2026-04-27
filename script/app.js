@@ -530,7 +530,7 @@ modalDelete.addEventListener("click", () => {
 document.getElementById("logout-btn").addEventListener("click", () => {
   sessionStorage.removeItem("auth");
   sessionStorage.removeItem("username");
-  window.location.href = "./login.html";
+  window.transitionTo("./login.html");
 });
 
 // ──────────────────────────────────────────────

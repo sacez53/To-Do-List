@@ -679,10 +679,9 @@
           segs.forEach(s  => { s.classList.remove("lit"); s.classList.add("dim"); });
           labelEl.textContent = "Application prête";
 
-          // Fondu + redirect
+          // Fondu + redirect via le système de transitions global
           setTimeout(() => {
-            document.body.classList.add("exit");
-            setTimeout(() => { window.location.href = "./app.html"; }, 520);
+            window.transitionTo("./app.html", 420);
           }, 300);
         }
       }
