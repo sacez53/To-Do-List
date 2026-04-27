@@ -58,7 +58,7 @@ body {
 body.modal-open { overflow: hidden; }
 
 button, input, textarea, select { font: inherit; }
-button { -webkit-appearance: none; }
+button { -webkit-appearance: none; appearance: none; }
 
 /* ════════════════════════════════════════
    HEADER

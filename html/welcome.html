@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bienvenue — To‑Do List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#080808" />
+    <link rel="icon" href="../logo/Check-green.svg.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #080808;
+        --surface: #0f0f0f;
+        --line: #1e1e1e;
+        --line-strong: #2e2e2e;
+        --text: #efefef;
+        --text-muted: #9a9a9a;
+        --text-faint: #6e6e6e;
+        --white: #fff;
+        --black: #000;
+        --duration: 5000ms; /* durée totale avant redirection */
+      }
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "IBM Plex Mono", "Courier New", monospace;
+      }
+
+      html {
+        color-scheme: dark;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg);
+        color: var(--text);
+        background-image: radial-gradient(circle, #161616 1px, transparent 1px);
+        background-size: 22px 22px;
+        overflow: hidden;
+      }
+
+      /* ── Conteneur central ── */
+      .welcome-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        padding: 3rem 2rem;
+        max-width: 420px;
+        width: 100%;
+        animation: fadeUp 500ms ease both;
+      }
+
+      /* ── Icône ── */
+      .welcome-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        border: 1px solid var(--line-strong);
+        font-size: 1.8rem;
+        position: relative;
+        animation: fadeUp 500ms 60ms ease both;
+        flex-shrink: 0;
+      }
+      .welcome-icon::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border: 1px solid var(--line);
+      }
+
+      /* ── Texte principal ── */
+      .welcome-tag {
+        font-size: 0.68rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        animation: fadeUp 500ms 120ms ease both;
+      }
+
+      .welcome-greeting {
+        font-size: clamp(1.4rem, 7vw, 2.4rem);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-align: center;
+        line-height: 1.1;
+        animation: fadeUp 500ms 180ms ease both;
+      }
+
+      .welcome-greeting .username {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.55em;
+        letter-spacing: 0.2em;
+        margin-top: 0.4rem;
+      }
+
+      .welcome-sub {
+        font-size: 0.75rem;
+        color: var(--text-faint);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-align: center;
+        animation: fadeUp 500ms 240ms ease both;
+      }
+
+      /* ── Bloc barre de chargement ── */
+      .loader-block {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        animation: fadeUp 500ms 300ms ease both;
+      }
+
+      .loader-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .loader-label {
+        font-size: 0.62rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+      }
+
+      .loader-pct {
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        min-width: 3ch;
+        text-align: right;
+      }
+
+      /* Rail de la barre */
+      .loader-rail {
+        width: 100%;
+        height: 2px;
+        background: var(--line-strong);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Barre qui avance */
+      .loader-fill {
+        position: absolute;
+        top: 0; left: 0;
+        height: 100%;
+        width: 0%;
+        background: var(--white);
+        transition: width 100ms linear;
+      }
+
+      /* Lueur au bout de la barre */
+      .loader-fill::after {
+        content: "";
+        position: absolute;
+        right: 0; top: 50%;
+        transform: translateY(-50%);
+        width: 24px;
+        height: 6px;
+        background: radial-gradient(ellipse at right, rgba(255,255,255,0.6), transparent);
+        filter: blur(3px);
+      }
+
+      /* Séparateur décoratif discret */
+      .divider-line {
+        width: 100%;
+        height: 1px;
+        background: var(--line);
+        animation: fadeUp 500ms 360ms ease both;
+      }
+
+      /* ── Étapes de chargement ── */
+      .steps {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        animation: fadeUp 500ms 400ms ease both;
+      }
+
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        transition: color 300ms ease;
+      }
+
+      .step.active {
+        color: var(--text-muted);
+      }
+
+      .step.done {
+        color: var(--text-faint);
+      }
+
+      .step-dot {
+        width: 5px;
+        height: 5px;
+        border: 1px solid var(--line-strong);
+        flex-shrink: 0;
+        transition: background 300ms ease, border-color 300ms ease;
+      }
+
+      .step.active .step-dot {
+        background: var(--white);
+        border-color: var(--white);
+        box-shadow: 0 0 6px rgba(255,255,255,0.4);
+      }
+
+      .step.done .step-dot {
+        background: var(--text-faint);
+        border-color: var(--text-faint);
+      }
+
+      /* ── Animations ── */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.4; }
+      }
+
+      /* Barre entière qui pulse légèrement quand elle charge */
+      .loader-fill.pulsing {
+        animation: none; /* géré par JS */
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="welcome-card" id="welcome-card">
+
+      <!-- Icône -->
+      <div class="welcome-icon" aria-hidden="true" id="welcome-icon">✓</div>
+
+      <!-- Tag -->
+      <span class="welcome-tag" id="welcome-tag">Authentification réussie</span>
+
+      <!-- Salutation -->
+      <h1 class="welcome-greeting" id="welcome-greeting">
+        <!-- Rempli par JS -->
+        <span class="username" id="username-line"></span>
+      </h1>
+
+      <!-- Sous-titre -->
+      <p class="welcome-sub" id="welcome-sub"></p>
+
+      <!-- Séparateur -->
+      <div class="divider-line"></div>
+
+      <!-- Barre de chargement -->
+      <div class="loader-block">
+        <div class="loader-top">
+          <span class="loader-label">Chargement de l'application</span>
+          <span class="loader-pct" id="loader-pct">0%</span>
+        </div>
+        <div class="loader-rail">
+          <div class="loader-fill" id="loader-fill"></div>
+        </div>
+      </div>
+
+      <!-- Étapes -->
+      <div class="steps" id="steps-list">
+        <div class="step" data-step="0">
+          <div class="step-dot"></div>
+          <span>Vérification de la session</span>
+        </div>
+        <div class="step" data-step="1">
+          <div class="step-dot"></div>
+          <span>Chargement des préférences</span>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-dot"></div>
+          <span>Connexion à Firebase</span>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-dot"></div>
+          <span>Synchronisation des tâches</span>
+        </div>
+        <div class="step" data-step="4">
+          <div class="step-dot"></div>
+          <span>Prêt</span>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      // ── Garde : si non connecté, retour login ──
+      if (!sessionStorage.getItem("auth")) {
+        window.location.replace("./login.html");
+      }
+
+      // ── Récupération du prénom ──
+      const username = sessionStorage.getItem("username") || "utilisateur";
+
+      // ── Salutation selon l'heure ──
+      const hour = new Date().getHours();
+      let greeting, sub, icon;
+
+      if (hour >= 5 && hour < 12) {
+        greeting = "Bonjour";
+        sub      = "Belle journée productive en perspective !";
+        icon     = "☀️";
+      } else if (hour >= 12 && hour < 18) {
+        greeting = "Bon après-midi";
+        sub      = "Continuez sur votre lancée !";
+        icon     = "⚡";
+      } else if (hour >= 18 && hour < 22) {
+        greeting = "Bonsoir";
+        sub      = "Bonne session du soir !";
+        icon     = "🌙";
+      } else {
+        greeting = "Bonne nuit";
+        sub      = "Travailler tard… l'engagement avant tout.";
+        icon     = "✦";
+      }
+
+      // ── Injection dans le DOM ──
+      document.getElementById("welcome-greeting").childNodes[0].textContent = greeting + " ";
+      document.getElementById("username-line").textContent = username;
+      document.getElementById("welcome-sub").textContent  = sub;
+      document.getElementById("welcome-icon").textContent = icon;
+
+      // ── Animation barre de chargement ──
+      const TOTAL_MS   = 5000;  // 5 secondes
+      const fill       = document.getElementById("loader-fill");
+      const pctEl      = document.getElementById("loader-pct");
+      const steps      = document.querySelectorAll(".step");
+      const stepCount  = steps.length;
+
+      // Timings des étapes (en % d'avancement)
+      const stepThresholds = [0, 22, 48, 72, 92];
+
+      let startTime = null;
+      let currentStep = -1;
+
+      function activateStep(i) {
+        if (i === currentStep) return;
+        // Marquer ancienne étape comme done
+        if (currentStep >= 0) {
+          steps[currentStep].classList.remove("active");
+          steps[currentStep].classList.add("done");
+        }
+        currentStep = i;
+        if (i < stepCount) {
+          steps[i].classList.add("active");
+          // Scroll into view si mobile
+          steps[i].scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }
+
+      function tick(ts) {
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+        const progress = Math.min(elapsed / TOTAL_MS, 1);
+
+        // Courbe d'accélération douce (ease-in-out)
+        const eased = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        const pct = Math.round(eased * 100);
+        fill.style.width = pct + "%";
+        pctEl.textContent = pct + "%";
+
+        // Activation des étapes
+        for (let i = stepThresholds.length - 1; i >= 0; i--) {
+          if (pct >= stepThresholds[i]) {
+            activateStep(i);
+            break;
+          }
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          // Dernière étape done
+          activateStep(stepCount); // force fin
+          steps.forEach(s => { s.classList.remove("active"); s.classList.add("done"); });
+          fill.style.width = "100%";
+          pctEl.textContent = "100%";
+
+          // Redirection avec légère transition
+          setTimeout(() => {
+            document.getElementById("welcome-card").style.transition = "opacity 400ms ease";
+            document.getElementById("welcome-card").style.opacity = "0";
+            setTimeout(() => {
+              window.location.href = "./app.html";
+            }, 420);
+          }, 200);
+        }
+      }
+
+      // Démarrage légèrement différé pour laisser le temps à l'animation d'apparition
+      setTimeout(() => requestAnimationFrame(tick), 400);
+    </script>
+  </body>
+</html>
