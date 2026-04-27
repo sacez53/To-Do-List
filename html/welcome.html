@@ -7,422 +7,688 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#080808" />
+    <meta name="theme-color" content="0808080" />
     <link rel="icon" href="../logo/Check-green.svg.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+      /* ── Variables (identiques au site) ── */
       :root {
-        --bg: #080808;
-        --surface: #0f0f0f;
-        --line: #1e1e1e;
-        --line-strong: #2e2e2e;
-        --text: #efefef;
-        --text-muted: #9a9a9a;
-        --text-faint: #6e6e6e;
-        --white: #fff;
-        --black: #000;
-        --duration: 5000ms; /* durée totale avant redirection */
+        --bg:           #080808;
+        --surface:      #0f0f0f;
+        --line:         #1e1e1e;
+        --line-strong:  #2e2e2e;
+        --text:         #efefef;
+        --text-muted:   #9a9a9a;
+        --text-faint:   #6e6e6e;
+        --white:        #fff;
+        --black:        #000;
+        --duration:     5000;   /* ms — modifiable */
       }
 
       *, *::before, *::after {
         box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+        margin: 0; padding: 0;
         font-family: "IBM Plex Mono", "Courier New", monospace;
       }
 
-      html {
-        color-scheme: dark;
-        -webkit-text-size-adjust: 100%;
-      }
+      html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
 
+      /* ── Corps ── */
       body {
-        min-height: 100vh;
-        min-height: 100dvh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        min-height: 100vh; min-height: 100dvh;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
         background: var(--bg);
         color: var(--text);
         background-image: radial-gradient(circle, #161616 1px, transparent 1px);
         background-size: 22px 22px;
         overflow: hidden;
+        position: relative;
       }
 
-      /* ── Conteneur central ── */
-      .welcome-card {
+      /* ── Canvas particules (derrière tout) ── */
+      #particles-canvas {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── Halo central ── */
+      .halo {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 520px; height: 520px;
+        border-radius: 50%;
+        background: radial-gradient(ellipse at center,
+          rgba(255,255,255,0.03) 0%,
+          transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── Lignes d'angle (coins) ── */
+      .corner {
+        position: fixed;
+        width: 18px; height: 18px;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .corner::before, .corner::after {
+        content: "";
+        position: absolute;
+        background: var(--line-strong);
+      }
+      .corner::before { width: 100%; height: 1px; top: 0; left: 0; }
+      .corner::after  { width: 1px; height: 100%; top: 0; left: 0; }
+
+      .corner.tl { top: 16px; left: 16px; }
+      .corner.tr { top: 16px; right: 16px; transform: scaleX(-1); }
+      .corner.bl { bottom: 16px; left: 16px; transform: scaleY(-1); }
+      .corner.br { bottom: 16px; right: 16px; transform: scale(-1); }
+
+      /* ── Scan line ── */
+      .scanline {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(to right, transparent, rgba(255,255,255,0.04), transparent);
+        animation: scan 8s linear infinite;
+        pointer-events: none;
+        z-index: 1;
+      }
+      @keyframes scan {
+        from { top: -2px; }
+        to   { top: 100%; }
+      }
+
+      /* ── Horloge coin haut droit ── */
+      .clock {
+        position: fixed;
+        top: 1.25rem; right: 1.5rem;
+        font-size: 0.6rem;
+        letter-spacing: 0.18em;
+        color: var(--text-faint);
+        text-transform: uppercase;
+        z-index: 2;
+        animation: fadeIn 800ms ease both;
+      }
+
+      /* ── Logo coin haut gauche ── */
+      .brand {
+        position: fixed;
+        top: 1.25rem; left: 1.5rem;
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        color: var(--text-faint);
+        text-transform: uppercase;
+        z-index: 2;
+        animation: fadeIn 800ms ease both;
+      }
+
+      /* ── Carte centrale ── */
+      .card {
+        position: relative;
+        z-index: 2;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 2rem;
-        padding: 3rem 2rem;
-        max-width: 420px;
+        gap: 0;
         width: 100%;
-        animation: fadeUp 500ms ease both;
+        max-width: 400px;
+        padding: 0 1.5rem;
+        animation: riseIn 600ms cubic-bezier(0.16,1,0.3,1) both;
+      }
+      @keyframes riseIn {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
       }
 
-      /* ── Icône ── */
-      .welcome-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 64px;
-        height: 64px;
-        border: 1px solid var(--line-strong);
-        font-size: 1.8rem;
-        position: relative;
-        animation: fadeUp 500ms 60ms ease both;
-        flex-shrink: 0;
-      }
-      .welcome-icon::before {
-        content: "";
-        position: absolute;
-        inset: 5px;
-        border: 1px solid var(--line);
-      }
-
-      /* ── Texte principal ── */
-      .welcome-tag {
-        font-size: 0.68rem;
+      /* ── Badge heure ── */
+      .time-badge {
+        font-size: 0.6rem;
+        font-weight: 700;
         letter-spacing: 0.22em;
         text-transform: uppercase;
         color: var(--text-faint);
-        animation: fadeUp 500ms 120ms ease both;
+        border: 1px solid var(--line-strong);
+        padding: 0.28rem 0.7rem;
+        border-radius: 2px;
+        margin-bottom: 2rem;
+        animation: fadeIn 600ms 200ms ease both;
+        opacity: 0;
       }
 
-      .welcome-greeting {
-        font-size: clamp(1.4rem, 7vw, 2.4rem);
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        text-align: center;
-        line-height: 1.1;
-        animation: fadeUp 500ms 180ms ease both;
+      /* ── Icône principale ── */
+      .main-icon {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 72px; height: 72px;
+        border: 1px solid var(--line-strong);
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        animation: fadeIn 600ms 300ms ease both;
+        opacity: 0;
+      }
+      /* Carré interne */
+      .main-icon::before {
+        content: "";
+        position: absolute;
+        inset: 6px;
+        border: 1px solid var(--line);
+      }
+      /* Lueur subtile */
+      .main-icon::after {
+        content: "";
+        position: absolute;
+        inset: -12px;
+        background: radial-gradient(ellipse at center, rgba(255,255,255,0.04), transparent 70%);
+        pointer-events: none;
       }
 
-      .welcome-greeting .username {
-        display: block;
-        color: var(--text-muted);
-        font-size: 0.55em;
+      /* ── Salutation ── */
+      .greeting-label {
+        font-size: 0.62rem;
         letter-spacing: 0.2em;
-        margin-top: 0.4rem;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        margin-bottom: 0.5rem;
+        animation: fadeIn 600ms 380ms ease both;
+        opacity: 0;
       }
 
-      .welcome-sub {
-        font-size: 0.75rem;
-        color: var(--text-faint);
-        letter-spacing: 0.12em;
+      .greeting {
+        font-size: clamp(1.6rem, 8vw, 2.6rem);
+        font-weight: 700;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
         text-align: center;
-        animation: fadeUp 500ms 240ms ease both;
+        line-height: 1;
+        margin-bottom: 0.6rem;
+        min-height: 1.1em;
+        animation: fadeIn 600ms 440ms ease both;
+        opacity: 0;
       }
 
-      /* ── Bloc barre de chargement ── */
+      /* Curseur clignotant */
+      .cursor {
+        display: inline-block;
+        width: 2px; height: 0.85em;
+        background: var(--text);
+        margin-left: 3px;
+        vertical-align: middle;
+        animation: blink 1s step-end infinite;
+      }
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0; }
+      }
+      .cursor.hidden { display: none; }
+
+      /* ── Nom d'utilisateur ── */
+      .username {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.55rem;
+        animation: fadeIn 600ms 500ms ease both;
+        opacity: 0;
+      }
+
+      /* ── Sous-titre ── */
+      .subtitle {
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        color: var(--text-faint);
+        text-align: center;
+        margin-bottom: 2.5rem;
+        animation: fadeIn 600ms 560ms ease both;
+        opacity: 0;
+      }
+
+      /* ── Séparateur ── */
+      .sep {
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(to right, transparent, var(--line-strong), transparent);
+        margin-bottom: 2rem;
+        animation: fadeIn 600ms 600ms ease both;
+        opacity: 0;
+      }
+
+      /* ── Bloc loader ── */
       .loader-block {
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 0.6rem;
-        animation: fadeUp 500ms 300ms ease both;
+        gap: 0.75rem;
+        animation: fadeIn 600ms 660ms ease both;
+        opacity: 0;
+        margin-bottom: 1.5rem;
       }
 
-      .loader-top {
+      .loader-meta {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
       .loader-label {
-        font-size: 0.62rem;
-        letter-spacing: 0.16em;
+        font-size: 0.58rem;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
         color: var(--text-faint);
       }
 
       .loader-pct {
-        font-size: 0.62rem;
-        letter-spacing: 0.1em;
-        color: var(--text-muted);
+        font-size: 0.65rem;
         font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
         font-variant-numeric: tabular-nums;
-        min-width: 3ch;
+        min-width: 3.5ch;
         text-align: right;
+        transition: color 200ms ease;
       }
+      .loader-pct.done { color: var(--white); }
 
-      /* Rail de la barre */
+      /* Rail */
       .loader-rail {
         width: 100%;
-        height: 2px;
+        height: 1px;
         background: var(--line-strong);
         position: relative;
-        overflow: hidden;
+        overflow: visible;
       }
 
-      /* Barre qui avance */
+      /* Remplissage */
       .loader-fill {
         position: absolute;
         top: 0; left: 0;
         height: 100%;
         width: 0%;
         background: var(--white);
-        transition: width 100ms linear;
+        transition: width 120ms linear;
       }
 
-      /* Lueur au bout de la barre */
+      /* Point de tête */
       .loader-fill::after {
         content: "";
         position: absolute;
-        right: 0; top: 50%;
+        right: -1px; top: 50%;
         transform: translateY(-50%);
-        width: 24px;
-        height: 6px;
-        background: radial-gradient(ellipse at right, rgba(255,255,255,0.6), transparent);
-        filter: blur(3px);
+        width: 4px; height: 4px;
+        background: var(--white);
+        border-radius: 50%;
+        box-shadow: 0 0 10px 3px rgba(255,255,255,0.5),
+                    0 0 20px 6px rgba(255,255,255,0.2);
       }
 
-      /* Séparateur décoratif discret */
-      .divider-line {
+      /* Segments du rail (5 segments) */
+      .loader-segments {
         width: 100%;
-        height: 1px;
+        display: flex;
+        gap: 2px;
+        margin-top: 4px;
+      }
+      .seg {
+        flex: 1;
+        height: 2px;
         background: var(--line);
-        animation: fadeUp 500ms 360ms ease both;
+        transition: background 400ms ease, box-shadow 400ms ease;
+        border-radius: 1px;
+      }
+      .seg.lit {
+        background: var(--white);
+        box-shadow: 0 0 6px rgba(255,255,255,0.4);
+      }
+      .seg.dim {
+        background: var(--text-faint);
       }
 
-      /* ── Étapes de chargement ── */
+      /* ── Étapes ── */
       .steps {
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
-        animation: fadeUp 500ms 400ms ease both;
+        gap: 0.3rem;
+        animation: fadeIn 600ms 720ms ease both;
+        opacity: 0;
       }
 
       .step {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
-        font-size: 0.65rem;
-        letter-spacing: 0.1em;
+        gap: 0.65rem;
+        font-size: 0.6rem;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: var(--text-faint);
+        color: var(--line-strong);
         transition: color 300ms ease;
+        padding: 0.15rem 0;
       }
+      .step.active { color: var(--text-muted); }
+      .step.done   { color: var(--text-faint); }
 
-      .step.active {
-        color: var(--text-muted);
+      /* Indicateur d'étape */
+      .step-mark {
+        flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--line-strong);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.45rem;
+        color: transparent;
+        transition: border-color 300ms ease, background 300ms ease, color 300ms ease, box-shadow 300ms ease;
       }
-
-      .step.done {
+      .step.active .step-mark {
+        border-color: var(--white);
+        background: var(--white);
+        color: var(--black);
+        box-shadow: 0 0 8px rgba(255,255,255,0.3);
+        content: "▶";
+      }
+      .step.done .step-mark {
+        border-color: var(--text-faint);
         color: var(--text-faint);
       }
 
-      .step-dot {
-        width: 5px;
-        height: 5px;
-        border: 1px solid var(--line-strong);
-        flex-shrink: 0;
-        transition: background 300ms ease, border-color 300ms ease;
+      /* ── Pied de carte ── */
+      .card-footer {
+        margin-top: 2.5rem;
+        font-size: 0.55rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--line-strong);
+        animation: fadeIn 600ms 780ms ease both;
+        opacity: 0;
       }
 
-      .step.active .step-dot {
-        background: var(--white);
-        border-color: var(--white);
-        box-shadow: 0 0 6px rgba(255,255,255,0.4);
-      }
-
-      .step.done .step-dot {
-        background: var(--text-faint);
-        border-color: var(--text-faint);
-      }
-
-      /* ── Animations ── */
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(16px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0.4; }
-      }
-
-      /* Barre entière qui pulse légèrement quand elle charge */
-      .loader-fill.pulsing {
-        animation: none; /* géré par JS */
+      /* ── Transition de sortie ── */
+      body.exit {
+        transition: opacity 500ms ease;
+        opacity: 0;
       }
     </style>
   </head>
   <body>
 
-    <div class="welcome-card" id="welcome-card">
+    <!-- Canvas particules -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Éléments décoratifs fixes -->
+    <div class="halo"></div>
+    <div class="scanline"></div>
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <!-- Marque + horloge -->
+    <div class="brand">To‑Do List</div>
+    <div class="clock" id="clock">--:--:--</div>
+
+    <!-- Carte principale -->
+    <div class="card" id="card">
+
+      <!-- Badge contextuel -->
+      <span class="time-badge" id="time-badge">—</span>
 
       <!-- Icône -->
-      <div class="welcome-icon" aria-hidden="true" id="welcome-icon">✓</div>
-
-      <!-- Tag -->
-      <span class="welcome-tag" id="welcome-tag">Authentification réussie</span>
+      <div class="main-icon" id="main-icon" aria-hidden="true">✓</div>
 
       <!-- Salutation -->
-      <h1 class="welcome-greeting" id="welcome-greeting">
-        <!-- Rempli par JS -->
-        <span class="username" id="username-line"></span>
-      </h1>
+      <span class="greeting-label">Bonjour,</span>
+      <h1 class="greeting" id="greeting"><span id="greeting-text"></span><span class="cursor" id="cursor"></span></h1>
+
+      <!-- Nom -->
+      <span class="username" id="username-el"></span>
 
       <!-- Sous-titre -->
-      <p class="welcome-sub" id="welcome-sub"></p>
+      <p class="subtitle" id="subtitle"></p>
 
       <!-- Séparateur -->
-      <div class="divider-line"></div>
+      <div class="sep"></div>
 
       <!-- Barre de chargement -->
       <div class="loader-block">
-        <div class="loader-top">
-          <span class="loader-label">Chargement de l'application</span>
+        <div class="loader-meta">
+          <span class="loader-label" id="loader-label">Initialisation</span>
           <span class="loader-pct" id="loader-pct">0%</span>
         </div>
         <div class="loader-rail">
           <div class="loader-fill" id="loader-fill"></div>
         </div>
+        <div class="loader-segments" id="segs">
+          <div class="seg" data-seg="0"></div>
+          <div class="seg" data-seg="1"></div>
+          <div class="seg" data-seg="2"></div>
+          <div class="seg" data-seg="3"></div>
+          <div class="seg" data-seg="4"></div>
+        </div>
       </div>
 
       <!-- Étapes -->
-      <div class="steps" id="steps-list">
-        <div class="step" data-step="0">
-          <div class="step-dot"></div>
-          <span>Vérification de la session</span>
-        </div>
-        <div class="step" data-step="1">
-          <div class="step-dot"></div>
-          <span>Chargement des préférences</span>
-        </div>
-        <div class="step" data-step="2">
-          <div class="step-dot"></div>
-          <span>Connexion à Firebase</span>
-        </div>
-        <div class="step" data-step="3">
-          <div class="step-dot"></div>
-          <span>Synchronisation des tâches</span>
-        </div>
-        <div class="step" data-step="4">
-          <div class="step-dot"></div>
-          <span>Prêt</span>
-        </div>
+      <div class="steps" id="steps">
+        <div class="step" data-step="0"><div class="step-mark">✓</div><span>Vérification de la session</span></div>
+        <div class="step" data-step="1"><div class="step-mark">✓</div><span>Chargement des préférences</span></div>
+        <div class="step" data-step="2"><div class="step-mark">✓</div><span>Connexion à Firebase</span></div>
+        <div class="step" data-step="3"><div class="step-mark">✓</div><span>Synchronisation des tâches</span></div>
+        <div class="step" data-step="4"><div class="step-mark">✓</div><span>Prêt</span></div>
       </div>
 
+      <!-- Pied -->
+      <span class="card-footer">Chargement en cours…</span>
     </div>
 
     <script>
-      // ── Garde : si non connecté, retour login ──
+      // ── Garde ──
       if (!sessionStorage.getItem("auth")) {
         window.location.replace("./login.html");
       }
 
-      // ── Récupération du prénom ──
+      // ── Données ──
       const username = sessionStorage.getItem("username") || "utilisateur";
+      const hour     = new Date().getHours();
 
-      // ── Salutation selon l'heure ──
-      const hour = new Date().getHours();
-      let greeting, sub, icon;
-
+      let greeting, sub, icon, badge;
       if (hour >= 5 && hour < 12) {
-        greeting = "Bonjour";
-        sub      = "Belle journée productive en perspective !";
-        icon     = "☀️";
-      } else if (hour >= 12 && hour < 18) {
-        greeting = "Bon après-midi";
-        sub      = "Continuez sur votre lancée !";
-        icon     = "⚡";
+        greeting = "Bonjour";   sub = "Belle journée productive en perspective !"; icon = "☀"; badge = "Matin";
+      } else if (hour >= 12 && hour < 14) {
+        greeting = "Bon midi";  sub = "Prenez une pause bien méritée.";             icon = "◎"; badge = "Midi";
+      } else if (hour >= 14 && hour < 18) {
+        greeting = "Bonjour";   sub = "Continuez sur votre lancée !";               icon = "⚡"; badge = "Après-midi";
       } else if (hour >= 18 && hour < 22) {
-        greeting = "Bonsoir";
-        sub      = "Bonne session du soir !";
-        icon     = "🌙";
+        greeting = "Bonsoir";   sub = "Bonne session du soir !";                    icon = "◐"; badge = "Soir";
       } else {
-        greeting = "Bonne nuit";
-        sub      = "Travailler tard… l'engagement avant tout.";
-        icon     = "✦";
+        greeting = "Bonne nuit"; sub = "Travailler tard — l'engagement avant tout."; icon = "✦"; badge = "Nuit";
       }
 
-      // ── Injection dans le DOM ──
-      document.getElementById("welcome-greeting").childNodes[0].textContent = greeting + " ";
-      document.getElementById("username-line").textContent = username;
-      document.getElementById("welcome-sub").textContent  = sub;
-      document.getElementById("welcome-icon").textContent = icon;
+      // ── Injection statique ──
+      document.getElementById("time-badge").textContent  = badge;
+      document.getElementById("main-icon").textContent   = icon;
+      document.getElementById("username-el").textContent = username;
+      document.getElementById("subtitle").textContent    = sub;
 
-      // ── Animation barre de chargement ──
-      const TOTAL_MS   = 5000;  // 5 secondes
-      const fill       = document.getElementById("loader-fill");
-      const pctEl      = document.getElementById("loader-pct");
-      const steps      = document.querySelectorAll(".step");
-      const stepCount  = steps.length;
+      // ── Horloge live ──
+      function updateClock() {
+        const now = new Date();
+        const p = n => String(n).padStart(2, "0");
+        document.getElementById("clock").textContent =
+          p(now.getHours()) + ":" + p(now.getMinutes()) + ":" + p(now.getSeconds());
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
 
-      // Timings des étapes (en % d'avancement)
-      const stepThresholds = [0, 22, 48, 72, 92];
+      // ── Typewriter de la salutation ──
+      const greetingEl = document.getElementById("greeting-text");
+      const cursorEl   = document.getElementById("cursor");
+      let   charIdx    = 0;
+      let   typeStarted = false;
 
-      let startTime = null;
-      let currentStep = -1;
+      function typeChar() {
+        if (charIdx < greeting.length) {
+          greetingEl.textContent += greeting[charIdx++];
+          setTimeout(typeChar, 55 + Math.random() * 35);
+        } else {
+          // Curseur reste encore 1.2s puis disparaît
+          setTimeout(() => cursorEl.classList.add("hidden"), 1200);
+        }
+      }
+
+      // Démarrer le typewriter après 700ms (apparition de la carte)
+      setTimeout(() => typeChar(), 700);
+
+      // ── Particules légères ──
+      (function initParticles() {
+        const canvas = document.getElementById("particles-canvas");
+        const ctx    = canvas.getContext("2d");
+        let W, H, particles;
+
+        function resize() {
+          W = canvas.width  = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+
+        function makeParticle() {
+          return {
+            x:  Math.random() * W,
+            y:  Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.18,
+            vy: -0.12 - Math.random() * 0.15,
+            r:  0.6 + Math.random() * 0.8,
+            a:  Math.random(),
+            da: 0.002 + Math.random() * 0.003
+          };
+        }
+
+        function init() {
+          resize();
+          particles = Array.from({ length: 55 }, makeParticle);
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          particles.forEach(p => {
+            p.x  += p.vx;
+            p.y  += p.vy;
+            p.a  += p.da;
+            if (p.a > 1)  { p.a = 1;  p.da *= -1; }
+            if (p.a < 0)  { p.a = 0;  p.da *= -1; }
+            if (p.y < -4) { Object.assign(p, makeParticle(), { y: H + 4 }); }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${p.a * 0.25})`;
+            ctx.fill();
+          });
+          requestAnimationFrame(draw);
+        }
+
+        window.addEventListener("resize", resize);
+        init();
+        draw();
+      })();
+
+      // ── Barre de chargement ──
+      const TOTAL_MS  = 5000;
+      const fillEl    = document.getElementById("loader-fill");
+      const pctEl     = document.getElementById("loader-pct");
+      const labelEl   = document.getElementById("loader-label");
+      const segs      = document.querySelectorAll(".seg");
+      const steps     = document.querySelectorAll(".step");
+
+      const STEPS = [
+        { threshold:  0, label: "Vérification de la session" },
+        { threshold: 22, label: "Chargement des préférences" },
+        { threshold: 46, label: "Connexion à Firebase" },
+        { threshold: 70, label: "Synchronisation des tâches" },
+        { threshold: 90, label: "Prêt" }
+      ];
+
+      let startTime    = null;
+      let currentStep  = -1;
 
       function activateStep(i) {
-        if (i === currentStep) return;
-        // Marquer ancienne étape comme done
+        if (i === currentStep || i >= steps.length) return;
         if (currentStep >= 0) {
           steps[currentStep].classList.remove("active");
           steps[currentStep].classList.add("done");
         }
         currentStep = i;
-        if (i < stepCount) {
-          steps[i].classList.add("active");
-          // Scroll into view si mobile
-          steps[i].scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }
+        steps[i].classList.add("active");
+        labelEl.textContent = STEPS[i].label;
+      }
+
+      function updateSegs(pct) {
+        // 5 segments → chaque segment = 20%
+        segs.forEach((seg, i) => {
+          const segMax = (i + 1) * 20;
+          const segMin =  i      * 20;
+          if (pct >= segMax) {
+            seg.classList.add("dim");
+            seg.classList.remove("lit");
+          } else if (pct > segMin) {
+            seg.classList.add("lit");
+            seg.classList.remove("dim");
+          } else {
+            seg.classList.remove("lit", "dim");
+          }
+        });
       }
 
       function tick(ts) {
         if (!startTime) startTime = ts;
-        const elapsed = ts - startTime;
+        const elapsed  = ts - startTime;
         const progress = Math.min(elapsed / TOTAL_MS, 1);
 
-        // Courbe d'accélération douce (ease-in-out)
-        const eased = progress < 0.5
-          ? 2 * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+        // Ease out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const pct   = Math.round(eased * 100);
 
-        const pct = Math.round(eased * 100);
-        fill.style.width = pct + "%";
-        pctEl.textContent = pct + "%";
+        fillEl.style.width  = pct + "%";
+        pctEl.textContent   = pct + "%";
+        if (pct === 100) pctEl.classList.add("done");
 
-        // Activation des étapes
-        for (let i = stepThresholds.length - 1; i >= 0; i--) {
-          if (pct >= stepThresholds[i]) {
-            activateStep(i);
-            break;
-          }
+        updateSegs(pct);
+
+        // Activation étapes
+        for (let i = STEPS.length - 1; i >= 0; i--) {
+          if (pct >= STEPS[i].threshold) { activateStep(i); break; }
         }
 
         if (progress < 1) {
           requestAnimationFrame(tick);
         } else {
-          // Dernière étape done
-          activateStep(stepCount); // force fin
+          // Terminer toutes les étapes
           steps.forEach(s => { s.classList.remove("active"); s.classList.add("done"); });
-          fill.style.width = "100%";
-          pctEl.textContent = "100%";
+          segs.forEach(s  => { s.classList.remove("lit"); s.classList.add("dim"); });
+          labelEl.textContent = "Application prête";
 
-          // Redirection avec légère transition
+          // Fondu + redirect
           setTimeout(() => {
-            document.getElementById("welcome-card").style.transition = "opacity 400ms ease";
-            document.getElementById("welcome-card").style.opacity = "0";
-            setTimeout(() => {
-              window.location.href = "./app.html";
-            }, 420);
-          }, 200);
+            document.body.classList.add("exit");
+            setTimeout(() => { window.location.href = "./app.html"; }, 520);
+          }, 300);
         }
       }
 
-      // Démarrage légèrement différé pour laisser le temps à l'animation d'apparition
-      setTimeout(() => requestAnimationFrame(tick), 400);
+      // Lancer la barre après l'animation d'entrée
+      setTimeout(() => requestAnimationFrame(tick), 500);
     </script>
   </body>
 </html>
