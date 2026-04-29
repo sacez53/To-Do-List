@@ -52,6 +52,24 @@ let firebaseUrl   = null;
 let syncTimeout   = null;
 let encKey        = null;  // CryptoKey AES-GCM dérivée du mot de passe
 
+// Configuration par défaut (sera écrasée par config.json)
+let appConfig = {
+  syncDebounceMs: 800,
+  defaultSort: "created-desc",
+  notePreviewMaxLength: 70,
+  statusLabels: {
+    todo:       { label: "À faire",    icon: "📋" },
+    inprogress: { label: "En cours",   icon: "⚡" },
+    waiting:    { label: "En attente", icon: "⏳" },
+    done:       { label: "Terminé",    icon: "✅" },
+    cancelled:  { label: "Annulé",     icon: "❌" }
+  },
+  priorityLabels: {
+    high: "🔴 Haute",
+    normal: "🔵 Basse"
+  }
+};
+
 // ──────────────────────────────────────────────
 // Init
 // ──────────────────────────────────────────────
@@ -69,17 +87,35 @@ async function init() {
   }
 
   try {
-    const res    = await fetch("../json/config.json");
-    const config = await res.json();
+    const fetchJson = async (url) => {
+      try { const r = await fetch(url); return r.ok ? await r.json() : {}; }
+      catch { return {}; }
+    };
 
-    if (config.firebaseUrl && config.firebaseUrl.trim() !== "") {
-      firebaseUrl = config.firebaseUrl.replace(/\/$/, "");
+    const [settings, ui, fbConfig] = await Promise.all([
+      fetchJson("../json/settings.json"),
+      fetchJson("../json/ui.json"),
+      fetchJson("../json/firebase.json")
+    ]);
+
+    // Surcharge de la configuration par défaut
+    if (settings.syncDebounceMs !== undefined) appConfig.syncDebounceMs = settings.syncDebounceMs;
+    if (settings.defaultSort !== undefined) {
+      appConfig.defaultSort = settings.defaultSort;
+      currentSort = settings.defaultSort; // Applique le tri par défaut
+    }
+    if (settings.notePreviewMaxLength !== undefined) appConfig.notePreviewMaxLength = settings.notePreviewMaxLength;
+    if (ui.statusLabels) Object.assign(appConfig.statusLabels, ui.statusLabels);
+    if (ui.priorityLabels) Object.assign(appConfig.priorityLabels, ui.priorityLabels);
+
+    if (fbConfig.url && fbConfig.url.trim() !== "") {
+      firebaseUrl = fbConfig.url.replace(/\/$/, "");
       await loadFromFirebase();
     } else {
       setSyncStatus("offline");
     }
   } catch (e) {
-    console.warn("Erreur config.json :", e);
+    console.warn("Erreur chargement configuration :", e);
     setSyncStatus("offline");
   }
   render();
@@ -161,7 +197,7 @@ async function loadFromFirebase() {
 }
 
 // ──────────────────────────────────────────────
-// Sauvegarde (debounce 800ms)
+// Sauvegarde
 // ──────────────────────────────────────────────
 async function saveToFirebase() {
   if (!firebaseUrl) return;
@@ -184,7 +220,7 @@ async function saveToFirebase() {
       console.warn("Erreur sync Firebase :", e);
       setSyncStatus("error");
     }
-  }, 800);
+  }, appConfig.syncDebounceMs);
 }
 
 function saveTodos() {
@@ -237,17 +273,10 @@ sortSelect.addEventListener("change", () => {
 // ──────────────────────────────────────────────
 // Labels de statut
 // ──────────────────────────────────────────────
-const STATUS_LABELS = {
-  todo:       { label: "À faire",    icon: "📋" },
-  inprogress: { label: "En cours",   icon: "⚡" },
-  waiting:    { label: "En attente", icon: "⏳" },
-  done:       { label: "Terminé",    icon: "✅" },
-  cancelled:  { label: "Annulé",     icon: "❌" }
-};
 const STATUS_ORDER = ["inprogress", "todo", "waiting", "done", "cancelled"];
 const PRIORITY_ORDER = { high: 0, normal: 1, low: 2 };
 
-function getStatusInfo(s) { return STATUS_LABELS[s] || STATUS_LABELS["todo"]; }
+function getStatusInfo(s) { return appConfig.statusLabels[s] || appConfig.statusLabels["todo"]; }
 
 // ──────────────────────────────────────────────
 // Helpers date d'échéance
@@ -365,7 +394,7 @@ function render() {
     if (prio !== "normal") {
       const prioBadge = document.createElement("span");
       prioBadge.className = `priority-badge priority-${prio}`;
-      prioBadge.textContent = prio === "high" ? "🔴 Haute" : "🔵 Basse";
+      prioBadge.textContent = appConfig.priorityLabels[prio] || appConfig.priorityLabels["normal"];
       meta.appendChild(prioBadge);
     }
 
@@ -381,8 +410,8 @@ function render() {
     if (todo.notes && todo.notes.trim()) {
       const note = document.createElement("span");
       note.className = "todo-note-preview";
-      note.textContent = todo.notes.length > 70
-        ? todo.notes.slice(0, 70) + "…"
+      note.textContent = todo.notes.length > appConfig.notePreviewMaxLength
+        ? todo.notes.slice(0, appConfig.notePreviewMaxLength) + "…"
         : todo.notes;
       textWrap.appendChild(note);
     }

@@ -5,13 +5,13 @@
   let timeoutMinutes = 5; // Valeur par défaut
   
   try {
-    const res = await fetch("../json/config.json");
+    const res = await fetch("../json/security.json");
     const config = await res.json();
     if (typeof config.timeoutMinutes === 'number') {
       timeoutMinutes = config.timeoutMinutes;
     }
   } catch (err) {
-    console.warn("Erreur lors du chargement de config.json pour le timeout:", err);
+    console.warn("Erreur lors du chargement de security.json pour le timeout:", err);
   }
 
   const TIMEOUT_MS = timeoutMinutes * 60 * 1000;

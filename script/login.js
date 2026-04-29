@@ -5,14 +5,22 @@
 
 // ─── Utilitaires UI ────────────────────────────────
 
-/** Charge la config et retourne l'URL Firebase nettoyée */
+let cachedFirebaseUrl = null;
+
 async function getFirebaseUrl() {
-  const res    = await fetch("../json/config.json");
+  if (cachedFirebaseUrl) return cachedFirebaseUrl;
+  const res = await fetch("../json/firebase.json");
   const config = await res.json();
-  if (!config.firebaseUrl || !config.firebaseUrl.trim()) {
-    throw new Error("Firebase non configuré dans config.json");
+  if (!config.url || !config.url.trim()) {
+    throw new Error("Firebase non configuré dans firebase.json");
   }
-  return config.firebaseUrl.replace(/\/$/, "");
+  cachedFirebaseUrl = config.url.replace(/\/$/, "");
+  return cachedFirebaseUrl;
+}
+
+async function getSecurityConfig() {
+  const res = await fetch("../json/security.json");
+  return await res.json();
 }
 
 /** Valide le format d'un identifiant */
@@ -136,11 +144,6 @@ registerForm.addEventListener("submit", async (e) => {
     document.getElementById("reg-user").focus();
     return;
   }
-  if (password.length < 5) {
-    showError(registerError, "Mot de passe trop court (min. 5 caractères).");
-    document.getElementById("reg-pass").focus();
-    return;
-  }
   if (password !== confirm) {
     showError(registerError, "Les mots de passe ne correspondent pas.");
     document.getElementById("reg-confirm").value = "";
@@ -151,6 +154,16 @@ registerForm.addEventListener("submit", async (e) => {
   setLoading(registerBtn, true);
 
   try {
+    const secConfig = await getSecurityConfig();
+    const minLen = secConfig.minPasswordLength || 5;
+    
+    if (password.length < minLen) {
+      showError(registerError, `Mot de passe trop court (min. ${minLen} caractères).`);
+      document.getElementById("reg-pass").focus();
+      setLoading(registerBtn, false);
+      return;
+    }
+
     const fbUrl = await getFirebaseUrl();
 
     // Vérifie si l'identifiant est déjà pris
