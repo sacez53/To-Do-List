@@ -1,16 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
-  <meta charset="UTF-8" />
-  <title>Gestion des données — Ma To‑Do List</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#080808" />
-  <meta name="description"
-    content="Gérez, exportez et supprimez vos données personnelles depuis Ma To‑Do List." />
+  <meta charset="UTF-8">
+  <title>Ma To-Do List — Données</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="icon" href="../logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,19 +21,21 @@
       --text-faint: #6e6e6e;
       --white: #fff;
       --black: #000;
-      --danger: #7a2828;
-      --danger-text: #d07070;
-      --danger-line: #3a1818;
     }
 
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       font-family: "IBM Plex Mono", "Courier New", monospace;
     }
 
-    html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
+    html {
+      color-scheme: dark;
+      -webkit-text-size-adjust: 100%;
+    }
 
     body {
       min-height: 100vh;
@@ -71,9 +67,16 @@
       text-decoration: none;
       transition: color 160ms ease;
     }
-    .nav-logo:hover { color: var(--white); }
 
-    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-logo:hover {
+      color: var(--white);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
     .nav-ghost {
       font-size: 0.72rem;
@@ -87,7 +90,11 @@
       border-radius: 2px;
       transition: color 160ms ease, border-color 160ms ease;
     }
-    .nav-ghost:hover { color: var(--white); border-color: var(--text-faint); }
+
+    .nav-ghost:hover {
+      color: var(--white);
+      border-color: var(--text-faint);
+    }
 
     .nav-cta {
       font-size: 0.72rem;
@@ -102,7 +109,11 @@
       border-radius: 2px;
       transition: background 160ms ease, color 160ms ease;
     }
-    .nav-cta:hover { background: transparent; color: var(--white); }
+
+    .nav-cta:hover {
+      background: transparent;
+      color: var(--white);
+    }
 
     /* ── Page header ── */
     .page-header {
@@ -113,12 +124,15 @@
       text-align: center;
       position: relative;
     }
+
     .page-header::before {
       content: "";
       position: absolute;
-      top: 0; left: 50%;
+      top: 0;
+      left: 50%;
       transform: translateX(-50%);
-      width: 1px; height: 60px;
+      width: 1px;
+      height: 60px;
       background: linear-gradient(to bottom, transparent, var(--line-strong));
     }
 
@@ -145,7 +159,7 @@
     }
 
     .page-header p {
-      font-size: clamp(0.82rem, 2.5vw, 0.92rem);
+      font-size: clamp(0.82rem, 2.5vw, 0.95rem);
       color: var(--text-muted);
       max-width: 44ch;
       line-height: 1.65;
@@ -153,8 +167,15 @@
     }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* ── Wrapper ── */
@@ -172,10 +193,9 @@
       border-right: 1px solid var(--line);
       animation: fadeUp 500ms 220ms ease both;
     }
-    .block + .block { margin-top: 2rem; }
-    .block-danger {
-      border-left-color: var(--danger-line);
-      border-right-color: var(--danger-line);
+
+    .block+.block {
+      margin-top: 2rem;
     }
 
     .block-header {
@@ -186,250 +206,170 @@
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
     }
-    .block-danger .block-header {
-      border-top-color: var(--danger-line);
-      border-bottom-color: var(--danger-line);
-    }
 
     .block-num {
-      font-size: 0.65rem; font-weight: 700;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      color: var(--text-faint); min-width: 2ch;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      min-width: 2ch;
     }
+
     .block-title {
-      font-size: 0.78rem; font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 700;
       letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--text-muted);
     }
-    .block-danger .block-title { color: var(--danger-text); }
 
     .block-body {
       padding: 1.25rem 1rem;
       border-bottom: 1px solid var(--line);
     }
-    .block-danger .block-body { border-bottom-color: var(--danger-line); }
 
     .block-body p {
-      font-size: 0.87rem;
+      font-size: 0.88rem;
       color: var(--text);
-      line-height: 1.8;
+      line-height: 1.75;
     }
-    .block-body p + p { margin-top: 0.9rem; }
 
-    /* ── Row list ── */
-    .row-list { list-style: none; }
-    .row-list li {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      align-items: baseline;
-      gap: 0.75rem;
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid var(--line);
-      transition: background 160ms ease;
+    .block-body p+p {
+      margin-top: 0.9rem;
     }
-    .row-list li:hover { background: var(--surface); }
-    .block-danger .row-list li { border-bottom-color: var(--danger-line); }
-    .row-key {
-      font-size: 0.72rem; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--text-faint);
-    }
-    .row-val { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
 
-    /* ── Action card ── */
-    .action-card {
-      padding: 1.25rem 1rem;
-      border-bottom: 1px solid var(--line);
+    /* ── Boutons action ── */
+    .actions {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       gap: 0.75rem;
-    }
-    .block-danger .action-card { border-bottom-color: var(--danger-line); }
-
-    .action-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.65;
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
     }
 
-    /* Bouton action standard */
     .btn-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.65rem 1.25rem;
-      border: 1px solid var(--line-strong);
-      border-radius: 2px;
-      background: transparent;
-      color: var(--text);
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      background: var(--white);
+      border: 1px solid var(--white);
+      border-radius: 2px;
       cursor: pointer;
-      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
-      align-self: flex-start;
+      transition: background 160ms ease, color 160ms ease;
     }
+
     .btn-action:hover {
-      background: var(--surface);
-      border-color: var(--text-faint);
+      background: transparent;
       color: var(--white);
     }
 
-    /* Bouton danger */
-    .btn-danger {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.65rem 1.25rem;
-      border: 1px solid var(--danger-line);
-      border-radius: 2px;
-      background: transparent;
-      color: var(--danger-text);
-      font-size: 0.78rem;
+    .btn-action-ghost {
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--line-strong);
+      background: transparent;
+      border-radius: 2px;
       cursor: pointer;
-      transition: background 160ms ease, border-color 160ms ease;
-      align-self: flex-start;
+      transition: color 160ms ease, border-color 160ms ease;
     }
+
+    .btn-action-ghost:hover {
+      color: var(--white);
+      border-color: var(--text-faint);
+    }
+
+    /* ── Zone de danger ── */
+    .danger-header {
+      background: rgba(249, 115, 115, 0.05);
+    }
+
+    .danger-title {
+      color: #f97373;
+    }
+
+    .btn-danger {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #f97373;
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border: 1px solid rgba(249, 115, 115, 0.3);
+      background: transparent;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
     .btn-danger:hover {
-      background: rgba(122, 40, 40, 0.15);
-      border-color: var(--danger-text);
+      background: #f97373;
+      color: var(--black);
     }
 
-    /* ── Notice ── */
-    .notice {
-      margin: 0;
-      padding: 1rem;
-      border-bottom: 1px solid var(--line);
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      line-height: 1.7;
-      font-style: italic;
-    }
-
-    /* ── Tag status ── */
-    .status-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid var(--line);
-    }
-    .status-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #5a9a6a;
-      flex-shrink: 0;
-    }
-    .status-dot.warn { background: #9a8a4a; }
-    .status-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    /* ── Modale de confirmation ── */
+    /* ── Modale ── */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      z-index: 1000;
       opacity: 0;
       pointer-events: none;
       transition: opacity 200ms ease;
     }
-    .modal-overlay.open {
+
+    .modal-overlay.active {
       opacity: 1;
       pointer-events: all;
     }
-    .modal-box {
-      background: var(--surface);
+
+    .modal {
+      background: var(--bg);
       border: 1px solid var(--line-strong);
-      border-radius: 2px;
       padding: 2rem;
-      max-width: 380px;
+      max-width: 400px;
       width: 90%;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      border-radius: 2px;
+      transform: translateY(10px);
+      transition: transform 200ms ease;
     }
-    .modal-box h2 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal h2 {
+      font-size: 1rem;
       text-transform: uppercase;
-      color: var(--danger-text);
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      color: var(--white);
     }
-    .modal-box p {
+
+    .modal p {
       font-size: 0.85rem;
       color: var(--text-muted);
-      line-height: 1.7;
+      margin-bottom: 2rem;
+      line-height: 1.6;
     }
+
     .modal-actions {
       display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-    .btn-confirm-danger {
-      flex: 1;
-      padding: 0.6rem 1rem;
-      border: 1px solid var(--danger-line);
-      border-radius: 2px;
-      background: transparent;
-      color: var(--danger-text);
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 160ms ease;
-    }
-    .btn-confirm-danger:hover { background: rgba(122, 40, 40, 0.2); }
-
-    .btn-cancel {
-      flex: 1;
-      padding: 0.6rem 1rem;
-      border: 1px solid var(--line-strong);
-      border-radius: 2px;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: color 160ms ease, border-color 160ms ease;
-    }
-    .btn-cancel:hover { color: var(--white); border-color: var(--text-faint); }
-
-    /* ── Feedback toast ── */
-    .toast {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(10px);
-      background: var(--surface);
-      border: 1px solid var(--line-strong);
-      color: var(--text);
-      font-size: 0.78rem;
-      letter-spacing: 0.06em;
-      padding: 0.7rem 1.25rem;
-      border-radius: 2px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 200ms ease, transform 200ms ease;
-      white-space: nowrap;
-      z-index: 200;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
+      justify-content: flex-end;
+      gap: 1rem;
     }
 
     /* ── Footer ── */
@@ -440,26 +380,6 @@
       font-size: 0.72rem;
       letter-spacing: 0.06em;
       color: var(--text-muted);
-    }
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .footer-links a {
-      color: var(--text-faint);
-      text-decoration: none;
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      transition: color 160ms ease;
-    }
-    .footer-links a:hover { color: var(--text); }
-
-    /* ── Responsive ── */
-    @media (max-width: 480px) {
-      .row-list li { grid-template-columns: 1fr; gap: 0.2rem; }
     }
   </style>
 </head>
@@ -475,314 +395,77 @@
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Compte &amp; Données · v2.0</span>
-    <h1>Gestion des<br>données</h1>
-    <p>Consultez, exportez ou supprimez vos données — vous gardez le contrôle total.</p>
+    <span class="page-tag">Paramètres · <span id="app-version">v2.0</span></span>
+    <h1>Données</h1>
+    <p>Outils de portabilité, d'exportation et de gestion de votre compte personnel.</p>
   </header>
 
   <main class="wrapper">
 
-    <!-- 01 — Vue d'ensemble -->
-    <section class="block" aria-labelledby="s-overview">
+    <!-- 01 — Exportation -->
+    <section class="block" aria-labelledby="section-export">
       <div class="block-header">
         <span class="block-num">01</span>
-        <span class="block-title" id="s-overview">Vos données en un coup d'œil</span>
+        <span class="block-title" id="section-export">Exportation (Portabilité)</span>
       </div>
-      <ul class="row-list">
-        <li>
-          <span class="row-key">E-mail</span>
-          <span class="row-val">Utilisé pour la connexion. Modifiable depuis les <a href="./settings.html" style="color:var(--text-muted)">Paramètres</a>.</span>
-        </li>
-        <li>
-          <span class="row-key">Nom d'utilisateur</span>
-          <span class="row-val">Pseudonyme libre, visible dans l'interface. Modifiable à tout moment.</span>
-        </li>
-        <li>
-          <span class="row-key">Tâches</span>
-          <span class="row-val">Titres, notes, statuts, priorités et dates. Stockés dans Firestore sous votre UID Firebase.</span>
-        </li>
-        <li>
-          <span class="row-key">Mot de passe</span>
-          <span class="row-val">Jamais stocké en clair — géré exclusivement par Firebase Authentication.</span>
-        </li>
-        <li>
-          <span class="row-key">Localisation</span>
-          <span class="row-val">Non collectée. Aucun tracking géographique.</span>
-        </li>
-      </ul>
-      <div class="status-row">
-        <span class="status-dot"></span>
-        <span class="status-label">Données hébergées sur Firebase (Google), région Europe</span>
+      <div class="block-body">
+        <p>
+          Récupérez l'intégralité de vos tâches pour les sauvegarder ou les importer dans un autre outil. Les exports
+          incluent les titres, notes, statuts, priorités et dates d'échéance.
+        </p>
       </div>
-      <div class="status-row" style="border-bottom: none;">
-        <span class="status-dot warn"></span>
-        <span class="status-label">Métadonnées techniques conservées par Firebase selon leur politique (30–180 jours)</span>
+      <div class="actions">
+        <button class="btn-action" id="export-json">Export JSON</button>
+        <button class="btn-action-ghost" id="export-csv">Export CSV</button>
       </div>
     </section>
 
-    <!-- 02 — Exporter les tâches -->
-    <section class="block" aria-labelledby="s-export">
-      <div class="block-header">
+    <!-- 02 — Zone de danger -->
+    <section class="block" aria-labelledby="section-danger" style="border-color: rgba(249, 115, 115, 0.2);">
+      <div class="block-header danger-header">
         <span class="block-num">02</span>
-        <span class="block-title" id="s-export">Exporter mes tâches</span>
-      </div>
-      <div class="action-card">
-        <p class="action-desc">
-          Téléchargez une copie complète de toutes vos tâches au format <strong>JSON</strong> lisible. Ce fichier
-          contient les titres, notes, statuts, priorités et dates d'échéance. Il peut être réimporté ou archivé.
-        </p>
-        <button class="btn-action" id="btn-export-json" aria-label="Exporter les tâches en JSON">
-          ↓ Exporter en JSON
-        </button>
-      </div>
-      <div class="action-card" style="border-bottom: none;">
-        <p class="action-desc">
-          Exportez également vos tâches au format <strong>CSV</strong> (tableur) — compatible Excel, LibreOffice Calc
-          et Google Sheets.
-        </p>
-        <button class="btn-action" id="btn-export-csv" aria-label="Exporter les tâches en CSV">
-          ↓ Exporter en CSV
-        </button>
-      </div>
-    </section>
-
-    <!-- 03 — Modifier mes informations -->
-    <section class="block" aria-labelledby="s-modifier">
-      <div class="block-header">
-        <span class="block-num">03</span>
-        <span class="block-title" id="s-modifier">Modifier mes informations</span>
+        <span class="block-title danger-title" id="section-danger">Zone de danger</span>
       </div>
       <div class="block-body">
         <p>
-          Toutes les données personnelles modifiables sont accessibles depuis la page <strong>Paramètres</strong> :
-          nom d'utilisateur, adresse e-mail et mot de passe. Les modifications sont appliquées immédiatement
-          dans Firebase.
+          Les actions suivantes sont <strong>irréversibles</strong>. La suppression de votre compte entraînera la
+          destruction immédiate de toutes vos tâches stockées sur nos serveurs.
         </p>
       </div>
-      <div class="action-card" style="border-bottom: none;">
-        <a class="btn-action" href="./settings.html" id="link-settings" aria-label="Accéder aux Paramètres">
-          → Accéder aux Paramètres
-        </a>
+      <div class="actions">
+        <button class="btn-danger" id="btn-delete-account">Supprimer mon compte</button>
       </div>
-    </section>
-
-    <!-- 04 — Droit à l'oubli / Suppression -->
-    <section class="block block-danger" aria-labelledby="s-suppression">
-      <div class="block-header">
-        <span class="block-num">04</span>
-        <span class="block-title" id="s-suppression">Suppression des données</span>
-      </div>
-      <div class="block-body">
-        <p>
-          Vous pouvez supprimer uniquement vos tâches (en conservant votre compte), ou supprimer
-          <strong>intégralement</strong> votre compte et toutes les données associées. Ces actions sont
-          <strong>irréversibles</strong>.
-        </p>
-      </div>
-      <div class="action-card">
-        <p class="action-desc">
-          Supprimer toutes les tâches sans supprimer le compte. Votre accès reste actif mais la liste sera vide.
-        </p>
-        <button class="btn-danger" id="btn-delete-tasks" aria-label="Supprimer toutes les tâches">
-          ✕ Supprimer toutes les tâches
-        </button>
-      </div>
-      <div class="action-card" style="border-bottom: none;">
-        <p class="action-desc">
-          Supprimer le compte et toutes les données (tâches, profil, authentification). L'accès sera immédiatement
-          révoqué.
-        </p>
-        <a class="btn-danger" href="./settings.html#danger" id="btn-delete-account" aria-label="Supprimer mon compte">
-          ✕ Supprimer mon compte
-        </a>
-      </div>
-    </section>
-
-    <!-- 05 — Liens légaux -->
-    <section class="block" aria-labelledby="s-legal">
-      <div class="block-header">
-        <span class="block-num">05</span>
-        <span class="block-title" id="s-legal">Documents légaux</span>
-      </div>
-      <ul class="row-list" style="border-bottom: none;">
-        <li>
-          <span class="row-key">Confidentialité</span>
-          <span class="row-val"><a href="./confidentialite.html" style="color:var(--text-muted)">Politique de confidentialité complète →</a></span>
-        </li>
-        <li>
-          <span class="row-key">Firebase / Google</span>
-          <span class="row-val">firebase.google.com/support/privacy</span>
-        </li>
-        <li>
-          <span class="row-key">RGPD</span>
-          <span class="row-val">Règlement (UE) 2016/679 du Parlement européen</span>
-        </li>
-        <li style="border-bottom: none;">
-          <span class="row-key">Contact</span>
-          <span class="row-val">Via GitHub — github.com/sacez53/To-Do-List</span>
-        </li>
-      </ul>
     </section>
 
   </main>
 
-  <footer>
-    <div class="footer-links">
-      <a href="../index.html">Accueil</a>
-      <a href="./apropos.html">À propos</a>
-      <a href="./donnees.html" aria-current="page">Gestion des données</a>
-      <a href="./confidentialite.html">Confidentialité</a>
-    </div>
-    <p>© 2026 · Sacha G. Photographe</p>
-  </footer>
-
-  <!-- Modale suppression tâches -->
-  <div class="modal-overlay" id="modal-delete-tasks" role="alertdialog" aria-modal="true" aria-labelledby="modal-dt-title">
-    <div class="modal-box">
-      <h2 id="modal-dt-title">Supprimer toutes les tâches ?</h2>
-      <p>Cette action supprimera définitivement toutes vos tâches. Votre compte reste actif. Vous devez être connecté pour effectuer cette action.</p>
+  <!-- Modale de confirmation -->
+  <div class="modal-overlay" id="confirm-overlay">
+    <div class="modal">
+      <h2 id="modal-title">Confirmer l'action</h2>
+      <p id="modal-desc">Êtes-vous sûr de vouloir continuer ? Cette action est irréversible.</p>
       <div class="modal-actions">
-        <button class="btn-confirm-danger" id="modal-dt-confirm">Supprimer</button>
-        <button class="btn-cancel" id="modal-dt-cancel">Annuler</button>
+        <button class="btn-action-ghost" id="cancel-action">Annuler</button>
+        <button class="btn-action" id="confirm-action" style="background: #f97373; border-color: #f97373;">Confirmer</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast feedback -->
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <footer>
+    <p>© 2026 · Sacha G. Photographe</p>
+  </footer>
 
-  <script type="module">
-    // ── Utilitaire toast ──
-    function showToast(msg, duration = 3000) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), duration);
-    }
-
-    // ── Firebase (lazy import — doit correspondre à votre config) ──
-    // Ces actions nécessitent une session active.
-    // Elles redirigent vers login si non connecté.
-    function requireAuth(cb) {
-      import('../script/app.js').catch(() => {});
-      const auth = sessionStorage.getItem('auth');
-      if (!auth) {
-        window.location.href = './login.html';
-        return;
-      }
-      cb();
-    }
-
-    // ── Export JSON ──
-    document.getElementById('btn-export-json').addEventListener('click', () => {
-      requireAuth(async () => {
-        try {
-          const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-          const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-          const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-
-          const configRaw = sessionStorage.getItem('fbConfig');
-          if (!configRaw) { showToast('Configuration Firebase introuvable.'); return; }
-          const app = initializeApp(JSON.parse(configRaw), 'export-instance-' + Date.now());
-          const auth = getAuth(app);
-          const user = auth.currentUser || JSON.parse(sessionStorage.getItem('auth') || 'null');
-          if (!user?.uid) { showToast('Connectez-vous pour exporter.'); return; }
-
-          const db = getFirestore(app);
-          const snap = await getDocs(collection(db, 'users', user.uid, 'tasks'));
-          const tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-          const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `todo-export-${new Date().toISOString().slice(0,10)}.json`;
-          a.click();
-          URL.revokeObjectURL(url);
-          showToast('Export JSON téléchargé ✓');
-        } catch (e) {
-          showToast('Connectez-vous à l\'application pour exporter.');
+  <script src="../script/donnees.js"></script>
+  <script>
+    fetch('../json/version.json')
+      .then(r => r.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('app-version').textContent = data.version;
         }
-      });
-    });
-
-    // ── Export CSV ──
-    document.getElementById('btn-export-csv').addEventListener('click', () => {
-      requireAuth(async () => {
-        try {
-          const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-          const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-          const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-
-          const configRaw = sessionStorage.getItem('fbConfig');
-          if (!configRaw) { showToast('Configuration Firebase introuvable.'); return; }
-          const app = initializeApp(JSON.parse(configRaw), 'export-csv-' + Date.now());
-          const auth = getAuth(app);
-          const user = auth.currentUser || JSON.parse(sessionStorage.getItem('auth') || 'null');
-          if (!user?.uid) { showToast('Connectez-vous pour exporter.'); return; }
-
-          const db = getFirestore(app);
-          const snap = await getDocs(collection(db, 'users', user.uid, 'tasks'));
-          const tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-          const headers = ['id', 'title', 'status', 'priority', 'dueDate', 'notes', 'createdAt'];
-          const rows = tasks.map(t =>
-            headers.map(h => JSON.stringify(t[h] ?? '')).join(',')
-          );
-          const csv = [headers.join(','), ...rows].join('\n');
-          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `todo-export-${new Date().toISOString().slice(0,10)}.csv`;
-          a.click();
-          URL.revokeObjectURL(url);
-          showToast('Export CSV téléchargé ✓');
-        } catch (e) {
-          showToast('Connectez-vous à l\'application pour exporter.');
-        }
-      });
-    });
-
-    // ── Suppression de toutes les tâches ──
-    const modalDT = document.getElementById('modal-delete-tasks');
-
-    document.getElementById('btn-delete-tasks').addEventListener('click', () => {
-      requireAuth(() => { modalDT.classList.add('open'); });
-    });
-
-    document.getElementById('modal-dt-cancel').addEventListener('click', () => {
-      modalDT.classList.remove('open');
-    });
-
-    modalDT.addEventListener('click', (e) => {
-      if (e.target === modalDT) modalDT.classList.remove('open');
-    });
-
-    document.getElementById('modal-dt-confirm').addEventListener('click', async () => {
-      modalDT.classList.remove('open');
-      try {
-        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-        const { getFirestore, collection, getDocs, deleteDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-        const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-
-        const configRaw = sessionStorage.getItem('fbConfig');
-        if (!configRaw) { showToast('Configuration Firebase introuvable.'); return; }
-        const app = initializeApp(JSON.parse(configRaw), 'delete-tasks-' + Date.now());
-        const auth = getAuth(app);
-        const user = auth.currentUser || JSON.parse(sessionStorage.getItem('auth') || 'null');
-        if (!user?.uid) { showToast('Session expirée — reconnectez-vous.'); return; }
-
-        const db = getFirestore(app);
-        const snap = await getDocs(collection(db, 'users', user.uid, 'tasks'));
-        const batch = snap.docs.map(d => deleteDoc(doc(db, 'users', user.uid, 'tasks', d.id)));
-        await Promise.all(batch);
-        showToast('Toutes les tâches ont été supprimées ✓');
-      } catch (e) {
-        showToast('Erreur — connectez-vous à l\'application d\'abord.');
-      }
-    });
+      })
+      .catch(e => console.error('Erreur chargement version:', e));
   </script>
-
 </body>
+
 </html>
