@@ -184,6 +184,21 @@ function renderCalendarGrid() {
         // Optionnel: scroller jusqu'à la date dans le planning.
       }
     });
+
+    const tooltip = document.createElement("div");
+    tooltip.className = "calendar-tooltip";
+    if (dayTasks.length > 0) {
+      let listHtml = `<ul style="list-style: none; padding: 0; margin: 0;">`;
+      dayTasks.forEach(t => {
+         const info = getStatusInfo(t.status);
+         listHtml += `<li style="margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${info.icon} ${t.text}</li>`;
+      });
+      listHtml += `</ul>`;
+      tooltip.innerHTML = listHtml;
+    } else {
+      tooltip.innerHTML = `<span style="color: var(--text-faint); font-style: italic;">Aucune tâche</span>`;
+    }
+    cell.appendChild(tooltip);
     
     calendarGrid.appendChild(cell);
   }

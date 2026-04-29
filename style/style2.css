@@ -658,6 +658,34 @@ button { -webkit-appearance: none; appearance: none; }
 .calendar-cell.today { border-color: var(--line-strong); font-weight: bold; }
 .calendar-cell.selected { background: var(--line-strong); color: var(--white); }
 
+.calendar-tooltip {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
+  z-index: 10;
+  min-width: 120px;
+  text-align: left;
+}
+
+.calendar-cell:hover .calendar-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
 .calendar-task-dot {
   width: 4px;
   height: 4px;
