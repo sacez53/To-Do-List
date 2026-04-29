@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#080808" />
   <meta name="description"
     content="À propos de Ma To‑Do List — présentation du projet et de son créateur, Sacha G., photographe et développeur." />
-  <link rel="icon" href="../logo/Check-green.svg.png">
+  <link rel="icon" href="../logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -173,8 +173,15 @@
     }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* ── Wrapper ── */
@@ -193,7 +200,7 @@
       animation: fadeUp 500ms 240ms ease both;
     }
 
-    .block + .block {
+    .block+.block {
       margin-top: 2rem;
     }
 
@@ -234,7 +241,7 @@
       line-height: 1.75;
     }
 
-    .block-body p + p {
+    .block-body p+p {
       margin-top: 0.9rem;
     }
 
@@ -580,7 +587,8 @@
       <ul class="timeline">
         <li>
           <span class="tl-date">Mai 2026</span>
-          <span class="tl-text"><strong>v3.0</strong> — Intégration de la vue Calendrier sur page dédiée, de la vue Planning chronologique et des actions rapides.</span>
+          <span class="tl-text"><strong>v3.0</strong> — Intégration de la vue Calendrier sur page dédiée, de la vue
+            Planning chronologique et des actions rapides.</span>
         </li>
         <li>
           <span class="tl-date">Avr. 2026</span>
@@ -599,7 +607,8 @@
         </li>
         <li>
           <span class="tl-date">Jan. 2026</span>
-          <span class="tl-text"><strong>v0.1</strong> — Prototype initial : liste de tâches locale sans persistance.</span>
+          <span class="tl-text"><strong>v0.1</strong> — Prototype initial : liste de tâches locale sans
+            persistance.</span>
         </li>
       </ul>
     </section>
