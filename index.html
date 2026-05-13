@@ -12,6 +12,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="./script/transitions.js"></script>
+  <script>
+    // Déconnexion automatique
+    sessionStorage.removeItem("auth");
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("encKey");
+    sessionStorage.removeItem("encSalt");
+  </script>
 
   <!-- Google Search Console / SEO basics -->
   <meta name="robots" content="index, follow">
@@ -370,14 +377,12 @@
   <nav>
     <span class="nav-logo">To‑Do List</span>
     <div class="nav-links">
-      <a class="nav-ghost" href="./html/apropos.html">À propos</a>
-      <a class="nav-ghost" href="developpeur.html">Le Développeur</a>
       <a class="nav-cta" href="./html/login.html" id="nav-connexion">Connexion →</a>
     </div>
   </nav>
 
   <section class="hero">
-    <span class="hero-tag">Usage personnel · <span id="app-version">v2.0</span></span>
+    <span class="hero-tag">Usage personnel · <span id="app-version">v5.0</span></span>
     <div class="hero-icon" aria-hidden="true">✓</div>
     <h1>Ma To‑Do<br>List</h1>
     <p class="hero-sub">Gérez vos tâches avec statuts, priorités, échéances et synchronisation multi-appareils via
@@ -452,6 +457,7 @@
       })
       .catch(e => console.error('Erreur chargement version:', e));
   </script>
+  <script src="./script/burger-menu.js"></script>
 </body>
 
 </html>

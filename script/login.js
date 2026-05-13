@@ -109,7 +109,11 @@ loginForm.addEventListener("submit", async (e) => {
     sessionStorage.setItem("username", username);
     sessionStorage.setItem("encKey",   keyB64);
     sessionStorage.setItem("encSalt",  salt);
-    window.transitionTo("./welcome.html");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectPage = urlParams.get('redirect');
+    const nextUrl = redirectPage ? `./${redirectPage}` : `./welcome.html`;
+    window.transitionTo(nextUrl);
 
   } catch (err) {
     console.error(err);
@@ -196,8 +200,12 @@ registerForm.addEventListener("submit", async (e) => {
     sessionStorage.setItem("encKey",   keyB64);
     sessionStorage.setItem("encSalt",  salt);
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectPage = urlParams.get('redirect');
+    const nextUrl = redirectPage ? `./${redirectPage}` : `./welcome.html`;
+
     showSuccess(registerSuccess, "Compte créé ! Redirection...");
-    setTimeout(() => { window.transitionTo("./welcome.html"); }, 900);
+    setTimeout(() => { window.transitionTo(nextUrl); }, 900);
 
   } catch (err) {
     console.error(err);

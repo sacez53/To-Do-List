@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>To‑Do List — App</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#080808"/>
+  <link rel="icon" href="../logo/list-todo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style/style2.css"/>
+  <script src="../script/transitions.js"></script>
+  <script>if(!sessionStorage.getItem("auth"))window.location.replace("./login.html");</script>
+  <style>
+    /* ── V2 tokens ── */
+    :root{--v2-accent:#4ade80;--v2-accent-dim:rgba(74,222,128,.12);--v2-accent-glow:rgba(74,222,128,.25);}
+
+    /* ── Banner ── */
+    .v2-banner{background:var(--v2-accent-dim);border-bottom:1px solid rgba(74,222,128,.25);padding:.5rem 1rem;text-align:center;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--v2-accent);}
+    .v2-banner a{color:var(--v2-accent);text-decoration:none;border-bottom:1px solid currentColor;}
+
+    /* ── Header V2 ── */
+    .v2-header{text-align:center;padding:1.25rem 1rem .875rem;border-bottom:1px solid var(--line);position:relative;}
+    .v2-header::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:48px;height:1px;background:var(--v2-accent);}
+    .v2-header h1{font-size:clamp(1rem,4vw,1.6rem);font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.2rem;}
+    .v2-beta{display:inline-flex;align-items:center;gap:.3rem;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--v2-accent);border:1px solid rgba(74,222,128,.4);padding:.1rem .4rem;border-radius:2px;margin-left:.5rem;}
+    .v2-header p{font-size:.7rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;}
+    .v2-header-actions{display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:.75rem;flex-wrap:wrap;}
+    #v2-logout-btn{padding:.3rem .75rem;min-height:40px;border:1px solid var(--line-strong);border-radius:3px;background:transparent;color:var(--text-muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:color .16s,border-color .16s;}
+    #v2-logout-btn:hover{color:#fff;border-color:#fff;}
+    .v2-back-btn{padding:.3rem .75rem;min-height:40px;border:1px solid var(--line-strong);border-radius:3px;background:transparent;color:var(--text-muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;transition:color .16s,border-color .16s;}
+    .v2-back-btn:hover{color:#fff;border-color:#fff;}
+
+    /* ── Sync ── */
+    .v2-sync{display:inline-flex;align-items:center;gap:.35rem;cursor:default;}
+    .v2-sync-dot{width:6px;height:6px;border-radius:50%;background:var(--text-faint);flex-shrink:0;transition:background .16s;}
+    .v2-sync-syncing{background:var(--text-muted);animation:pulse 900ms ease infinite;}
+    .v2-sync-synced{background:var(--v2-accent);}
+    .v2-sync-error{background:#666;}
+    .v2-sync-offline{background:var(--text-faint);}
+    .v2-sync-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);}
+
+    /* ── Stats ── */
+    .v2-stats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:.7rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--text-muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem;}
+    .v2-progress-wrap{height:2px;background:var(--line);margin-bottom:1rem;position:relative;}
+    .v2-progress-bar{height:100%;background:var(--v2-accent);transition:width .4s ease;box-shadow:0 0 8px var(--v2-accent-glow);}
+
+    /* ── Toolbar ── */
+    .v2-toolbar{display:flex;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap;align-items:center;}
+    .v2-search-wrap{position:relative;flex:1;min-width:160px;}
+    .v2-search-icon{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);color:var(--text-faint);font-size:.9rem;pointer-events:none;}
+    .v2-search{width:100%;padding:.5rem .5rem .5rem 2rem;border:1px solid var(--line-strong);border-radius:3px;background:var(--surface);color:var(--text);font-size:.8rem;transition:border-color .16s;}
+    .v2-search:focus{outline:none;border-color:#fff;}
+    .v2-search-clear{position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.8rem;padding:.2rem;}
+    .v2-sort{padding:.5rem .75rem;border:1px solid var(--line-strong);border-radius:3px;background:var(--surface);color:var(--text);font-size:.75rem;cursor:pointer;-webkit-appearance:none;appearance:none;}
+    .v2-sort:focus{outline:none;border-color:#fff;}
+
+    /* ── Vue switcher ── */
+    .v2-view-switcher{display:flex;border:1px solid var(--line-strong);border-radius:3px;overflow:hidden;margin-bottom:.75rem;}
+    .v2-view-btn{flex:1;padding:.5rem .4rem;background:transparent;border:none;color:var(--text-muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:background .16s,color .16s;display:flex;align-items:center;justify-content:center;gap:.3rem;}
+    .v2-view-btn:not(:last-child){border-right:1px solid var(--line-strong);}
+    .v2-view-btn.active{background:var(--surface-2);color:#fff;}
+    .v2-view-btn:not(.active):hover{color:var(--text);}
+
+    /* ── Filtre avancé ── */
+    .v2-filter-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;}
+    .v2-filter-toggle{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .75rem;border:1px solid var(--line-strong);border-radius:3px;background:transparent;color:var(--text-muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:color .16s,border-color .16s;}
+    .v2-filter-toggle:hover,.v2-filter-toggle.active{color:#fff;border-color:#fff;}
+    .v2-filter-count{background:var(--v2-accent);color:#000;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:none;align-items:center;justify-content:center;font-weight:700;}
+    .v2-filter-reset{padding:.4rem .75rem;border:1px solid transparent;border-radius:3px;background:transparent;color:var(--text-faint);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:color .16s;}
+    .v2-filter-reset:hover{color:#fff;}
+
+    /* ── Panel filtres ── */
+    .v2-filter-panel{display:none;background:var(--surface);border:1px solid var(--line-strong);border-radius:3px;padding:1rem;margin-bottom:.75rem;animation:slideDown 180ms ease;}
+    .v2-filter-panel.open{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .v2-fp-group h4{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.5rem;}
+    .v2-fp-checks{display:flex;flex-direction:column;gap:.3rem;}
+    .v2-fp-check{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--text-muted);cursor:pointer;}
+    .v2-fp-check:hover{color:#fff;}
+    .v2-fp-check input{accent-color:var(--v2-accent);cursor:pointer;}
+    .v2-fp-date{display:flex;flex-direction:column;gap:.4rem;}
+    .v2-fp-date label{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);}
+    .v2-fp-date input[type=date]{width:100%;padding:.4rem .5rem;border:1px solid var(--line-strong);border-radius:3px;background:var(--surface-2);color:var(--text);font-size:.75rem;}
+
+    /* ── Board ── */
+    .v2-board{min-height:200px;}
+
+    /* ── Vue Liste ── */
+    .v2-list{list-style:none;border-top:1px solid var(--line);}
+    .v2-item{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;padding:.9rem 0;border-bottom:1px solid var(--line);cursor:pointer;position:relative;transition:background .16s,padding .16s;animation:itemIn 220ms ease both;}
+    @keyframes itemIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .v2-item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--v2-accent);opacity:0;transition:opacity .16s;}
+    .v2-item:hover{background:var(--surface);padding-left:.75rem;padding-right:.4rem;}
+    .v2-item:hover::before{opacity:1;}
+    .v2-item-left{display:flex;align-items:flex-start;gap:.55rem;min-width:0;flex:1;}
+    .v2-item-body{display:flex;flex-direction:column;gap:.2rem;min-width:0;flex:1;}
+    .v2-item-text{font-size:.88rem;color:var(--text);word-break:break-word;line-height:1.45;}
+    .v2-item-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem;margin-top:.1rem;}
+    .v2-note-preview{font-size:.72rem;color:var(--text-muted);font-style:italic;border-left:1px solid var(--line-strong);padding-left:.4rem;line-height:1.4;word-break:break-word;}
+    .v2-note-icon{font-size:.75rem;cursor:help;}
+    .v2-edit-btn{flex-shrink:0;min-height:40px;padding:.25rem .6rem;border:1px solid transparent;border-radius:3px;background:transparent;color:var(--text-muted);cursor:pointer;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;transition:color .16s,border-color .16s;}
+    .v2-edit-btn:hover{color:#fff;border-color:var(--line-strong);}
+    .v2-empty{padding:3rem 0;text-align:center;color:var(--text-muted);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;}
+
+    /* ── Badges statut ── */
+    .v2-badge{display:inline-flex;align-items:center;flex-shrink:0;font-size:.65rem;padding:.12rem .4rem;border:1px solid var(--line-strong);border-radius:3px;color:var(--text-muted);background:transparent;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;cursor:pointer;transition:transform .1s,border-color .16s,color .16s;}
+    .v2-badge:hover{transform:scale(1.05);border-color:#fff;color:#fff;}
+    .v2-badge--done{border-color:rgba(74,222,128,.4);color:var(--v2-accent);}
+    .v2-badge--inprogress{border-color:rgba(250,204,21,.3);color:#facc15;}
+    .v2-badge--waiting{border-color:rgba(148,163,184,.3);color:#94a3b8;}
+    .v2-badge--cancelled{border-color:rgba(100,100,100,.3);color:var(--text-faint);}
+
+    /* ── Priorité ── */
+    .v2-prio{font-size:.65rem;padding:.1rem .35rem;border-radius:3px;border:1px solid;white-space:nowrap;}
+    .v2-prio--high{border-color:rgba(248,113,113,.4);color:#f87171;}
+    .v2-prio--low{border-color:rgba(96,165,250,.4);color:#60a5fa;}
+
+    /* ── Échéance ── */
+    .v2-due{font-size:.65rem;white-space:nowrap;}
+    .due-overdue{color:#f87171;}
+    .due-today{color:#facc15;}
+    .due-soon{color:#fb923c;}
+    .due-ok{color:var(--text-faint);}
+
+    /* ── États texte ── */
+    .v2-done{text-decoration:line-through;color:var(--text-faint);}
+    .v2-cancelled{text-decoration:line-through;opacity:.3;}
+    .v2-muted{color:var(--text-faint);}
+
+    /* ── Vue Kanban ── */
+    .v2-board--kanban{overflow-x:auto;}
+    .v2-kanban{display:flex;gap:.75rem;padding-bottom:.75rem;min-width:800px;}
+    .v2-kanban-col{flex:1;min-width:160px;background:var(--surface);border:1px solid var(--line);border-radius:3px;display:flex;flex-direction:column;}
+    .v2-kanban-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem .75rem;border-bottom:1px solid var(--line);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);}
+    .v2-kanban-count{background:var(--surface-3);border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--text-muted);}
+    .v2-kanban-list{display:flex;flex-direction:column;gap:.5rem;padding:.6rem;flex:1;min-height:80px;}
+    .v2-kanban-empty{font-size:.65rem;color:var(--text-faint);text-align:center;padding:.5rem;text-transform:uppercase;letter-spacing:.06em;}
+    .v2-card{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:3px;padding:.6rem .7rem;cursor:pointer;transition:border-color .16s,transform .12s;animation:itemIn 220ms ease both;}
+    .v2-card:hover{border-color:var(--v2-accent);transform:translateY(-1px);}
+    .v2-card-text{font-size:.78rem;color:var(--text);line-height:1.4;margin-bottom:.4rem;word-break:break-word;}
+    .v2-card-meta{display:flex;flex-wrap:wrap;gap:.3rem;}
+
+    /* ── Vue Tableau ── */
+    .v2-table{width:100%;border-collapse:collapse;font-size:.75rem;}
+    .v2-table thead th{padding:.5rem .6rem;text-align:left;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);font-size:.65rem;border-bottom:1px solid var(--line-strong);white-space:nowrap;}
+    .v2-table-row{border-bottom:1px solid var(--line);cursor:pointer;transition:background .16s;}
+    .v2-table-row:hover{background:var(--surface);}
+    .v2-table-row td{padding:.6rem .6rem;vertical-align:middle;}
+    .v2-table-text{max-width:240px;}
+    .v2-table-text span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+    /* ── FAB ── */
+    .v2-fab{position:fixed;bottom:calc(1.5rem + env(safe-area-inset-bottom));right:1.25rem;z-index:50;width:56px;height:56px;border-radius:50%;border:1px solid var(--v2-accent);background:var(--v2-accent);color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(74,222,128,.25);transition:background .16s,transform .16s,box-shadow .16s;}
+    .v2-fab:hover{background:#22c55e;transform:scale(1.08);box-shadow:0 12px 40px rgba(74,222,128,.4);}
+    .v2-fab-icon{font-size:1.6rem;font-weight:300;line-height:1;margin-top:-1px;}
+
+    /* ── Footer ── */
+    .v2-footer{text-align:center;padding:.875rem;font-size:.7rem;color:var(--text-muted);border-top:1px solid var(--line);letter-spacing:.04em;}
+
+    @media(min-width:560px){.v2-item{flex-direction:row;align-items:center;} .v2-item-left{align-items:center;}}
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="v2-header">
+    <h1>To‑Do List</h1>
+    <p>
+      Espace de <strong id="v2-user-label" style="color:#fff;font-weight:500;"></strong>
+      &nbsp;·&nbsp;
+      <span class="v2-sync">
+        <span class="v2-sync-dot" id="v2-sync-dot"></span>
+        <span class="v2-sync-label" id="v2-sync-label">Chargement...</span>
+      </span>
+    </p>
+    <div class="v2-header-actions">
+      <a class="v2-back-btn" href="calendar.html">📅 Calendrier</a>
+      <a class="v2-back-btn" href="settings.html">⛯ Paramètres</a>
+      <button id="v2-logout-btn">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="container" style="max-width:900px;">
+
+    <!-- Stats -->
+    <div class="v2-stats">
+      <span id="v2-stat-total">0 tâches</span>
+      <span id="v2-stat-done">0 terminées</span>
+      <span id="v2-stat-progress">0%</span>
+    </div>
+    <div class="v2-progress-wrap">
+      <div class="v2-progress-bar" id="v2-progress-bar" style="width:0%"></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="v2-toolbar">
+      <div class="v2-search-wrap">
+        <span class="v2-search-icon">⌕</span>
+        <input type="search" id="v2-search" class="v2-search" placeholder="Rechercher..." autocomplete="off"/>
+        <button class="v2-search-clear" id="v2-search-clear" style="display:none">✕</button>
+      </div>
+      <select id="v2-sort" class="v2-sort">
+        <option value="status">Statut</option>
+        <option value="az">A → Z</option>
+        <option value="za">Z → A</option>
+        <option value="created-desc">Récents</option>
+        <option value="created-asc">Anciens</option>
+        <option value="priority">Priorité ↑</option>
+        <option value="due-asc">Échéance ↑</option>
+        <option value="overdue-first">Retards d'abord</option>
+        <option value="notes-first">Notes en premier</option>
+      </select>
+    </div>
+
+    <!-- Switcher vue -->
+    <div class="v2-view-switcher">
+      <button class="v2-view-btn active" data-view="list">☰ Liste</button>
+      <button class="v2-view-btn" data-view="kanban">⬛ Kanban</button>
+      <button class="v2-view-btn" data-view="table">⊞ Tableau</button>
+    </div>
+
+    <!-- Filtres avancés -->
+    <div class="v2-filter-bar">
+      <button id="v2-filter-toggle" class="v2-filter-toggle">
+        ⚙ Filtres avancés
+        <span class="v2-filter-count" id="v2-filter-count"></span>
+      </button>
+      <button id="v2-filter-reset" class="v2-filter-reset">Réinitialiser</button>
+    </div>
+
+    <div id="v2-filter-panel" class="v2-filter-panel">
+      <div class="v2-fp-group">
+        <h4>Statut</h4>
+        <div class="v2-fp-checks" id="fp-statuses"></div>
+      </div>
+      <div class="v2-fp-group">
+        <h4>Priorité</h4>
+        <div class="v2-fp-checks" id="fp-priorities"></div>
+      </div>
+      <div class="v2-fp-group">
+        <h4>Date d'échéance</h4>
+        <div class="v2-fp-date">
+          <label>Avant le</label>
+          <input type="date" id="fp-due-before"/>
+          <label>Après le</label>
+          <input type="date" id="fp-due-after"/>
+        </div>
+      </div>
+      <div class="v2-fp-group">
+        <h4>Autres</h4>
+        <div class="v2-fp-checks">
+          <label class="v2-fp-check"><input type="checkbox" id="fp-has-notes"> 📝 Avec notes</label>
+          <label class="v2-fp-check"><input type="checkbox" id="fp-no-due"> 📅 Sans date</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Board -->
+    <div id="v2-board" class="v2-board"></div>
+
+  </main>
+
+  <footer class="v2-footer">© 2026 · Sacha G.</footer>
+
+  <!-- FAB -->
+  <button class="v2-fab" id="v2-fab" aria-label="Ajouter une tâche">
+    <span class="v2-fab-icon">+</span>
+  </button>
+
+  <!-- Modale ajout/édition (réutilisée de style2.css) -->
+  <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+    <div class="modal">
+      <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+      <h2 class="modal-heading" id="modal-heading">Nouvelle tâche</h2>
+      <div class="modal-field">
+        <label for="modal-text">Titre</label>
+        <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tâche..."/>
+      </div>
+      <div class="modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div class="modal-field">
+          <label for="modal-status">Statut</label>
+          <select id="modal-status" class="modal-select">
+            <option value="todo">📋 À faire</option>
+            <option value="inprogress">⚡ En cours</option>
+            <option value="waiting">⏳ En attente</option>
+            <option value="done">✅ Terminé</option>
+            <option value="cancelled">❌ Annulé</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label for="modal-priority">Priorité</label>
+          <select id="modal-priority" class="modal-select">
+            <option value="normal">— Normale</option>
+            <option value="high">🔴 Haute</option>
+            <option value="low">🔵 Basse</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label for="modal-due">Date d'échéance <span style="opacity:.5;font-size:.65rem;">(optionnel)</span></label>
+        <input type="date" id="modal-due" class="modal-input"/>
+      </div>
+      <div class="modal-field">
+        <label for="modal-notes">Notes</label>
+        <textarea id="modal-notes" class="modal-textarea" placeholder="Ajouter une note..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-save" id="modal-save">Créer</button>
+        <button class="btn-delete" id="modal-delete" style="display:none">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale confirmation -->
+  <div id="confirm-overlay" class="modal-overlay" role="alertdialog" aria-modal="true">
+    <div class="modal confirm-modal" style="max-width:340px;">
+      <h2 class="modal-heading">Supprimer la tâche ?</h2>
+      <p style="font-size:.78rem;color:var(--text-muted);">Cette action est irréversible.</p>
+      <div class="modal-actions">
+        <button class="btn-delete" id="confirm-yes">Supprimer</button>
+        <button class="btn-save" id="confirm-no">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../script/crypto.js"></script>
+  <script src="../script/burger-menu.js"></script>
+  <script src="../script/app-v2.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Commentaires — To‑Do List</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="description" content="Laissez un commentaire sur l'application To-Do List."/>
+  <meta name="theme-color" content="#080808"/>
+  <link rel="icon" href="../logo/list-todo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="../script/transitions.js"></script>
+  <style>
+    :root{--bg:#080808;--surface:#0f0f0f;--surface-2:#141414;--line:#1e1e1e;--line-strong:#2e2e2e;--text:#efefef;--text-muted:#9a9a9a;--text-faint:#6e6e6e;--white:#fff;--black:#000;--accent:#4ade80;--accent-dim:rgba(74,222,128,.1);--radius:3px;--tr:160ms ease;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:"IBM Plex Mono","Courier New",monospace;}
+    html{color-scheme:dark;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;}
+    body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg);color:var(--text);background-image:radial-gradient(circle,#161616 1px,transparent 1px);background-size:22px 22px;}
+
+    /* ── Top bar ── */
+    .top-bar{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;background:rgba(8,8,8,.95);backdrop-filter:blur(8px);}
+    .top-logo{font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color var(--tr);}
+    .top-logo:hover{color:var(--white);}
+    .top-back{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color var(--tr);}
+    .top-back:hover{color:var(--white);}
+
+    /* ── Layout ── */
+    .page{flex:1;display:flex;flex-direction:column;}
+    .hero-section{padding:2.5rem 1.25rem 1.5rem;text-align:center;border-bottom:1px solid var(--line);position:relative;}
+    .hero-section::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:48px;height:1px;background:var(--accent);}
+    .page-tag{display:inline-flex;align-items:center;gap:.4rem;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(74,222,128,.3);padding:.2rem .6rem;border-radius:2px;margin-bottom:1rem;}
+    .page-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
+    .page-sub{font-size:.75rem;color:var(--text-muted);letter-spacing:.06em;line-height:1.6;}
+
+    /* ── Container ── */
+    .container{width:100%;max-width:680px;margin:0 auto;padding:1.5rem 1.25rem 5rem;flex:1;}
+
+    /* ── Stats bar ── */
+    .stats-bar{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--line);margin-bottom:1.25rem;}
+    #comment-count{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);}
+    .refresh-btn{background:none;border:1px solid var(--line-strong);border-radius:var(--radius);color:var(--text-muted);font-size:.65rem;padding:.3rem .6rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:color var(--tr),border-color var(--tr);}
+    .refresh-btn:hover{color:var(--white);border-color:var(--white);}
+
+    /* ── Formulaire de publication ── */
+    .compose-box{background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem;position:relative;display:flex;flex-direction:column;gap:.75rem;}
+    .compose-box::before{content:"";position:absolute;top:0;left:1.25rem;right:1.25rem;height:1px;background:linear-gradient(to right,transparent,rgba(74,222,128,.12),transparent);}
+    .compose-header{display:flex;align-items:center;gap:.6rem;}
+    .compose-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(74,222,128,.3);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--accent);flex-shrink:0;}
+    #comment-username-badge{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);}
+    #comment-input{width:100%;padding:.75rem .875rem;border:1px solid var(--line);border-radius:var(--radius);background:#000;color:var(--text);font-size:.85rem;resize:vertical;min-height:90px;line-height:1.6;transition:border-color var(--tr);}
+    #comment-input:focus{outline:none;border-color:var(--accent);}
+    #comment-input::placeholder{color:var(--text-faint);}
+    .compose-footer{display:flex;align-items:center;justify-content:space-between;}
+    #char-count{font-size:.65rem;color:var(--text-faint);letter-spacing:.06em;}
+    #comment-submit{padding:.6rem 1.25rem;border:1px solid var(--accent);border-radius:var(--radius);background:var(--accent);color:#000;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:background var(--tr),color var(--tr);}
+    #comment-submit:hover{background:transparent;color:var(--accent);}
+    #comment-submit:disabled{opacity:.4;cursor:not-allowed;}
+    #form-error{display:none;font-size:.7rem;color:#f87171;letter-spacing:.06em;padding:.4rem 0;}
+    .cm-logout{margin-left:auto;background:none;border:1px solid var(--line-strong);color:var(--text-faint);border-radius:2px;font-size:.65rem;padding:.2rem .5rem;cursor:pointer;transition:all var(--tr);text-transform:uppercase;letter-spacing:.06em;}
+    .cm-logout:hover{color:var(--white);border-color:var(--white);}
+
+    /* ── Message non connecté ── */
+    #comment-auth-msg{display:none;align-items:center;gap:.75rem;padding:.875rem 1rem;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);margin-bottom:1.5rem;}
+    .auth-msg-icon{font-size:1.2rem;flex-shrink:0;}
+    .auth-msg-text{flex:1;}
+    .auth-msg-text p{font-size:.75rem;color:var(--text-muted);line-height:1.5;}
+    .auth-msg-text p strong{color:var(--text);}
+    .auth-msg-link{display:inline-flex;align-items:center;gap:.3rem;padding:.5rem .875rem;border:1px solid var(--white);border-radius:var(--radius);background:var(--white);color:var(--black);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-decoration:none;flex-shrink:0;transition:background var(--tr),color var(--tr);}
+    .auth-msg-link:hover{background:transparent;color:var(--white);}
+
+    /* ── États ── */
+    #comments-loading{font-size:.72rem;color:var(--text-muted);text-align:center;padding:2rem 0;letter-spacing:.08em;text-transform:uppercase;display:none;}
+    #comments-loading::after{content:"";animation:dots 1.2s steps(3,end) infinite;}
+    @keyframes dots{0%{content:""}33%{content:"."}66%{content:".."}100%{content:"..."}}
+    #comments-empty{display:none;text-align:center;padding:3rem 0;color:var(--text-faint);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;}
+    .cm-error{text-align:center;padding:2rem 0;color:var(--text-faint);font-size:.75rem;letter-spacing:.08em;}
+
+    /* ── Cartes commentaires ── */
+    #comments-list{display:flex;flex-direction:column;gap:.75rem;}
+    .cm-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:.875rem 1rem;animation:itemIn 220ms ease both;transition:border-color var(--tr);}
+    .cm-card:hover{border-color:var(--line-strong);}
+    @keyframes itemIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .cm-card-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;}
+    .cm-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(74,222,128,.25);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--accent);flex-shrink:0;}
+    .cm-card-meta{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;min-width:0;}
+    .cm-username{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text);}
+    .cm-date{font-size:.62rem;color:var(--text-faint);letter-spacing:.05em;}
+    .cm-text{font-size:.82rem;color:var(--text-muted);line-height:1.65;word-break:break-word;}
+    .cm-delete{margin-left:auto;background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:.8rem;padding:.2rem;transition:color var(--tr);}
+    .cm-delete:hover{color:#ef4444;}
+
+    /* ── Footer ── */
+    footer{text-align:center;padding:.875rem;border-top:1px solid var(--line);font-size:.7rem;color:var(--text-muted);letter-spacing:.04em;}
+
+    @media(min-width:560px){.compose-footer{align-items:center;} #comment-input{min-height:80px;}}
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <a class="top-logo" href="../index.html">To‑Do List</a>
+    <a class="top-back" href="../index.html">← Accueil</a>
+  </div>
+
+  <div class="page">
+
+    <!-- En-tête -->
+    <div class="hero-section">
+      <div class="page-tag">💬 Communauté</div>
+      <h1 class="page-title">Commentaires</h1>
+      <p class="page-sub">Partagez vos retours, suggestions ou impressions sur l'application.</p>
+    </div>
+
+    <main class="container">
+
+      <!-- Stats -->
+      <div class="stats-bar">
+        <span id="comment-count">Chargement...</span>
+        <button class="refresh-btn" id="refresh-btn" onclick="loadComments()">↻ Actualiser</button>
+      </div>
+
+      <!-- Formulaire (connecté) -->
+      <form id="comment-form" autocomplete="off" novalidate style="display:none;flex-direction:column;gap:.75rem;">
+        <div class="compose-box">
+          <div class="compose-header">
+            <div class="compose-avatar">?</div>
+            <span id="comment-username-badge">@...</span>
+            <button type="button" id="comment-logout-btn" class="cm-logout" onclick="logoutComment()" title="Se déconnecter">Déconnexion</button>
+          </div>
+          <textarea id="comment-input" placeholder="Écrivez votre commentaire..." maxlength="500"></textarea>
+          <p id="form-error"></p>
+          <div class="compose-footer">
+            <span id="char-count">0 / 500</span>
+            <button type="submit" id="comment-submit" disabled>Publier</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Message non connecté -->
+      <div id="comment-auth-msg">
+        <span class="auth-msg-icon">🔒</span>
+        <div class="auth-msg-text">
+          <p><strong>Connexion requise</strong><br>Vous pouvez lire les commentaires librement, mais il faut un compte pour en publier.</p>
+        </div>
+        <a class="auth-msg-link" href="../html/login.html?redirect=commentaires.html">Se connecter →</a>
+      </div>
+
+      <!-- Liste -->
+      <p id="comments-loading">Chargement</p>
+      <p id="comments-empty">Aucun commentaire pour l'instant.<br>Soyez le premier à en laisser un !</p>
+      <div id="comments-list"></div>
+
+    </main>
+  </div>
+
+  <footer>© 2026 · Sacha G.</footer>
+
+  <script src="../script/burger-menu.js"></script>
+  <script src="../script/commentaires.js"></script>
+</body>
+</html>

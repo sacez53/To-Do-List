@@ -10,6 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="../script/transitions.js"></script>
+  <script>
+    // Déconnexion automatique
+    sessionStorage.removeItem("auth");
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("encKey");
+    sessionStorage.removeItem("encSalt");
+  </script>
   <style>
     :root {
       --bg: #080808;
@@ -319,7 +326,6 @@
     <a class="nav-logo" href="../index.html">To‑Do List</a>
     <div class="nav-links">
       <a class="nav-link" href="../index.html">Accueil</a>
-      <a class="nav-link" href="./apropos.html">À propos</a>
     </div>
   </nav>
 
@@ -398,6 +404,7 @@
     <p>© 2026 · Sacha G. Photographe & Développeur</p>
   </footer>
 
+  <script src="../script/burger-menu.js"></script>
 </body>
 
 </html>

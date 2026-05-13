@@ -1,637 +1,949 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Chargement — To‑Do List</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#080808" />
-    <link rel="icon" href="../logo/list-todo.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="../script/transitions.js"></script>
-    <style>
-      /* ── Tokens ── */
-      :root {
-        --bg:          #080808;
-        --surface:     #0f0f0f;
-        --line:        #1e1e1e;
-        --line-strong: #2e2e2e;
-        --text:        #efefef;
-        --text-muted:  #9a9a9a;
-        --text-faint:  #5a5a5a;
-        --accent:      #ffffff;
-        --accent-dim:  rgba(255,255,255,0.08);
-        --accent-glow: rgba(255,255,255,0.25);
-        --white:       #fff;
-        --black:       #000;
-        --duration:    5000;
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Chargement — To‑Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#080808" />
+  <link rel="icon" href="../logo/list-todo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="../script/transitions.js"></script>
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --bg: #080808;
+      --surface: #0f0f0f;
+      --line: #1e1e1e;
+      --line-strong: #2e2e2e;
+      --text: #efefef;
+      --text-muted: #9a9a9a;
+      --text-faint: #5a5a5a;
+      --accent: #ffffff;
+      --accent-dim: rgba(255, 255, 255, 0.08);
+      --accent-glow: rgba(255, 255, 255, 0.25);
+      --white: #fff;
+      --black: #000;
+      --duration: 5000;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+    }
+
+    html {
+      color-scheme: dark;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Dot grid ── */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, #181818 1px, transparent 1px);
+      background-size: 22px 22px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Canvas ── */
+    #c {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Scanline ── */
+    .scanline {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.04), transparent);
+      animation: scan 7s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes scan {
+      from {
+        top: -2px;
       }
 
-      *, *::before, *::after {
-        box-sizing: border-box; margin: 0; padding: 0;
-        font-family: "IBM Plex Mono", "Courier New", monospace;
+      to {
+        top: 100%;
+      }
+    }
+
+    /* ── Corners ── */
+    .corner {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .corner::before,
+    .corner::after {
+      content: "";
+      position: absolute;
+      background: var(--green);
+      opacity: 0.5;
+    }
+
+    .corner::before {
+      width: 100%;
+      height: 1px;
+      top: 0;
+      left: 0;
+    }
+
+    .corner::after {
+      width: 1px;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .corner.tl {
+      top: 16px;
+      left: 16px;
+    }
+
+    .corner.tr {
+      top: 16px;
+      right: 16px;
+      transform: scaleX(-1);
+    }
+
+    .corner.bl {
+      bottom: 16px;
+      left: 16px;
+      transform: scaleY(-1);
+    }
+
+    .corner.br {
+      bottom: 16px;
+      right: 16px;
+      transform: scale(-1);
+    }
+
+    /* ── HUD labels ── */
+    .hud {
+      position: fixed;
+      z-index: 3;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      animation: fadeIn 1s ease both;
+    }
+
+    .hud-tl {
+      top: 1.1rem;
+      left: 1.5rem;
+    }
+
+    .hud-tr {
+      top: 1.1rem;
+      right: 1.5rem;
+    }
+
+    .hud-bl {
+      bottom: 1.1rem;
+      left: 1.5rem;
+      font-size: 0.52rem;
+    }
+
+    .hud-br {
+      bottom: 1.1rem;
+      right: 1.5rem;
+      font-size: 0.52rem;
+    }
+
+    .hud-accent {
+      color: var(--text-muted);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
       }
 
-      html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
-
-      body {
-        min-height: 100vh; min-height: 100dvh;
-        display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        background: var(--bg);
-        color: var(--text);
-        overflow: hidden;
-        position: relative;
-      }
-
-      /* ── Dot grid ── */
-      body::before {
-        content: "";
-        position: fixed; inset: 0;
-        background-image: radial-gradient(circle, #181818 1px, transparent 1px);
-        background-size: 22px 22px;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      /* ── Canvas ── */
-      #c { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-
-      /* ── Scanline ── */
-      .scanline {
-        position: fixed; top: 0; left: 0; right: 0; height: 2px;
-        background: linear-gradient(to right, transparent, rgba(255,255,255,0.04), transparent);
-        animation: scan 7s linear infinite;
-        pointer-events: none; z-index: 1;
-      }
-      @keyframes scan { from { top: -2px; } to { top: 100%; } }
-
-      /* ── Corners ── */
-      .corner {
-        position: fixed; width: 20px; height: 20px;
-        pointer-events: none; z-index: 2;
-      }
-      .corner::before, .corner::after {
-        content: ""; position: absolute; background: var(--green);
-        opacity: 0.5;
-      }
-      .corner::before { width: 100%; height: 1px; top: 0; left: 0; }
-      .corner::after  { width: 1px; height: 100%; top: 0; left: 0; }
-      .corner.tl { top: 16px; left: 16px; }
-      .corner.tr { top: 16px; right: 16px; transform: scaleX(-1); }
-      .corner.bl { bottom: 16px; left: 16px; transform: scaleY(-1); }
-      .corner.br { bottom: 16px; right: 16px; transform: scale(-1); }
-
-      /* ── HUD labels ── */
-      .hud {
-        position: fixed; z-index: 3;
-        font-size: 0.58rem; letter-spacing: 0.18em;
-        text-transform: uppercase; color: var(--text-faint);
-        animation: fadeIn 1s ease both;
-      }
-      .hud-tl { top: 1.1rem; left: 1.5rem; }
-      .hud-tr { top: 1.1rem; right: 1.5rem; }
-      .hud-bl { bottom: 1.1rem; left: 1.5rem; font-size: 0.52rem; }
-      .hud-br { bottom: 1.1rem; right: 1.5rem; font-size: 0.52rem; }
-
-      .hud-accent { color: var(--text-muted); }
-
-      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-      /* ── Main layout ── */
-      .stage {
-        position: relative; z-index: 4;
-        display: flex; flex-direction: column;
-        align-items: center;
-        animation: riseIn 700ms cubic-bezier(0.16,1,0.3,1) both;
-      }
-      @keyframes riseIn {
-        from { opacity: 0; transform: translateY(28px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-
-      /* ── Orbit ring system ── */
-      .orbit-wrap {
-        position: relative;
-        width: 160px; height: 160px;
-        display: flex; align-items: center; justify-content: center;
-        margin-bottom: 2.5rem;
-      }
-
-      /* Outer ring */
-      .ring {
-        position: absolute;
-        border-radius: 50%;
-        border: 1px solid transparent;
-      }
-      .ring-1 {
-        width: 160px; height: 160px;
-        border-color: rgba(255,255,255,0.08);
-        animation: spin 12s linear infinite;
-      }
-      .ring-2 {
-        width: 124px; height: 124px;
-        border-color: rgba(255,255,255,0.05);
-        animation: spin 8s linear infinite reverse;
-      }
-      .ring-3 {
-        width: 90px; height: 90px;
-        border-color: var(--line-strong);
-        animation: spin 20s linear infinite;
-      }
-
-      /* Orbit dots on ring-1 */
-      .ring-1::before, .ring-1::after {
-        content: "";
-        position: absolute;
-        width: 5px; height: 5px;
-        border-radius: 50%;
-        background: var(--white);
-        box-shadow: 0 0 8px 2px var(--accent-glow);
-      }
-      .ring-1::before { top: -2.5px; left: 50%; transform: translateX(-50%); }
-      .ring-1::after  { bottom: -2.5px; left: 50%; transform: translateX(-50%); }
-
-      /* Orbit dot on ring-2 */
-      .ring-2::before {
-        content: "";
-        position: absolute;
-        width: 4px; height: 4px;
-        border-radius: 50%;
-        background: var(--white);
-        opacity: 0.5;
-        right: -2px; top: 50%; transform: translateY(-50%);
-        box-shadow: 0 0 6px 1px var(--accent-glow);
-      }
-
-      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-      /* Center icon box */
-      .icon-box {
-        position: relative;
-        width: 64px; height: 64px;
-        border: 1px solid var(--line-strong);
-        display: flex; align-items: center; justify-content: center;
-        background: var(--surface);
-        z-index: 1;
-      }
-      .icon-box::before {
-        content: "";
-        position: absolute; inset: 5px;
-        border: 1px solid var(--white);
-        opacity: 0.08;
-      }
-      .icon-box::after {
-        content: "";
-        position: absolute; inset: -24px;
-        background: radial-gradient(ellipse at center, rgba(34,197,94,0.08), transparent 70%);
-        pointer-events: none;
-      }
-      .icon-glyph {
-        font-size: 1.8rem;
-        line-height: 1;
-        filter: drop-shadow(0 0 6px rgba(255,255,255,0.3));
-      }
-
-      /* Green glow behind orbit */
-      .orbit-glow {
-        position: absolute;
-        width: 200px; height: 200px;
-        border-radius: 50%;
-        background: radial-gradient(ellipse at center, rgba(255,255,255,0.03), transparent 70%);
-        pointer-events: none;
-      }
-
-      /* ── Date badge ── */
-      .date-badge {
-        font-size: 0.55rem; letter-spacing: 0.22em;
-        text-transform: uppercase; color: var(--text-faint);
-        border: 1px solid var(--line-strong);
-        padding: 0.25rem 0.7rem;
-        border-radius: 2px;
-        margin-bottom: 1.6rem;
-        animation: fadeIn 600ms 100ms ease both; opacity: 0;
-      }
-
-      /* ── Greeting ── */
-      .greeting-label {
-        font-size: 0.58rem; letter-spacing: 0.22em;
-        text-transform: uppercase; color: var(--text-faint);
-        margin-bottom: 0.45rem;
-        animation: fadeIn 600ms 300ms ease both; opacity: 0;
-      }
-      .greeting {
-        font-size: clamp(1.6rem, 8vw, 2.4rem);
-        font-weight: 700; letter-spacing: 0.06em;
-        text-transform: uppercase; text-align: center;
-        line-height: 1; margin-bottom: 0.5rem;
-        min-height: 1.1em;
-        animation: fadeIn 600ms 380ms ease both; opacity: 0;
-      }
-      .cursor {
-        display: inline-block; width: 2px; height: 0.85em;
-        background: var(--green); margin-left: 3px;
-        vertical-align: middle;
-        animation: blink 1s step-end infinite;
-        box-shadow: 0 0 6px var(--green-glow);
-      }
-      @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-      .cursor.hidden { display: none; }
-
-      .username {
-        font-size: 0.72rem; font-weight: 700;
-        letter-spacing: 0.2em; text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: 0.4rem;
-        animation: fadeIn 600ms 460ms ease both; opacity: 0;
-      }
-      .subtitle {
-        font-size: 0.64rem; letter-spacing: 0.1em;
-        color: var(--text-faint); text-align: center;
-        margin-bottom: 2.5rem;
-        animation: fadeIn 600ms 520ms ease both; opacity: 0;
-      }
-
-      /* ── Divider ── */
-      .sep {
-        width: 320px; max-width: 90vw; height: 1px;
-        background: linear-gradient(to right, transparent, var(--line-strong), transparent);
+      to {
         opacity: 1;
-        margin-bottom: 1.75rem;
-        animation: fadeIn 600ms 560ms ease both; opacity: 0;
+      }
+    }
+
+    /* ── Main layout ── */
+    .stage {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: riseIn 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes riseIn {
+      from {
+        opacity: 0;
+        transform: translateY(28px);
       }
 
-      /* ── Loader block ── */
-      .loader-block {
-        width: 320px; max-width: 90vw;
-        display: flex; flex-direction: column; gap: 0.6rem;
-        animation: fadeIn 600ms 600ms ease both; opacity: 0;
-        margin-bottom: 1.5rem;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
-      .loader-meta {
-        display: flex; justify-content: space-between; align-items: center;
-      }
-      .loader-label {
-        font-size: 0.55rem; letter-spacing: 0.16em;
-        text-transform: uppercase; color: var(--text-faint);
-      }
-      .loader-pct {
-        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
-        color: var(--text-muted); font-variant-numeric: tabular-nums;
-        min-width: 3.5ch; text-align: right;
+    }
+
+    /* ── Orbit ring system ── */
+    .orbit-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Outer ring */
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid transparent;
+    }
+
+    .ring-1 {
+      width: 160px;
+      height: 160px;
+      border-color: rgba(255, 255, 255, 0.08);
+      animation: spin 12s linear infinite;
+    }
+
+    .ring-2 {
+      width: 124px;
+      height: 124px;
+      border-color: rgba(255, 255, 255, 0.05);
+      animation: spin 8s linear infinite reverse;
+    }
+
+    .ring-3 {
+      width: 90px;
+      height: 90px;
+      border-color: var(--line-strong);
+      animation: spin 20s linear infinite;
+    }
+
+    /* Orbit dots on ring-1 */
+    .ring-1::before,
+    .ring-1::after {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--white);
+      box-shadow: 0 0 8px 2px var(--accent-glow);
+    }
+
+    .ring-1::before {
+      top: -2.5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .ring-1::after {
+      bottom: -2.5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Orbit dot on ring-2 */
+    .ring-2::before {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--white);
+      opacity: 0.5;
+      right: -2px;
+      top: 50%;
+      transform: translateY(-50%);
+      box-shadow: 0 0 6px 1px var(--accent-glow);
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
       }
 
-      /* Rail */
-      .loader-rail {
-        width: 100%; height: 1px;
-        background: var(--line-strong);
-        position: relative;
+      to {
+        transform: rotate(360deg);
       }
-      .loader-fill {
-        position: absolute; top: 0; left: 0;
-        height: 100%; width: 0%;
-        background: var(--white);
-        transition: width 120ms linear;
-      }
-      .loader-fill::after {
-        content: "";
-        position: absolute; right: -1px; top: 50%;
-        transform: translateY(-50%);
-        width: 5px; height: 5px;
-        background: var(--white); border-radius: 50%;
-        box-shadow: 0 0 10px 3px rgba(255,255,255,0.4),
-                    0 0 20px 6px rgba(255,255,255,0.15);
+    }
+
+    /* Center icon box */
+    .icon-box {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border: 1px solid var(--line-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      z-index: 1;
+    }
+
+    .icon-box::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border: 1px solid var(--white);
+      opacity: 0.08;
+    }
+
+    .icon-box::after {
+      content: "";
+      position: absolute;
+      inset: -24px;
+      background: radial-gradient(ellipse at center, rgba(34, 197, 94, 0.08), transparent 70%);
+      pointer-events: none;
+    }
+
+    .icon-glyph {
+      font-size: 1.8rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.3));
+    }
+
+    /* Green glow behind orbit */
+    .orbit-glow {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.03), transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Date badge ── */
+    .date-badge {
+      font-size: 0.55rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      border: 1px solid var(--line-strong);
+      padding: 0.25rem 0.7rem;
+      border-radius: 2px;
+      margin-bottom: 1.6rem;
+      animation: fadeIn 600ms 100ms ease both;
+      opacity: 0;
+    }
+
+    /* ── Greeting ── */
+    .greeting-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.45rem;
+      animation: fadeIn 600ms 300ms ease both;
+      opacity: 0;
+    }
+
+    .greeting {
+      font-size: clamp(1.6rem, 8vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      min-height: 1.1em;
+      animation: fadeIn 600ms 380ms ease both;
+      opacity: 0;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 0.85em;
+      background: var(--green);
+      margin-left: 3px;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+      box-shadow: 0 0 6px var(--green-glow);
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
       }
 
-      /* Segments */
-      .loader-segs {
-        display: flex; gap: 3px; margin-top: 5px;
+      50% {
+        opacity: 0
       }
-      .seg {
-        flex: 1; height: 2px;
-        background: var(--line); border-radius: 1px;
-        transition: background 300ms ease, box-shadow 300ms ease;
-      }
-      .seg.lit {
-        background: var(--white);
-        box-shadow: 0 0 5px rgba(255,255,255,0.3);
-      }
-      .seg.dim { background: var(--text-faint); }
+    }
 
-      /* ── Steps ── */
-      .steps {
-        width: 320px; max-width: 90vw;
-        display: flex; flex-direction: column; gap: 0.28rem;
-        animation: fadeIn 600ms 660ms ease both; opacity: 0;
-      }
-      .step {
-        display: flex; align-items: center; gap: 0.6rem;
-        font-size: 0.57rem; letter-spacing: 0.12em;
-        text-transform: uppercase; color: var(--line-strong);
-        transition: color 300ms ease; padding: 0.12rem 0;
-      }
-      .step-text { flex: 1; }
-      .step-time {
-        font-size: 0.5rem; letter-spacing: 0.08em;
-        color: var(--text-faint); opacity: 0;
-        transition: opacity 400ms ease;
-        white-space: nowrap;
-      }
-      .step.done .step-time { opacity: 1; }
-      .step.active { color: var(--text-muted); }
-      .step.done   { color: var(--text-faint); }
+    .cursor.hidden {
+      display: none;
+    }
 
-      .step-mark {
-        flex-shrink: 0; width: 14px; height: 14px;
-        border: 1px solid var(--line-strong);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 0.45rem; color: transparent;
-        transition: border-color 300ms ease, background 300ms ease,
-                    color 300ms ease, box-shadow 300ms ease;
+    .username {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      animation: fadeIn 600ms 460ms ease both;
+      opacity: 0;
+    }
+
+    .subtitle {
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeIn 600ms 520ms ease both;
+      opacity: 0;
+    }
+
+    /* ── Divider ── */
+    .sep {
+      width: 320px;
+      max-width: 90vw;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--line-strong), transparent);
+      opacity: 1;
+      margin-bottom: 1.75rem;
+      animation: fadeIn 600ms 560ms ease both;
+      opacity: 0;
+    }
+
+    /* ── Loader block ── */
+    .loader-block {
+      width: 320px;
+      max-width: 90vw;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      animation: fadeIn 600ms 600ms ease both;
+      opacity: 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .loader-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .loader-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .loader-pct {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      min-width: 3.5ch;
+      text-align: right;
+    }
+
+    /* Rail */
+    .loader-rail {
+      width: 100%;
+      height: 1px;
+      background: var(--line-strong);
+      position: relative;
+    }
+
+    .loader-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: var(--white);
+      transition: width 120ms linear;
+    }
+
+    .loader-fill::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 5px;
+      height: 5px;
+      background: var(--white);
+      border-radius: 50%;
+      box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.4),
+        0 0 20px 6px rgba(255, 255, 255, 0.15);
+    }
+
+    /* Segments */
+    .loader-segs {
+      display: flex;
+      gap: 3px;
+      margin-top: 5px;
+    }
+
+    .seg {
+      flex: 1;
+      height: 2px;
+      background: var(--line);
+      border-radius: 1px;
+      transition: background 300ms ease, box-shadow 300ms ease;
+    }
+
+    .seg.lit {
+      background: var(--white);
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    }
+
+    .seg.dim {
+      background: var(--text-faint);
+    }
+
+    /* ── Steps ── */
+    .steps {
+      width: 320px;
+      max-width: 90vw;
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+      animation: fadeIn 600ms 660ms ease both;
+      opacity: 0;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.57rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--line-strong);
+      transition: color 300ms ease;
+      padding: 0.12rem 0;
+    }
+
+    .step-text {
+      flex: 1;
+    }
+
+    .step-time {
+      font-size: 0.5rem;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      opacity: 0;
+      transition: opacity 400ms ease;
+      white-space: nowrap;
+    }
+
+    .step.done .step-time {
+      opacity: 1;
+    }
+
+    .step.active {
+      color: var(--text-muted);
+    }
+
+    .step.done {
+      color: var(--text-faint);
+    }
+
+    .step-mark {
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--line-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.45rem;
+      color: transparent;
+      transition: border-color 300ms ease, background 300ms ease,
+        color 300ms ease, box-shadow 300ms ease;
+    }
+
+    .step.active .step-mark {
+      border-color: var(--white);
+      background: var(--white);
+      color: var(--black);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+    }
+
+    .step.done .step-mark {
+      border-color: var(--text-faint);
+      color: var(--text-faint);
+    }
+
+    /* ── Footer status ── */
+    .status-line {
+      margin-top: 2rem;
+      font-size: 0.52rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: fadeIn 600ms 720ms ease both;
+      opacity: 0;
+    }
+
+    .status-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--white);
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+      animation: pulse 1.4s ease infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
       }
-      .step.active .step-mark {
-        border-color: var(--white);
-        background: var(--white);
-        color: var(--black);
-        box-shadow: 0 0 8px rgba(255,255,255,0.25);
+
+      50% {
+        opacity: .4;
+        transform: scale(0.7)
       }
-      .step.done .step-mark {
-        border-color: var(--text-faint);
-        color: var(--text-faint);
-      }
+    }
 
-      /* ── Footer status ── */
-      .status-line {
-        margin-top: 2rem;
-        font-size: 0.52rem; letter-spacing: 0.2em;
-        text-transform: uppercase; color: var(--text-faint);
-        display: flex; align-items: center; gap: 0.5rem;
-        animation: fadeIn 600ms 720ms ease both; opacity: 0;
-      }
-      .status-dot {
-        width: 5px; height: 5px; border-radius: 50%;
-        background: var(--white);
-        box-shadow: 0 0 6px rgba(255,255,255,0.3);
-        animation: pulse 1.4s ease infinite;
-      }
-      @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(0.7)} }
+    /* ── Exit ── */
+    body.exit {
+      transition: opacity 500ms ease;
+      opacity: 0;
+    }
+  </style>
+</head>
 
-      /* ── Exit ── */
-      body.exit { transition: opacity 500ms ease; opacity: 0; }
-    </style>
-  </head>
-  <body>
+<body>
 
-    <canvas id="c"></canvas>
-    <div class="scanline"></div>
-    <div class="corner tl"></div>
-    <div class="corner tr"></div>
-    <div class="corner bl"></div>
-    <div class="corner br"></div>
+  <canvas id="c"></canvas>
+  <div class="scanline"></div>
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
 
-    <!-- HUD overlays -->
-    <div class="hud hud-tl">To‑Do List &nbsp;/&nbsp; <span id="hud-version">v1.0</span></div>
-    <div class="hud hud-tr" id="clock">--:--:--</div>
-    <div class="hud hud-bl hud-accent" id="hud-status">AUTH · OK</div>
-    <div class="hud hud-br" id="hud-date">—</div>
+  <!-- HUD overlays -->
+  <div class="hud hud-tl">To‑Do List &nbsp;/&nbsp; <span id="app-version"></span></div>
+  <div class="hud hud-tr" id="clock">--:--:--</div>
+  <div class="hud hud-bl hud-accent" id="hud-status">AUTH · OK</div>
+  <div class="hud hud-br" id="hud-date">—</div>
 
-    <!-- Main stage -->
-    <div class="stage">
+  <!-- Main stage -->
+  <div class="stage">
 
-      <!-- Date badge -->
-      <div class="date-badge" id="date-badge">—</div>
+    <!-- Date badge -->
+    <div class="date-badge" id="date-badge">—</div>
 
-      <!-- Orbit rings + icon -->
-      <div class="orbit-wrap">
-        <div class="orbit-glow"></div>
-        <div class="ring ring-1"></div>
-        <div class="ring ring-2"></div>
-        <div class="ring ring-3"></div>
-        <div class="icon-box">
-          <span class="icon-glyph" id="icon-glyph">✓</span>
-        </div>
+    <!-- Orbit rings + icon -->
+    <div class="orbit-wrap">
+      <div class="orbit-glow"></div>
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="ring ring-3"></div>
+      <div class="icon-box">
+        <span class="icon-glyph" id="icon-glyph">✓</span>
       </div>
+    </div>
 
-      <!-- Greeting -->
-      <span class="greeting-label" id="greeting-label">Initialisation…</span>
-      <h1 class="greeting">
-        <span id="greeting-text"></span><span class="cursor" id="cursor"></span>
-      </h1>
-      <span class="username" id="username-el"></span>
-      <p class="subtitle" id="subtitle"></p>
+    <!-- Greeting -->
+    <span class="greeting-label" id="greeting-label">Initialisation…</span>
+    <h1 class="greeting">
+      <span id="greeting-text"></span><span class="cursor" id="cursor"></span>
+    </h1>
+    <span class="username" id="username-el"></span>
+    <p class="subtitle" id="subtitle"></p>
 
-      <!-- Divider -->
-      <div class="sep"></div>
+    <!-- Divider -->
+    <div class="sep"></div>
 
-      <!-- Progress bar -->
-      <div class="loader-block">
-        <div class="loader-meta">
-          <span class="loader-label" id="loader-label">Initialisation</span>
-          <span class="loader-pct" id="loader-pct">0%</span>
-        </div>
-        <div class="loader-rail">
-          <div class="loader-fill" id="loader-fill"></div>
-        </div>
-        <div class="loader-segs" id="segs">
-          <div class="seg"></div>
-          <div class="seg"></div>
-          <div class="seg"></div>
-          <div class="seg"></div>
-          <div class="seg"></div>
-        </div>
+    <!-- Progress bar -->
+    <div class="loader-block">
+      <div class="loader-meta">
+        <span class="loader-label" id="loader-label">Initialisation</span>
+        <span class="loader-pct" id="loader-pct">0%</span>
       </div>
-
-      <!-- Steps -->
-      <div class="steps" id="steps">
-        <div class="step" data-step="0"><div class="step-mark">✓</div><span class="step-text">Vérification de la session</span><span class="step-time" id="st0"></span></div>
-        <div class="step" data-step="1"><div class="step-mark">✓</div><span class="step-text">Chargement des préférences</span><span class="step-time" id="st1"></span></div>
-        <div class="step" data-step="2"><div class="step-mark">✓</div><span class="step-text">Connexion à Firebase</span><span class="step-time" id="st2"></span></div>
-        <div class="step" data-step="3"><div class="step-mark">✓</div><span class="step-text">Synchronisation des tâches</span><span class="step-time" id="st3"></span></div>
-        <div class="step" data-step="4"><div class="step-mark">✓</div><span class="step-text">Application prête</span><span class="step-time" id="st4"></span></div>
+      <div class="loader-rail">
+        <div class="loader-fill" id="loader-fill"></div>
       </div>
-
-      <!-- Status line -->
-      <div class="status-line">
-        <div class="status-dot" id="status-dot"></div>
-        <span id="status-text">Connexion chiffrée · AES‑256</span>
+      <div class="loader-segs" id="segs">
+        <div class="seg"></div>
+        <div class="seg"></div>
+        <div class="seg"></div>
+        <div class="seg"></div>
+        <div class="seg"></div>
       </div>
+    </div>
 
-    </div><!-- /stage -->
+    <!-- Steps -->
+    <div class="steps" id="steps">
+      <div class="step" data-step="0">
+        <div class="step-mark">✓</div><span class="step-text">Vérification de la session</span><span class="step-time"
+          id="st0"></span>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-mark">✓</div><span class="step-text">Chargement des préférences</span><span class="step-time"
+          id="st1"></span>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-mark">✓</div><span class="step-text">Connexion à Firebase</span><span class="step-time"
+          id="st2"></span>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-mark">✓</div><span class="step-text">Synchronisation des tâches</span><span class="step-time"
+          id="st3"></span>
+      </div>
+      <div class="step" data-step="4">
+        <div class="step-mark">✓</div><span class="step-text">Application prête</span><span class="step-time"
+          id="st4"></span>
+      </div>
+    </div>
 
-    <script>
-      // ── Guard ──
-      if (!sessionStorage.getItem("auth")) {
-        window.location.replace("./login.html");
-      }
+    <!-- Status line -->
+    <div class="status-line">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Connexion chiffrée · AES‑256</span>
+    </div>
 
-      // ── Data ──
-      const username = sessionStorage.getItem("username") || "utilisateur";
-      const hour     = new Date().getHours();
+  </div><!-- /stage -->
 
-      let greeting, sub, icon;
-      if (hour >= 5 && hour < 12) {
-        greeting = "Bonjour";   sub = "Belle journée productive en perspective."; icon = "☀";
-      } else if (hour >= 12 && hour < 14) {
-        greeting = "Bon midi";  sub = "Prenez une pause bien méritée.";           icon = "◎";
-      } else if (hour >= 14 && hour < 18) {
-        greeting = "Bonjour";   sub = "Continuez sur votre lancée !";             icon = "⚡";
-      } else if (hour >= 18 && hour < 22) {
-        greeting = "Bonsoir";   sub = "Bonne session du soir !";                  icon = "◐";
+  <script>
+    // -- Version --
+    fetch('../json/version.json')
+      .then(r => r.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('app-version').textContent = data.version;
+        }
+      })
+      .catch(e => console.error('Erreur chargement version:', e));
+
+    // ── Guard ──
+    if (!sessionStorage.getItem("auth")) {
+      window.location.replace("./login.html");
+    }
+
+    // ── Data ──
+    const username = sessionStorage.getItem("username") || "utilisateur";
+    const hour = new Date().getHours();
+
+    let greeting, sub, icon;
+    if (hour >= 5 && hour < 12) {
+      greeting = "Bonjour"; sub = "Belle journée productive en perspective."; icon = "☀";
+    } else if (hour >= 12 && hour < 14) {
+      greeting = "Bon midi"; sub = "Prenez une pause bien méritée."; icon = "◎";
+    } else if (hour >= 14 && hour < 18) {
+      greeting = "Bonjour"; sub = "Continuez sur votre lancée !"; icon = "⚡";
+    } else if (hour >= 18 && hour < 22) {
+      greeting = "Bonsoir"; sub = "Bonne session du soir !"; icon = "◐";
+    } else {
+      greeting = "Bonne nuit"; sub = "L'engagement avant tout."; icon = "✦";
+    }
+
+    // ── Date & time setup ──
+    const now = new Date();
+    const DAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+    const MONTHS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
+    const dateFmt = `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+    document.getElementById("date-badge").textContent = dateFmt;
+    document.getElementById("hud-date").textContent = `${MONTHS[now.getMonth()].toUpperCase()} ${now.getDate()} · ${now.getFullYear()}`;
+
+    document.getElementById("icon-glyph").textContent = icon;
+    document.getElementById("username-el").textContent = "@" + username;
+    document.getElementById("subtitle").textContent = sub;
+
+    // Update greeting label based on time
+    const greetLabels = { "Bonjour": "Bonne matinée,", "Bon midi": "Heure du midi,", "Bonsoir": "Bonne soirée,", "Bonne nuit": "Bonne nuit," };
+    document.getElementById("greeting-label").textContent = greetLabels[greeting] || "Bienvenue,";
+
+    // ── Clock ──
+    function updateClock() {
+      const d = new Date(), p = n => String(n).padStart(2, "0");
+      document.getElementById("clock").textContent =
+        p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+    }
+    updateClock(); setInterval(updateClock, 1000);
+
+    // ── Typewriter ──
+    const greetEl = document.getElementById("greeting-text");
+    const cursorEl = document.getElementById("cursor");
+    let ci = 0;
+    function typeChar() {
+      if (ci < greeting.length) {
+        greetEl.textContent += greeting[ci++];
+        setTimeout(typeChar, 55 + Math.random() * 40);
       } else {
-        greeting = "Bonne nuit"; sub = "L'engagement avant tout.";               icon = "✦";
+        setTimeout(() => cursorEl.classList.add("hidden"), 1200);
       }
+    }
+    setTimeout(typeChar, 750);
 
-      // ── Date & time setup ──
-      const now = new Date();
-      const DAYS   = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-      const MONTHS = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
-      const dateFmt = `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
-      document.getElementById("date-badge").textContent = dateFmt;
-      document.getElementById("hud-date").textContent = `${MONTHS[now.getMonth()].toUpperCase()} ${now.getDate()} · ${now.getFullYear()}`;
+    // ── Particle canvas ──
+    (function () {
+      const cv = document.getElementById("c");
+      const ctx = cv.getContext("2d");
+      let W, H, pts;
+      function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+      function mkPt() {
+        return {
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - .5) * .15, vy: -.1 - Math.random() * .12,
+          r: .5 + Math.random() * .7, a: Math.random(),
+          da: .0015 + Math.random() * .002,
 
-      document.getElementById("icon-glyph").textContent = icon;
-      document.getElementById("username-el").textContent = "@" + username;
-      document.getElementById("subtitle").textContent    = sub;
-
-      // Update greeting label based on time
-      const greetLabels = { "Bonjour": "Bonne matinée,", "Bon midi": "Heure du midi,", "Bonsoir": "Bonne soirée,", "Bonne nuit": "Bonne nuit," };
-      document.getElementById("greeting-label").textContent = greetLabels[greeting] || "Bienvenue,";
-
-      // ── Clock ──
-      function updateClock() {
-        const d = new Date(), p = n => String(n).padStart(2,"0");
-        document.getElementById("clock").textContent =
-          p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+        };
       }
-      updateClock(); setInterval(updateClock, 1000);
-
-      // ── Typewriter ──
-      const greetEl = document.getElementById("greeting-text");
-      const cursorEl = document.getElementById("cursor");
-      let ci = 0;
-      function typeChar() {
-        if (ci < greeting.length) {
-          greetEl.textContent += greeting[ci++];
-          setTimeout(typeChar, 55 + Math.random() * 40);
-        } else {
-          setTimeout(() => cursorEl.classList.add("hidden"), 1200);
-        }
-      }
-      setTimeout(typeChar, 750);
-
-      // ── Particle canvas ──
-      (function() {
-        const cv = document.getElementById("c");
-        const ctx = cv.getContext("2d");
-        let W, H, pts;
-        function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
-        function mkPt() {
-          return {
-            x: Math.random()*W, y: Math.random()*H,
-            vx: (Math.random()-.5)*.15, vy: -.1 - Math.random()*.12,
-            r: .5 + Math.random()*.7, a: Math.random(),
-            da: .0015 + Math.random()*.002,
-
-          };
-        }
-        function init() { resize(); pts = Array.from({length:60}, mkPt); }
-        function draw() {
-          ctx.clearRect(0,0,W,H);
-          pts.forEach(p => {
-            p.x += p.vx; p.y += p.vy; p.a += p.da;
-            if (p.a > 1) { p.a=1; p.da*=-1; }
-            if (p.a < 0) { p.a=0; p.da*=-1; }
-            if (p.y < -4) Object.assign(p, mkPt(), {y: H+4});
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-            ctx.fillStyle = `rgba(255,255,255,${p.a * 0.15})`;
-            ctx.fill();
-          });
-          requestAnimationFrame(draw);
-        }
-        addEventListener("resize", resize);
-        init(); draw();
-      })();
-
-      // ── Loader ──
-      const TOTAL_MS = 8000;
-      const fillEl   = document.getElementById("loader-fill");
-      const pctEl    = document.getElementById("loader-pct");
-      const pctHud   = document.getElementById("hud-date");  // repurpose after init
-      const labelEl  = document.getElementById("loader-label");
-      const segs     = document.querySelectorAll(".seg");
-      const steps    = document.querySelectorAll(".step");
-      const statusTxt= document.getElementById("status-text");
-      const stepTimeFn = () => { const d=new Date(),p=n=>String(n).padStart(2,"0"); return p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds()); };
-
-      const STEPS = [
-        { threshold:  0, label: "Vérification de la session",  status: "AUTH · OK" },
-        { threshold: 20, label: "Chargement des préférences",  status: "PREFS · LOAD" },
-        { threshold: 45, label: "Connexion à Firebase",        status: "FIREBASE · SYNC" },
-        { threshold: 70, label: "Synchronisation des tâches",  status: "TASKS · SYNC" },
-        { threshold: 90, label: "Application prête",           status: "READY" }
-      ];
-
-      let startTime = null, currentStep = -1;
-
-      function activateStep(i) {
-        if (i === currentStep || i >= steps.length) return;
-        if (currentStep >= 0) {
-          steps[currentStep].classList.remove("active");
-          steps[currentStep].classList.add("done");
-          // stamp the time on the completed step
-          const timeEl = document.getElementById("st" + currentStep);
-          if (timeEl) timeEl.textContent = stepTimeFn();
-        }
-        currentStep = i;
-        steps[i].classList.add("active");
-        labelEl.textContent = STEPS[i].label;
-        document.getElementById("hud-status").textContent = STEPS[i].status;
-      }
-
-      function updateSegs(pct) {
-        segs.forEach((s, i) => {
-          const max = (i+1)*20, min = i*20;
-          s.classList.toggle("dim", pct >= max);
-          s.classList.toggle("lit", pct > min && pct < max);
+      function init() { resize(); pts = Array.from({ length: 60 }, mkPt); }
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        pts.forEach(p => {
+          p.x += p.vx; p.y += p.vy; p.a += p.da;
+          if (p.a > 1) { p.a = 1; p.da *= -1; }
+          if (p.a < 0) { p.a = 0; p.da *= -1; }
+          if (p.y < -4) Object.assign(p, mkPt(), { y: H + 4 });
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${p.a * 0.15})`;
+          ctx.fill();
         });
+        requestAnimationFrame(draw);
+      }
+      addEventListener("resize", resize);
+      init(); draw();
+    })();
+
+    // ── Loader ──
+    const TOTAL_MS = 8000;
+    const fillEl = document.getElementById("loader-fill");
+    const pctEl = document.getElementById("loader-pct");
+    const pctHud = document.getElementById("hud-date");  // repurpose after init
+    const labelEl = document.getElementById("loader-label");
+    const segs = document.querySelectorAll(".seg");
+    const steps = document.querySelectorAll(".step");
+    const statusTxt = document.getElementById("status-text");
+    const stepTimeFn = () => { const d = new Date(), p = n => String(n).padStart(2, "0"); return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()); };
+
+    const STEPS = [
+      { threshold: 0, label: "Vérification de la session", status: "AUTH · OK" },
+      { threshold: 20, label: "Chargement des préférences", status: "PREFS · LOAD" },
+      { threshold: 45, label: "Connexion à Firebase", status: "FIREBASE · SYNC" },
+      { threshold: 70, label: "Synchronisation des tâches", status: "TASKS · SYNC" },
+      { threshold: 90, label: "Application prête", status: "READY" }
+    ];
+
+    let startTime = null, currentStep = -1;
+
+    function activateStep(i) {
+      if (i === currentStep || i >= steps.length) return;
+      if (currentStep >= 0) {
+        steps[currentStep].classList.remove("active");
+        steps[currentStep].classList.add("done");
+        // stamp the time on the completed step
+        const timeEl = document.getElementById("st" + currentStep);
+        if (timeEl) timeEl.textContent = stepTimeFn();
+      }
+      currentStep = i;
+      steps[i].classList.add("active");
+      labelEl.textContent = STEPS[i].label;
+      document.getElementById("hud-status").textContent = STEPS[i].status;
+    }
+
+    function updateSegs(pct) {
+      segs.forEach((s, i) => {
+        const max = (i + 1) * 20, min = i * 20;
+        s.classList.toggle("dim", pct >= max);
+        s.classList.toggle("lit", pct > min && pct < max);
+      });
+    }
+
+    function tick(ts) {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      const progress = Math.min(elapsed / TOTAL_MS, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const pct = Math.round(eased * 100);
+
+      fillEl.style.width = pct + "%";
+      pctEl.textContent = pct + "%";
+      updateSegs(pct);
+
+      for (let i = STEPS.length - 1; i >= 0; i--) {
+        if (pct >= STEPS[i].threshold) { activateStep(i); break; }
       }
 
-      function tick(ts) {
-        if (!startTime) startTime = ts;
-        const elapsed  = ts - startTime;
-        const progress = Math.min(elapsed / TOTAL_MS, 1);
-        const eased    = 1 - Math.pow(1 - progress, 3);
-        const pct      = Math.round(eased * 100);
-
-        fillEl.style.width = pct + "%";
-        pctEl.textContent  = pct + "%";
-        updateSegs(pct);
-
-        for (let i = STEPS.length - 1; i >= 0; i--) {
-          if (pct >= STEPS[i].threshold) { activateStep(i); break; }
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(tick);
-        } else {
-          steps.forEach((s,i) => {
-            s.classList.remove("active"); s.classList.add("done");
-            const te = document.getElementById("st"+i);
-            if (te && !te.textContent) te.textContent = stepTimeFn();
-          });
-          segs.forEach(s => { s.classList.remove("lit"); s.classList.add("dim"); });
-          labelEl.textContent = "Prêt";
-          statusTxt.textContent = "Lancement en cours…";
-          setTimeout(() => { window.transitionTo("./app.html", 420); }, 320);
-        }
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        steps.forEach((s, i) => {
+          s.classList.remove("active"); s.classList.add("done");
+          const te = document.getElementById("st" + i);
+          if (te && !te.textContent) te.textContent = stepTimeFn();
+        });
+        segs.forEach(s => { s.classList.remove("lit"); s.classList.add("dim"); });
+        labelEl.textContent = "Prêt";
+        statusTxt.textContent = "Lancement en cours…";
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectPage = urlParams.get('redirect');
+        const finalUrl = redirectPage ? `./${redirectPage}` : "./app-v2.html";
+        
+        setTimeout(() => { window.transitionTo(finalUrl, 420); }, 320);
       }
+    }
 
-      setTimeout(() => requestAnimationFrame(tick), 500);
-    </script>
-  </body>
+    setTimeout(() => requestAnimationFrame(tick), 500);
+  </script>
+</body>
+
 </html>

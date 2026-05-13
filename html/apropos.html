@@ -10,6 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="../script/transitions.js"></script>
+  <script>
+    // Déconnexion automatique
+    sessionStorage.removeItem("auth");
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("encKey");
+    sessionStorage.removeItem("encSalt");
+  </script>
   <style>
     :root {
       --bg: #080808;
@@ -638,6 +645,7 @@
       })
       .catch(e => console.error('Erreur chargement version:', e));
   </script>
+  <script src="../script/burger-menu.js"></script>
 </body>
 
 </html>
