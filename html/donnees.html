@@ -180,7 +180,7 @@
 
     /* ── Wrapper ── */
     .wrapper {
-      max-width: 680px;
+      max-width: 860px;
       margin: 0 auto;
       width: 100%;
       padding: 0 1.25rem 4rem;
@@ -380,6 +380,16 @@
       font-size: 0.72rem;
       letter-spacing: 0.06em;
       color: var(--text-muted);
+    }
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .nav-ghost, .nav-cta, .nav-link, .btn-action, .btn-action-ghost, .btn-danger {
+        padding: 0.75rem 1rem;
+      }
+      footer a {
+        padding: 0.5rem;
+        display: inline-block;
+      }
     }
   </style>
 </head>

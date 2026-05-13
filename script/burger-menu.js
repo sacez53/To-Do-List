@@ -27,8 +27,8 @@
       justify-content: center;
       align-items: center;
       gap: 4px;
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       background: transparent;
       border: 1px solid #2a2a2a;
       border-radius: 3px;
@@ -98,7 +98,7 @@
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      padding: 0.7rem 1rem;
+      padding: 0.85rem 1rem;
       text-decoration: none;
       color: #9a9a9a;
       font-family: "IBM Plex Mono","Courier New",monospace;

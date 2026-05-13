@@ -33,7 +33,7 @@
     .page-sub{font-size:.75rem;color:var(--text-muted);letter-spacing:.06em;line-height:1.6;}
 
     /* ── Container ── */
-    .container{width:100%;max-width:680px;margin:0 auto;padding:1.5rem 1.25rem 5rem;flex:1;}
+    .container{width:100%;max-width:860px;margin:0 auto;padding:1.5rem 1.25rem 5rem;flex:1;}
 
     /* ── Stats bar ── */
     .stats-bar{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--line);margin-bottom:1.25rem;}
@@ -93,6 +93,18 @@
     footer{text-align:center;padding:.875rem;border-top:1px solid var(--line);font-size:.7rem;color:var(--text-muted);letter-spacing:.04em;}
 
     @media(min-width:560px){.compose-footer{align-items:center;} #comment-input{min-height:80px;}}
+
+    /* ── Responsive Mobile A11y ── */
+    @media (max-width: 480px) {
+      .top-logo, .top-back, .refresh-btn, #comment-submit, .cm-logout, .auth-msg-link, .cm-delete {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+      }
+      footer a {
+        padding: 0.5rem;
+        display: inline-block;
+      }
+    }
   </style>
 </head>
 <body>

@@ -259,7 +259,7 @@
       align-items: center;
       gap: 1rem;
       padding: 0 1.25rem;
-      max-width: 640px;
+      max-width: 860px;
       margin: 0 auto;
       width: 100%;
     }
@@ -281,16 +281,20 @@
     }
 
     /* ── Features ── */
-    .features {
-      max-width: 640px;
-      margin: 0 auto;
+    .features-container {
       width: 100%;
       padding: 2rem 1.25rem 3rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .features {
+      width: 100%;
+      max-width: 860px;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 0;
+      border-top: 1px solid var(--line);
       border-left: 1px solid var(--line);
-      border-right: 1px solid var(--line);
       animation: fadeUp 500ms 380ms ease both;
     }
 
@@ -299,13 +303,10 @@
       grid-template-columns: 100px 1fr;
       align-items: baseline;
       gap: 1rem;
-      padding: 0.85rem 1rem;
+      padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
       transition: background 160ms ease;
-    }
-
-    .feature-item:first-child {
-      border-top: 1px solid var(--line);
     }
 
     .feature-item:hover {
@@ -356,17 +357,23 @@
       color: var(--text);
     }
 
-    @media (min-width: 560px) {
-      .features {
-        grid-template-columns: 1fr 1fr;
-      }
-
+    @media (max-width: 480px) {
       .feature-item {
         grid-template-columns: 1fr;
+        gap: 0.4rem;
       }
+      .nav-ghost, .nav-cta, .nav-link {
+        padding: 0.75rem 1rem;
+      }
+      .footer-links a, footer a {
+        padding: 0.5rem;
+        display: inline-block;
+      }
+    }
 
-      .feature-item:nth-child(odd) {
-        border-right: 1px solid var(--line);
+    @media (min-width: 768px) {
+      .features {
+        grid-template-columns: 1fr 1fr;
       }
     }
   </style>
@@ -395,46 +402,48 @@
 
   <div class="divider"><span>Fonctionnalités</span></div>
 
-  <div class="features">
-    <div class="feature-item">
-      <span class="feature-key">Statuts</span>
-      <span class="feature-val">5 statuts : à faire, en cours, en attente, terminé, annulé</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Priorités</span>
-      <span class="feature-val">Haute, normale ou basse — badge coloré sur chaque tâche</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Échéances</span>
-      <span class="feature-val">Date limite avec indicateur visuel (retard, aujourd'hui, bientôt)</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Recherche</span>
-      <span class="feature-val">Filtrage instantané par texte sur titre et notes</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Tri</span>
-      <span class="feature-val">Par date, priorité, échéance ou statut</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Progression</span>
-      <span class="feature-val">Barre de progression en temps réel sur les tâches terminées</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Sync</span>
-      <span class="feature-val">Synchronisation Firebase multi-appareils en temps réel</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Sécurisé</span>
-      <span class="feature-val">Accès protégé par un code personnel</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Calendrier</span>
-      <span class="feature-val">Vue mensuelle et planning chronologique dédiés</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-key">Ergonomie</span>
-      <span class="feature-val">Cochez rapidement vos tâches d'un simple clic sur le statut</span>
+  <div class="features-container">
+    <div class="features">
+      <div class="feature-item">
+        <span class="feature-key">Statuts</span>
+        <span class="feature-val">5 statuts : à faire, en cours, en attente, terminé, annulé</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Priorités</span>
+        <span class="feature-val">Haute, normale ou basse — badge coloré sur chaque tâche</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Échéances</span>
+        <span class="feature-val">Date limite avec indicateur visuel (retard, aujourd'hui, bientôt)</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Recherche</span>
+        <span class="feature-val">Filtrage instantané par texte sur titre et notes</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Tri</span>
+        <span class="feature-val">Par date, priorité, échéance ou statut</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Progression</span>
+        <span class="feature-val">Barre de progression en temps réel sur les tâches terminées</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Sync</span>
+        <span class="feature-val">Synchronisation Firebase multi-appareils en temps réel</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Sécurisé</span>
+        <span class="feature-val">Accès protégé par un code personnel</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Calendrier</span>
+        <span class="feature-val">Vue mensuelle et planning chronologique dédiés</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-key">Ergonomie</span>
+        <span class="feature-val">Cochez rapidement vos tâches d'un simple clic sur le statut</span>
+      </div>
     </div>
   </div>
 
