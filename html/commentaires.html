@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <title>Commentaires — To‑Do List</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="description" content="Laissez un commentaire sur l'application To-Do List."/>
+  <meta name="description" content="Laissez un commentaire et une note sur l'application To-Do List."/>
   <meta name="theme-color" content="#080808"/>
   <link rel="icon" href="../logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="../script/transitions.js"></script>
   <style>
-    :root{--bg:#080808;--surface:#0f0f0f;--surface-2:#141414;--line:#1e1e1e;--line-strong:#2e2e2e;--text:#efefef;--text-muted:#9a9a9a;--text-faint:#6e6e6e;--white:#fff;--black:#000;--accent:#4ade80;--accent-dim:rgba(74,222,128,.1);--radius:3px;--tr:160ms ease;}
+    :root{--bg:#080808;--surface:#0f0f0f;--surface-2:#141414;--line:#1e1e1e;--line-strong:#2e2e2e;--text:#efefef;--text-muted:#9a9a9a;--text-faint:#6e6e6e;--white:#fff;--black:#000;--accent:#4ade80;--accent-dim:rgba(74,222,128,.1);--star:#facc15;--radius:3px;--tr:160ms ease;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:"IBM Plex Mono","Courier New",monospace;}
     html{color-scheme:dark;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;}
     body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg);color:var(--text);background-image:radial-gradient(circle,#161616 1px,transparent 1px);background-size:22px 22px;}
@@ -34,6 +34,37 @@
 
     /* ── Container ── */
     .container{width:100%;max-width:860px;margin:0 auto;padding:1.5rem 1.25rem 5rem;flex:1;}
+
+    /* ══ Bloc résumé notation ══ */
+    .rating-summary{background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:center;}
+    .rating-big{text-align:center;}
+    .rating-big-score{font-size:2.8rem;font-weight:700;line-height:1;color:var(--white);}
+    .rating-big-stars{font-size:1.1rem;margin:.2rem 0;letter-spacing:.05em;}
+    .rating-big-count{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);}
+    .rating-bars{display:flex;flex-direction:column;gap:.3rem;}
+    .rating-bar-row{display:flex;align-items:center;gap:.5rem;font-size:.65rem;color:var(--text-faint);}
+    .rating-bar-label{width:1.2ch;text-align:right;flex-shrink:0;}
+    .rating-bar-track{flex:1;height:5px;background:var(--line-strong);border-radius:2px;overflow:hidden;}
+    .rating-bar-fill{height:100%;background:var(--star);border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+    .rating-bar-n{width:2ch;text-align:right;flex-shrink:0;}
+
+    /* ── Stars selector (formulaire) ── */
+    .star-selector{display:flex;flex-direction:column;gap:.4rem;}
+    .star-selector label.star-label-title{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);}
+    .stars-input{display:flex;flex-direction:row-reverse;gap:.15rem;justify-content:flex-end;}
+    .stars-input input[type=radio]{display:none;}
+    .stars-input label{font-size:1.35rem;cursor:pointer;color:var(--line-strong);transition:color var(--tr),transform var(--tr);}
+    .stars-input label:hover,
+    .stars-input label:hover ~ label,
+    .stars-input input:checked ~ label{color:var(--star);}
+    .stars-input label:hover{transform:scale(1.2);}
+    #star-error{display:none;font-size:.65rem;color:#f87171;letter-spacing:.06em;}
+
+    /* ── Stars display on cards ── */
+    .cm-stars{display:flex;align-items:center;gap:.15rem;margin-left:auto;flex-shrink:0;}
+    .cm-star{font-size:.75rem;}
+    .cm-star.filled{color:var(--star);}
+    .cm-star.empty{color:var(--line-strong);}
 
     /* ── Stats bar ── */
     .stats-bar{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--line);margin-bottom:1.25rem;}
@@ -94,16 +125,12 @@
 
     @media(min-width:560px){.compose-footer{align-items:center;} #comment-input{min-height:80px;}}
 
-    /* ── Responsive Mobile A11y ── */
-    @media (max-width: 480px) {
-      .top-logo, .top-back, .refresh-btn, #comment-submit, .cm-logout, .auth-msg-link, .cm-delete {
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
-      }
-      footer a {
-        padding: 0.5rem;
-        display: inline-block;
-      }
+    /* ── Responsive ── */
+    @media(max-width:480px){
+      .rating-summary{grid-template-columns:1fr;}
+      .rating-big{display:flex;align-items:center;gap:1rem;text-align:left;}
+      .top-logo,.top-back,.refresh-btn,#comment-submit,.cm-logout,.auth-msg-link,.cm-delete{padding-top:.75rem;padding-bottom:.75rem;}
+      footer a{padding:.5rem;display:inline-block;}
     }
   </style>
 </head>
@@ -120,11 +147,23 @@
     <!-- En-tête -->
     <div class="hero-section">
       <div class="page-tag">💬 Communauté</div>
-      <h1 class="page-title">Commentaires</h1>
-      <p class="page-sub">Partagez vos retours, suggestions ou impressions sur l'application.</p>
+      <h1 class="page-title">Avis & Commentaires</h1>
+      <p class="page-sub">Partagez votre note et vos retours sur l'application.</p>
     </div>
 
     <main class="container">
+
+      <!-- ══ Résumé notation ══ -->
+      <div class="rating-summary" id="rating-summary" style="display:none;">
+        <div class="rating-big">
+          <div class="rating-big-score" id="rating-avg">—</div>
+          <div class="rating-big-stars" id="rating-avg-stars">☆☆☆☆☆</div>
+          <div class="rating-big-count" id="rating-count-label">0 avis</div>
+        </div>
+        <div class="rating-bars" id="rating-bars">
+          <!-- rempli dynamiquement -->
+        </div>
+      </div>
 
       <!-- Stats -->
       <div class="stats-bar">
@@ -140,6 +179,19 @@
             <span id="comment-username-badge">@...</span>
             <button type="button" id="comment-logout-btn" class="cm-logout" onclick="logoutComment()" title="Se déconnecter">Déconnexion</button>
           </div>
+
+          <!-- Sélecteur d'étoiles -->
+          <div class="star-selector">
+            <label class="star-label-title">Votre note <span id="star-error">— Veuillez sélectionner une note</span></label>
+            <div class="stars-input" id="stars-input">
+              <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 étoiles">★</label>
+              <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 étoiles">★</label>
+              <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 étoiles">★</label>
+              <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 étoiles">★</label>
+              <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 étoile">★</label>
+            </div>
+          </div>
+
           <textarea id="comment-input" placeholder="Écrivez votre commentaire..." maxlength="500"></textarea>
           <p id="form-error"></p>
           <div class="compose-footer">
@@ -153,14 +205,14 @@
       <div id="comment-auth-msg">
         <span class="auth-msg-icon">🔒</span>
         <div class="auth-msg-text">
-          <p><strong>Connexion requise</strong><br>Vous pouvez lire les commentaires librement, mais il faut un compte pour en publier.</p>
+          <p><strong>Connexion requise</strong><br>Vous pouvez lire les avis librement, mais il faut un compte pour en publier.</p>
         </div>
         <a class="auth-msg-link" href="../html/login.html?redirect=commentaires.html">Se connecter →</a>
       </div>
 
       <!-- Liste -->
       <p id="comments-loading">Chargement</p>
-      <p id="comments-empty">Aucun commentaire pour l'instant.<br>Soyez le premier à en laisser un !</p>
+      <p id="comments-empty">Aucun avis pour l'instant.<br>Soyez le premier à en laisser un !</p>
       <div id="comments-list"></div>
 
     </main>
