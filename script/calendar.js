@@ -68,7 +68,12 @@ function renderPlanning() {
     return;
   }
   
-  planningTasks.sort((a, b) => new Date(a.due) - new Date(b.due));
+  planningTasks.sort((a, b) => {
+    if (a.due !== b.due) return new Date(a.due) - new Date(b.due);
+    const at = a.dueTime || "23:59";
+    const bt = b.dueTime || "23:59";
+    return at > bt ? 1 : at < bt ? -1 : 0;
+  });
   
   const groupedTasks = {};
   planningTasks.forEach(t => {
@@ -104,7 +109,8 @@ function renderPlanning() {
     groupedTasks[dateStr].forEach(t => {
       const li = document.createElement("li");
       const info = getStatusInfo(t.status);
-      li.innerHTML = `<span>${info.icon}</span> <span>${t.text}</span>`;
+      const timeTag = t.dueTime ? ` <span style="opacity:.55;font-size:.75em;">⏱ ${t.dueTime}</span>` : "";
+      li.innerHTML = `<span>${info.icon}</span> <span>${t.text}${timeTag}</span>`;
       
       li.style.cursor = "pointer";
       li.addEventListener("click", () => {

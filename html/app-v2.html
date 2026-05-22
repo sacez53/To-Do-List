@@ -1024,9 +1024,15 @@
           </select>
         </div>
       </div>
-      <div class="modal-field">
-        <label for="modal-due">Date d'échéance <span style="opacity:.5;font-size:.65rem;">(optionnel)</span></label>
-        <input type="date" id="modal-due" class="modal-input" />
+      <div class="modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div class="modal-field">
+          <label for="modal-due">Date d'échéance <span style="opacity:.5;font-size:.65rem;">(optionnel)</span></label>
+          <input type="date" id="modal-due" class="modal-input" />
+        </div>
+        <div class="modal-field">
+          <label for="modal-due-time">Heure <span style="opacity:.5;font-size:.65rem;">(optionnel)</span></label>
+          <input type="time" id="modal-due-time" class="modal-input" />
+        </div>
       </div>
       <div class="modal-field">
         <label for="modal-notes">Notes</label>

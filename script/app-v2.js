@@ -31,6 +31,7 @@ const modalText     = document.getElementById("modal-text");
 const modalStatus   = document.getElementById("modal-status");
 const modalPriority = document.getElementById("modal-priority");
 const modalDue      = document.getElementById("modal-due");
+const modalDueTime  = document.getElementById("modal-due-time");
 const modalNotes    = document.getElementById("modal-notes");
 const modalSave     = document.getElementById("modal-save");
 const modalDelete   = document.getElementById("modal-delete");
@@ -191,7 +192,11 @@ function applySort(arr) {
       if (!a.due && !b.due) return 0;
       if (!a.due) return 1;
       if (!b.due) return -1;
-      return a.due > b.due ? 1 : -1;
+      if (a.due !== b.due) return a.due > b.due ? 1 : -1;
+      // Même date → trier par heure
+      const at = a.dueTime || "23:59";
+      const bt = b.dueTime || "23:59";
+      return at > bt ? 1 : at < bt ? -1 : 0;
     });
     case "overdue-first": return copy.sort((a,b) => {
       const today = new Date().toISOString().slice(0,10);
@@ -212,16 +217,17 @@ function applySort(arr) {
 // ══════════════════════════════════════════
 //  HELPERS DATE
 // ══════════════════════════════════════════
-function getDueInfo(due) {
+function getDueInfo(due, dueTime) {
   if (!due) return null;
   const today = new Date(); today.setHours(0,0,0,0);
   const d    = new Date(due + "T00:00:00");
   const diff = Math.round((d - today) / 86400000);
-  if (diff < 0)  return { label:"En retard",    cls:"due-overdue" };
-  if (diff === 0) return { label:"Aujourd'hui", cls:"due-today" };
-  if (diff === 1) return { label:"Demain",       cls:"due-soon" };
-  if (diff <= 3)  return { label:`Dans ${diff}j`,cls:"due-soon" };
-  return { label: d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"}), cls:"due-ok" };
+  const timeSuffix = dueTime ? ` ⏱ ${dueTime}` : "";
+  if (diff < 0)  return { label:"En retard" + timeSuffix,    cls:"due-overdue" };
+  if (diff === 0) return { label:"Aujourd'hui" + timeSuffix, cls:"due-today" };
+  if (diff === 1) return { label:"Demain" + timeSuffix,       cls:"due-soon" };
+  if (diff <= 3)  return { label:`Dans ${diff}j` + timeSuffix, cls:"due-soon" };
+  return { label: d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"}) + timeSuffix, cls:"due-ok" };
 }
 
 // ══════════════════════════════════════════
@@ -261,7 +267,7 @@ function renderList(items) {
   ul.className = "v2-list";
   items.forEach((todo, i) => {
     const info    = STATUS_INFO[todo.status] || STATUS_INFO.todo;
-    const dueInfo = getDueInfo(todo.due);
+    const dueInfo = getDueInfo(todo.due, todo.dueTime);
     const prio    = todo.priority || "normal";
     const li = document.createElement("li");
     li.className = "v2-item";
@@ -313,7 +319,7 @@ function renderKanban(items) {
       list.innerHTML = `<p class="v2-kanban-empty">Vide</p>`;
     } else {
       colItems.forEach(todo => {
-        const dueInfo = getDueInfo(todo.due);
+        const dueInfo = getDueInfo(todo.due, todo.dueTime);
         const prio    = todo.priority || "normal";
         const card = document.createElement("div");
         card.className = "v2-card";
@@ -358,7 +364,7 @@ function renderTable(items) {
   const tbody = document.createElement("tbody");
   items.forEach(todo => {
     const info    = STATUS_INFO[todo.status] || STATUS_INFO.todo;
-    const dueInfo = getDueInfo(todo.due);
+    const dueInfo = getDueInfo(todo.due, todo.dueTime);
     const prio    = todo.priority || "normal";
     const tr = document.createElement("tr");
     tr.className = "v2-table-row";
@@ -456,6 +462,7 @@ function openModal(id = null) {
     modalStatus.value         = "todo";
     modalPriority.value       = "normal";
     modalDue.value            = "";
+    if (modalDueTime) modalDueTime.value = "";
     modalNotes.value          = "";
     modalDelete.style.display = "none";
   } else {
@@ -468,6 +475,7 @@ function openModal(id = null) {
     modalStatus.value         = todo.status;
     modalPriority.value       = todo.priority || "normal";
     modalDue.value            = todo.due || "";
+    if (modalDueTime) modalDueTime.value = todo.dueTime || "";
     modalNotes.value          = todo.notes || "";
     modalDelete.style.display = "";
   }
@@ -537,11 +545,12 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal
 modalSave.addEventListener("click", () => {
   const newText = modalText.value.trim();
   if (!newText) { modalText.focus(); return; }
+  const dueTimeVal = modalDueTime ? (modalDueTime.value || null) : null;
   if (editingId === null) {
-    todos.push({ id:Date.now(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, notes:modalNotes.value.trim(), created:new Date().toISOString() });
+    todos.push({ id:Date.now(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), created:new Date().toISOString() });
   } else {
     const idx = todos.findIndex(t => t.id === editingId);
-    if (idx !== -1) Object.assign(todos[idx], { text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, notes:modalNotes.value.trim() });
+    if (idx !== -1) Object.assign(todos[idx], { text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim() });
   }
   saveTodos(); render(); closeModal();
 });
