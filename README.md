@@ -1,11 +1,11 @@
-# ✅ To-Do List — Premium Multi-User Web App
+# ✅ To-Do List — Sacha's experience based ToDo app
 
 [![GitHub Pages](https://img.shields.io/badge/Démo-Live-brightgreen)](https://sacez53.github.io/To-Do-List/)
 [![Firebase](https://img.shields.io/badge/Firebase-Realtime%20DB-orange)](https://firebase.google.com/)
 [![Vanilla JS](https://img.shields.io/badge/Vanilla%20JS-100%25-yellow)](https://sacez53.github.io/To-Do-List/)
 [![Responsive](https://img.shields.io/badge/Responsive-✅-blue)](https://sacez53.github.io/To-Do-List/)
 
-Application de gestion de tâches **premium** et **responsive**, conçue en **HTML5 / CSS3 / JavaScript vanilla**, avec **authentification multi-utilisateurs** et **synchronisation temps réel via Firebase Realtime Database**.
+Application de gestion de tâches, conçue en **HTML5 / CSS3 / JavaScript vanilla**, avec **authentification multi-utilisateurs** et **synchronisation temps réel via Firebase Realtime Database**.
 
 ---
 
