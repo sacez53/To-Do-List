@@ -165,6 +165,29 @@
         </div>
       </section>
 
+      <!-- ══ Section : Archives ══ -->
+      <section class="settings-section" aria-labelledby="section-archive-title">
+        <div class="settings-section-header">
+          <span class="settings-section-icon" aria-hidden="true">📦</span>
+          <div>
+            <h2 class="settings-section-title" id="section-archive-title">Archives</h2>
+            <p class="settings-section-sub">Gérer vos tâches terminées et archivées</p>
+          </div>
+        </div>
+
+        <div class="settings-form">
+          <button class="btn-save settings-btn" id="btn-archive-done" style="margin-bottom: 1rem; background-color: var(--surface-2); border-color: var(--line-strong);">
+            Archiver toutes les tâches terminées
+          </button>
+          
+          <div id="archived-tasks-container" style="display: none; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; border-top: 1px solid var(--line-strong); padding-top: 1rem;">
+             <!-- Archived tasks list -->
+          </div>
+          <p id="no-archived-msg" style="color: var(--text-muted); font-size: 0.8rem; text-align: center; margin-top: 1rem;">Aucune tâche archivée.</p>
+          <div class="settings-msg" id="msg-archive" role="alert" aria-live="polite"></div>
+        </div>
+      </section>
+
       <!-- ══ Section : Zone de danger ══ -->
       <section class="settings-section settings-section-danger" aria-labelledby="section-danger-title">
         <div class="settings-section-header">
