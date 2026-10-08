@@ -217,17 +217,24 @@ function applySort(arr) {
 // ══════════════════════════════════════════
 //  HELPERS DATE
 // ══════════════════════════════════════════
-function getDueInfo(due, dueTime) {
+function getDueInfo(due, dueTime, status) {
   if (!due) return null;
-  const today = new Date(); today.setHours(0,0,0,0);
-  const d    = new Date(due + "T00:00:00");
-  const diff = Math.round((d - today) / 86400000);
+  const d = new Date(due + "T00:00:00");
   const timeSuffix = dueTime ? ` ⏱ ${dueTime}` : "";
+  const dateStr = d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+  
+  if (status === "done" || status === "cancelled") {
+    return { label: `Prévu le ${dateStr}` + timeSuffix, cls: "due-ok" };
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((d - today) / 86400000);
+  
   if (diff < 0)  return { label:"En retard" + timeSuffix,    cls:"due-overdue" };
   if (diff === 0) return { label:"Aujourd'hui" + timeSuffix, cls:"due-today" };
   if (diff === 1) return { label:"Demain" + timeSuffix,       cls:"due-soon" };
   if (diff <= 3)  return { label:`Dans ${diff}j` + timeSuffix, cls:"due-soon" };
-  return { label: d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"}) + timeSuffix, cls:"due-ok" };
+  return { label: dateStr + timeSuffix, cls:"due-ok" };
 }
 
 // ══════════════════════════════════════════
@@ -267,7 +274,7 @@ function renderList(items) {
   ul.className = "v2-list";
   items.forEach((todo, i) => {
     const info    = STATUS_INFO[todo.status] || STATUS_INFO.todo;
-    const dueInfo = getDueInfo(todo.due, todo.dueTime);
+    const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
     const prio    = todo.priority || "normal";
     const li = document.createElement("li");
     li.className = "v2-item";
@@ -320,7 +327,7 @@ function renderKanban(items) {
       list.innerHTML = `<p class="v2-kanban-empty">Vide</p>`;
     } else {
       colItems.forEach(todo => {
-        const dueInfo = getDueInfo(todo.due, todo.dueTime);
+        const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
         const prio    = todo.priority || "normal";
         const card = document.createElement("div");
         card.className = "v2-card";
@@ -365,7 +372,7 @@ function renderTable(items) {
   const tbody = document.createElement("tbody");
   items.forEach(todo => {
     const info    = STATUS_INFO[todo.status] || STATUS_INFO.todo;
-    const dueInfo = getDueInfo(todo.due, todo.dueTime);
+    const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
     const prio    = todo.priority || "normal";
     const tr = document.createElement("tr");
     tr.className = "v2-table-row";
