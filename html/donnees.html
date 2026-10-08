@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8">
-  <title>Ma To-Do List — Données</title>
+  <title>Ma To-Do List â€” DonnÃ©es</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="icon" href="../logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +49,7 @@
       overflow-x: hidden;
     }
 
-    /* ── Nav ── */
+    /* â”€â”€ Nav â”€â”€ */
     nav {
       display: flex;
       align-items: center;
@@ -115,7 +115,7 @@
       color: var(--white);
     }
 
-    /* ── Page header ── */
+    /* â”€â”€ Page header â”€â”€ */
     .page-header {
       display: flex;
       flex-direction: column;
@@ -178,7 +178,7 @@
       }
     }
 
-    /* ── Wrapper ── */
+    /* â”€â”€ Wrapper â”€â”€ */
     .wrapper {
       max-width: 860px;
       margin: 0 auto;
@@ -187,7 +187,7 @@
       flex: 1;
     }
 
-    /* ── Bloc section ── */
+    /* â”€â”€ Bloc section â”€â”€ */
     .block {
       border-left: 1px solid var(--line);
       border-right: 1px solid var(--line);
@@ -238,7 +238,7 @@
       margin-top: 0.9rem;
     }
 
-    /* ── Boutons action ── */
+    /* â”€â”€ Boutons action â”€â”€ */
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -287,7 +287,7 @@
       border-color: var(--text-faint);
     }
 
-    /* ── Zone de danger ── */
+    /* â”€â”€ Zone de danger â”€â”€ */
     .danger-header {
       background: rgba(249, 115, 115, 0.05);
     }
@@ -316,7 +316,7 @@
       color: var(--black);
     }
 
-    /* ── Modale ── */
+    /* â”€â”€ Modale â”€â”€ */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -372,7 +372,7 @@
       gap: 1rem;
     }
 
-    /* ── Footer ── */
+    /* â”€â”€ Footer â”€â”€ */
     footer {
       text-align: center;
       padding: 1.25rem 1rem;
@@ -381,7 +381,7 @@
       letter-spacing: 0.06em;
       color: var(--text-muted);
     }
-    /* ── Responsive ── */
+    /* â”€â”€ Responsive â”€â”€ */
     @media (max-width: 480px) {
       .nav-ghost, .nav-cta, .nav-link, .btn-action, .btn-action-ghost, .btn-danger {
         padding: 0.75rem 1rem;
@@ -392,36 +392,46 @@
       }
     }
   </style>
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="../icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js');
+      });
+    }
+  </script>
 </head>
 
 <body>
 
   <nav>
-    <a class="nav-logo" href="../index.html">To‑Do List</a>
+    <a class="nav-logo" href="../index.html">Toâ€‘Do List</a>
     <div class="nav-links">
       <a class="nav-ghost" href="../index.html">Accueil</a>
-      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
+      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion â†’</a>
     </div>
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Paramètres · <span id="app-version">v2.0</span></span>
-    <h1>Données</h1>
-    <p>Outils de portabilité, d'exportation et de gestion de votre compte personnel.</p>
+    <span class="page-tag">ParamÃ¨tres Â· <span id="app-version">v2.0</span></span>
+    <h1>DonnÃ©es</h1>
+    <p>Outils de portabilitÃ©, d'exportation et de gestion de votre compte personnel.</p>
   </header>
 
   <main class="wrapper">
 
-    <!-- 01 — Exportation -->
+    <!-- 01 â€” Exportation -->
     <section class="block" aria-labelledby="section-export">
       <div class="block-header">
         <span class="block-num">01</span>
-        <span class="block-title" id="section-export">Exportation (Portabilité)</span>
+        <span class="block-title" id="section-export">Exportation (PortabilitÃ©)</span>
       </div>
       <div class="block-body">
         <p>
-          Récupérez l'intégralité de vos tâches pour les sauvegarder ou les importer dans un autre outil. Les exports
-          incluent les titres, notes, statuts, priorités et dates d'échéance.
+          RÃ©cupÃ©rez l'intÃ©gralitÃ© de vos tÃ¢ches pour les sauvegarder ou les importer dans un autre outil. Les exports
+          incluent les titres, notes, statuts, prioritÃ©s et dates d'Ã©chÃ©ance.
         </p>
       </div>
       <div class="actions">
@@ -430,7 +440,7 @@
       </div>
     </section>
 
-    <!-- 02 — Zone de danger -->
+    <!-- 02 â€” Zone de danger -->
     <section class="block" aria-labelledby="section-danger" style="border-color: rgba(249, 115, 115, 0.2);">
       <div class="block-header danger-header">
         <span class="block-num">02</span>
@@ -438,8 +448,8 @@
       </div>
       <div class="block-body">
         <p>
-          Les actions suivantes sont <strong>irréversibles</strong>. La suppression de votre compte entraînera la
-          destruction immédiate de toutes vos tâches stockées sur nos serveurs.
+          Les actions suivantes sont <strong>irrÃ©versibles</strong>. La suppression de votre compte entraÃ®nera la
+          destruction immÃ©diate de toutes vos tÃ¢ches stockÃ©es sur nos serveurs.
         </p>
       </div>
       <div class="actions">
@@ -453,7 +463,7 @@
   <div class="modal-overlay" id="confirm-overlay">
     <div class="modal">
       <h2 id="modal-title">Confirmer l'action</h2>
-      <p id="modal-desc">Êtes-vous sûr de vouloir continuer ? Cette action est irréversible.</p>
+      <p id="modal-desc">ÃŠtes-vous sÃ»r de vouloir continuer ? Cette action est irrÃ©versible.</p>
       <div class="modal-actions">
         <button class="btn-action-ghost" id="cancel-action">Annuler</button>
         <button class="btn-action" id="confirm-action" style="background: #f97373; border-color: #f97373;">Confirmer</button>
@@ -462,7 +472,7 @@
   </div>
 
   <footer>
-    <p>© 2026 · Sacha G. Photographe</p>
+    <p>Â© 2026 Â· Sacha G. Photographe</p>
   </footer>
 
   <script src="../script/donnees.js"></script>
@@ -479,3 +489,4 @@
 </body>
 
 </html>
+

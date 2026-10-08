@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8">
-  <title>Ma To-Do List — Confidentialité</title>
+  <title>Ma To-Do List â€” ConfidentialitÃ©</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="icon" href="../logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +44,7 @@
       overflow-x: hidden;
     }
 
-    /* ── Nav ── */
+    /* â”€â”€ Nav â”€â”€ */
     nav {
       display: flex;
       align-items: center;
@@ -95,7 +95,7 @@
     }
     .nav-cta:hover { background: transparent; color: var(--white); }
 
-    /* ── Page header ── */
+    /* â”€â”€ Page header â”€â”€ */
     .page-header {
       display: flex;
       flex-direction: column;
@@ -148,7 +148,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Wrapper ── */
+    /* â”€â”€ Wrapper â”€â”€ */
     .wrapper {
       max-width: 860px;
       margin: 0 auto;
@@ -157,7 +157,7 @@
       flex: 1;
     }
 
-    /* ── Bloc section ── */
+    /* â”€â”€ Bloc section â”€â”€ */
     .block {
       border-left: 1px solid var(--line);
       border-right: 1px solid var(--line);
@@ -195,7 +195,7 @@
     }
     .block-body p + p { margin-top: 0.9rem; }
 
-    /* ── Row list ── */
+    /* â”€â”€ Row list â”€â”€ */
     .row-list { list-style: none; }
     .row-list li {
       display: grid;
@@ -214,7 +214,7 @@
     }
     .row-val { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
 
-    /* ── Footer ── */
+    /* â”€â”€ Footer â”€â”€ */
     footer {
       text-align: center;
       padding: 1.25rem 1rem;
@@ -224,7 +224,7 @@
       color: var(--text-muted);
     }
 
-    /* ── Responsive ── */
+    /* â”€â”€ Responsive â”€â”€ */
     @media (max-width: 480px) {
       .row-list li {
         grid-template-columns: 1fr;
@@ -239,47 +239,57 @@
       }
     }
   </style>
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="../icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js');
+      });
+    }
+  </script>
 </head>
 
 <body>
 
   <nav>
-    <a class="nav-logo" href="../index.html">To‑Do List</a>
+    <a class="nav-logo" href="../index.html">Toâ€‘Do List</a>
     <div class="nav-links">
       <a class="nav-ghost" href="../index.html">Accueil</a>
-      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
+      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion â†’</a>
     </div>
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Légal · <span id="app-version">v2.0</span></span>
-    <h1>Confidentialité</h1>
-    <p>Engagement sur la protection de vos données personnelles et le respect de votre vie privée.</p>
+    <span class="page-tag">LÃ©gal Â· <span id="app-version">v2.0</span></span>
+    <h1>ConfidentialitÃ©</h1>
+    <p>Engagement sur la protection de vos donnÃ©es personnelles et le respect de votre vie privÃ©e.</p>
   </header>
 
   <main class="wrapper">
 
-    <!-- 01 — Collecte -->
+    <!-- 01 â€” Collecte -->
     <section class="block" aria-labelledby="section-collecte">
       <div class="block-header">
         <span class="block-num">01</span>
-        <span class="block-title" id="section-collecte">Collecte des données</span>
+        <span class="block-title" id="section-collecte">Collecte des donnÃ©es</span>
       </div>
       <div class="block-body">
         <p>
-          L'application <strong>Ma To‑Do List</strong> collecte uniquement les informations strictement nécessaires à
+          L'application <strong>Ma Toâ€‘Do List</strong> collecte uniquement les informations strictement nÃ©cessaires Ã 
           son fonctionnement :
         </p>
       </div>
       <ul class="row-list">
         <li>
           <span class="row-key">Compte</span>
-          <span class="row-val">Adresse e-mail et mot de passe (via Firebase Auth) pour sécuriser l'accès à votre espace
+          <span class="row-val">Adresse e-mail et mot de passe (via Firebase Auth) pour sÃ©curiser l'accÃ¨s Ã  votre espace
             personnel.</span>
         </li>
         <li>
           <span class="row-key">Contenu</span>
-          <span class="row-val">Titres, notes, statuts et échéances des tâches que vous créez (stockés sur Firebase
+          <span class="row-val">Titres, notes, statuts et Ã©chÃ©ances des tÃ¢ches que vous crÃ©ez (stockÃ©s sur Firebase
             Firestore).</span>
         </li>
         <li>
@@ -290,43 +300,43 @@
       </ul>
     </section>
 
-    <!-- 02 — Usage -->
+    <!-- 02 â€” Usage -->
     <section class="block" aria-labelledby="section-usage">
       <div class="block-header">
         <span class="block-num">02</span>
-        <span class="block-title" id="section-usage">Usage des données</span>
+        <span class="block-title" id="section-usage">Usage des donnÃ©es</span>
       </div>
       <div class="block-body">
         <p>
-          Vos données sont utilisées exclusivement pour vous fournir le service de gestion de tâches. Aucune donnée
-          n'est revendue, cédée ou utilisée à des fins publicitaires.
+          Vos donnÃ©es sont utilisÃ©es exclusivement pour vous fournir le service de gestion de tÃ¢ches. Aucune donnÃ©e
+          n'est revendue, cÃ©dÃ©e ou utilisÃ©e Ã  des fins publicitaires.
         </p>
         <p>
-          Le traitement est limité à la synchronisation en temps réel entre vos appareils et à la persistance de vos
+          Le traitement est limitÃ© Ã  la synchronisation en temps rÃ©el entre vos appareils et Ã  la persistance de vos
           listes personnelles.
         </p>
       </div>
     </section>
 
-    <!-- 03 — Sécurité -->
+    <!-- 03 â€” SÃ©curitÃ© -->
     <section class="block" aria-labelledby="section-securite">
       <div class="block-header">
         <span class="block-num">03</span>
-        <span class="block-title" id="section-securite">Sécurité &amp; Hébergement</span>
+        <span class="block-title" id="section-securite">SÃ©curitÃ© &amp; HÃ©bergement</span>
       </div>
       <div class="block-body">
         <p>
-          L'infrastructure repose sur les services de <strong>Google Firebase</strong>, bénéficiant ainsi de standards
-          de sécurité élevés (chiffrement des données au repos et en transit).
+          L'infrastructure repose sur les services de <strong>Google Firebase</strong>, bÃ©nÃ©ficiant ainsi de standards
+          de sÃ©curitÃ© Ã©levÃ©s (chiffrement des donnÃ©es au repos et en transit).
         </p>
         <p>
-          L'accès à vos données Firestore est protégé par des règles de sécurité strictes garantissant que seul
-          l'utilisateur authentifié peut lire ou écrire ses propres données.
+          L'accÃ¨s Ã  vos donnÃ©es Firestore est protÃ©gÃ© par des rÃ¨gles de sÃ©curitÃ© strictes garantissant que seul
+          l'utilisateur authentifiÃ© peut lire ou Ã©crire ses propres donnÃ©es.
         </p>
       </div>
     </section>
 
-    <!-- 04 — Vos droits -->
+    <!-- 04 â€” Vos droits -->
     <section class="block" aria-labelledby="section-droits">
       <div class="block-header">
         <span class="block-num">04</span>
@@ -334,24 +344,24 @@
       </div>
       <div class="block-body">
         <p>
-          Conformément au RGPD, vous disposez d'un droit total sur vos données :
+          ConformÃ©ment au RGPD, vous disposez d'un droit total sur vos donnÃ©es :
         </p>
       </div>
       <ul class="row-list">
         <li>
-          <span class="row-key">Accès</span>
-          <span class="row-val">Vous pouvez consulter l'intégralité de vos tâches directement dans l'interface de
+          <span class="row-key">AccÃ¨s</span>
+          <span class="row-val">Vous pouvez consulter l'intÃ©gralitÃ© de vos tÃ¢ches directement dans l'interface de
             l'application.</span>
         </li>
         <li>
-          <span class="row-key">Portabilité</span>
+          <span class="row-key">PortabilitÃ©</span>
           <span class="row-val">Un outil d'exportation (JSON/CSV) est disponible dans la section <a href="./donnees.html"
-              style="color: var(--white); font-weight: 700;">Gestion des données</a>.</span>
+              style="color: var(--white); font-weight: 700;">Gestion des donnÃ©es</a>.</span>
         </li>
         <li>
           <span class="row-key">Suppression</span>
-          <span class="row-val">Vous pouvez supprimer votre compte et l'intégralité des données associées de façon
-            irréversible depuis vos paramètres.</span>
+          <span class="row-val">Vous pouvez supprimer votre compte et l'intÃ©gralitÃ© des donnÃ©es associÃ©es de faÃ§on
+            irrÃ©versible depuis vos paramÃ¨tres.</span>
         </li>
       </ul>
     </section>
@@ -359,7 +369,7 @@
   </main>
 
   <footer>
-    <p>© 2026 · Sacha G. Photographe</p>
+    <p>Â© 2026 Â· Sacha G. Photographe</p>
   </footer>
 
   <script>
@@ -375,3 +385,4 @@
 </body>
 
 </html>
+

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8">
-  <title>Ma To-Do List — Le Développeur</title>
+  <title>Ma To-Do List â€” Le DÃ©veloppeur</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="icon" href="../logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="../script/transitions.js"></script>
   <script>
-    // Déconnexion automatique
+    // DÃ©connexion automatique
     sessionStorage.removeItem("auth");
     sessionStorage.removeItem("username");
     sessionStorage.removeItem("encKey");
@@ -56,7 +56,7 @@
       overflow-x: hidden;
     }
 
-    /* ── Nav ── */
+    /* â”€â”€ Nav â”€â”€ */
     nav {
       display: flex;
       align-items: center;
@@ -103,7 +103,7 @@
       border-color: var(--line-strong);
     }
 
-    /* ── Page header ── */
+    /* â”€â”€ Page header â”€â”€ */
     .page-header {
       display: flex;
       flex-direction: column;
@@ -166,7 +166,7 @@
       }
     }
 
-    /* ── Wrapper ── */
+    /* â”€â”€ Wrapper â”€â”€ */
     .wrapper {
       max-width: 860px;
       margin: 0 auto;
@@ -175,7 +175,7 @@
       flex: 1;
     }
 
-    /* ── Section block ── */
+    /* â”€â”€ Section block â”€â”€ */
     .block {
       border-left: 1px solid var(--line);
       border-right: 1px solid var(--line);
@@ -227,7 +227,7 @@
       margin-top: 0.9rem;
     }
 
-    /* ── Profile Image Spec ── */
+    /* â”€â”€ Profile Image Spec â”€â”€ */
     .profile-frame {
       width: 100%;
       aspect-ratio: 16/9;
@@ -254,7 +254,7 @@
       filter: grayscale(0.2) contrast(1);
     }
 
-    /* ── Row list ── */
+    /* â”€â”€ Row list â”€â”€ */
     .row-list {
       list-style: none;
     }
@@ -298,7 +298,7 @@
       text-decoration-color: var(--white);
     }
 
-    /* ── Footer ── */
+    /* â”€â”€ Footer â”€â”€ */
     footer {
       text-align: center;
       padding: 1.25rem 1rem;
@@ -325,26 +325,36 @@
       }
     }
   </style>
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="../icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js');
+      });
+    }
+  </script>
 </head>
 
 <body>
 
   <nav>
-    <a class="nav-logo" href="../index.html">To‑Do List</a>
+    <a class="nav-logo" href="../index.html">Toâ€‘Do List</a>
     <div class="nav-links">
       <a class="nav-link" href="../index.html">Accueil</a>
     </div>
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Créateur · Sacha G.</span>
-    <h1>Le Développeur</h1>
-    <p>Photographe amateur, étudiant et passionné par la création d'outils numériques minimalistes.</p>
+    <span class="page-tag">CrÃ©ateur Â· Sacha G.</span>
+    <h1>Le DÃ©veloppeur</h1>
+    <p>Photographe amateur, Ã©tudiant et passionnÃ© par la crÃ©ation d'outils numÃ©riques minimalistes.</p>
   </header>
 
   <main class="wrapper">
 
-    <!-- 01 — Profil -->
+    <!-- 01 â€” Profil -->
     <section class="block">
       <div class="block-header">
         <span class="block-num">01</span>
@@ -355,15 +365,15 @@
       </div>
       <div class="block-body">
         <p>
-          Je m'appelle <strong>Sacha G.</strong> Alliant la précision visuelle de la photographie à la logique rigoureuse du développement web, je conçois des outils qui simplifient le quotidien sans sacrifier l'esthétique.
+          Je m'appelle <strong>Sacha G.</strong> Alliant la prÃ©cision visuelle de la photographie Ã  la logique rigoureuse du dÃ©veloppement web, je conÃ§ois des outils qui simplifient le quotidien sans sacrifier l'esthÃ©tique.
         </p>
         <p>
-          Je crois en la puissance du <strong>minimalisme</strong>. Chaque ligne de code, comme chaque pixel d'une image, doit avoir une raison d'être. Mon objectif est de créer des expériences fluides, rapides et visuellement impeccables.
+          Je crois en la puissance du <strong>minimalisme</strong>. Chaque ligne de code, comme chaque pixel d'une image, doit avoir une raison d'Ãªtre. Mon objectif est de crÃ©er des expÃ©riences fluides, rapides et visuellement impeccables.
         </p>
       </div>
     </section>
 
-    <!-- 02 — Parcours -->
+    <!-- 02 â€” Parcours -->
     <section class="block">
       <div class="block-header">
         <span class="block-num">02</span>
@@ -371,15 +381,15 @@
       </div>
       <div class="block-body">
         <p>
-          Photographe amateur depuis plusieurs années, j'ai commencé le développement web en autodidacte pour construire mes propres outils de gestion. Ce qui n'était qu'une curiosité est devenu une véritable passion pour l'<strong>architecture logicielle</strong> et le <strong>design d'interface</strong>.
+          Photographe amateur depuis plusieurs annÃ©es, j'ai commencÃ© le dÃ©veloppement web en autodidacte pour construire mes propres outils de gestion. Ce qui n'Ã©tait qu'une curiositÃ© est devenu une vÃ©ritable passion pour l'<strong>architecture logicielle</strong> et le <strong>design d'interface</strong>.
         </p>
         <p>
-          Cette application est née d'un besoin personnel : une interface monochrome inspirée des terminaux, capable de gérer des tâches complexes avec une simplicité déconcertante. C'est un projet en <strong>évolution constante</strong>.
+          Cette application est nÃ©e d'un besoin personnel : une interface monochrome inspirÃ©e des terminaux, capable de gÃ©rer des tÃ¢ches complexes avec une simplicitÃ© dÃ©concertante. C'est un projet en <strong>Ã©volution constante</strong>.
         </p>
       </div>
     </section>
 
-    <!-- 03 — Technique -->
+    <!-- 03 â€” Technique -->
     <section class="block">
       <div class="block-header">
         <span class="block-num">03</span>
@@ -408,7 +418,7 @@
   </main>
 
   <footer>
-    <p>© 2026 · Sacha G. Photographe & Développeur</p>
+    <p>Â© 2026 Â· Sacha G. Photographe & DÃ©veloppeur</p>
   </footer>
 
   <script src="../script/burger-menu.js"></script>

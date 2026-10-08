@@ -1,19 +1,19 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8">
-  <title>Ma To-Do List — Accueil</title>
+  <title>Ma To-Do List â€” Accueil</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description"
-    content="Ma To-Do List — Une application web minimaliste et performante pour gérer vos tâches quotidiennes.">
+    content="Ma To-Do List â€” Une application web minimaliste et performante pour gÃ©rer vos tÃ¢ches quotidiennes.">
   <link rel="icon" href="./logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="./script/transitions.js"></script>
   <script>
-    // Déconnexion automatique
+    // DÃ©connexion automatique
     sessionStorage.removeItem("auth");
     sessionStorage.removeItem("username");
     sessionStorage.removeItem("encKey");
@@ -22,13 +22,13 @@
 
   <!-- Google Search Console / SEO basics -->
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Ma To-Do List — Application Web">
-  <meta property="og:description" content="Gérez vos tâches avec simplicité et efficacité.">
+  <meta property="og:title" content="Ma To-Do List â€” Application Web">
+  <meta property="og:description" content="GÃ©rez vos tÃ¢ches avec simplicitÃ© et efficacitÃ©.">
   <meta property="og:type" content="website">
 
   <script>
-    // Script de détection de version et redirection si nécessaire (optionnel)
-    // Ici on vérifie simplement que l'app est accessible
+    // Script de dÃ©tection de version et redirection si nÃ©cessaire (optionnel)
+    // Ici on vÃ©rifie simplement que l'app est accessible
     console.log("Bienvenue sur Ma To-Do List.");
   </script>
 
@@ -39,9 +39,9 @@
       --line: #1e1e1e;
       --line-strong: #2e2e2e;
       --text: #efefef;
-      /* #9a9a9a sur #080808 ≈ 5.6:1 WCAG AA ✓ */
+      /* #9a9a9a sur #080808 â‰ˆ 5.6:1 WCAG AA âœ“ */
       --text-muted: #9a9a9a;
-      /* #6e6e6e sur #080808 ≈ 4.6:1 WCAG AA ✓ */
+      /* #6e6e6e sur #080808 â‰ˆ 4.6:1 WCAG AA âœ“ */
       --text-faint: #6e6e6e;
       --white: #fff;
       --black: #000;
@@ -73,7 +73,7 @@
       overflow-x: hidden;
     }
 
-    /* ── Nav minimaliste ── */
+    /* â”€â”€ Nav minimaliste â”€â”€ */
     nav {
       display: flex;
       align-items: center;
@@ -96,7 +96,7 @@
       gap: 0.5rem;
     }
 
-    /* Bouton fantôme discret (À propos) */
+    /* Bouton fantÃ´me discret (Ã€ propos) */
     .nav-ghost {
       font-size: 0.72rem;
       font-weight: 700;
@@ -135,7 +135,7 @@
       color: var(--white);
     }
 
-    /* ── Hero ── */
+    /* â”€â”€ Hero â”€â”€ */
     .hero {
       flex: 1;
       display: flex;
@@ -147,7 +147,7 @@
       position: relative;
     }
 
-    /* Ligne déco centrale */
+    /* Ligne dÃ©co centrale */
     .hero::before {
       content: "";
       position: absolute;
@@ -253,7 +253,7 @@
       }
     }
 
-    /* ── Séparateur ── */
+    /* â”€â”€ SÃ©parateur â”€â”€ */
     .divider {
       display: flex;
       align-items: center;
@@ -280,7 +280,7 @@
       white-space: nowrap;
     }
 
-    /* ── Features ── */
+    /* â”€â”€ Features â”€â”€ */
     .features-container {
       width: 100%;
       padding: 2rem 1.25rem 3rem;
@@ -327,7 +327,7 @@
       line-height: 1.45;
     }
 
-    /* ── Footer ── */
+    /* â”€â”€ Footer â”€â”€ */
     footer {
       text-align: center;
       padding: 1.25rem 1rem;
@@ -377,83 +377,93 @@
       }
     }
   </style>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
 </head>
 
 <body>
 
   <nav>
-    <span class="nav-logo">To‑Do List</span>
+    <span class="nav-logo">Toâ€‘Do List</span>
     <div class="nav-links">
-      <a class="nav-cta" href="./html/login.html" id="nav-connexion">Connexion →</a>
+      <a class="nav-cta" href="./html/login.html" id="nav-connexion">Connexion â†’</a>
     </div>
   </nav>
 
   <section class="hero">
-    <span class="hero-tag">Usage personnel · <span id="app-version">v5.0</span></span>
-    <div class="hero-icon" aria-hidden="true">✓</div>
-    <h1>Ma To‑Do<br>List</h1>
-    <p class="hero-sub">Gérez vos tâches avec statuts, priorités, échéances et synchronisation multi-appareils via
+    <span class="hero-tag">Usage personnel Â· <span id="app-version">v5.0</span></span>
+    <div class="hero-icon" aria-hidden="true">âœ“</div>
+    <h1>Ma Toâ€‘Do<br>List</h1>
+    <p class="hero-sub">GÃ©rez vos tÃ¢ches avec statuts, prioritÃ©s, Ã©chÃ©ances et synchronisation multi-appareils via
       Firebase.</p>
     <a class="hero-btn" href="./html/login.html">
-      Accéder à l'app
-      <span class="arrow">→</span>
+      AccÃ©der Ã  l'app
+      <span class="arrow">â†’</span>
     </a>
   </section>
 
-  <div class="divider"><span>Fonctionnalités</span></div>
+  <div class="divider"><span>FonctionnalitÃ©s</span></div>
 
   <div class="features-container">
     <div class="features">
       <div class="feature-item">
         <span class="feature-key">Statuts</span>
-        <span class="feature-val">5 statuts : à faire, en cours, en attente, terminé, annulé</span>
+        <span class="feature-val">5 statuts : Ã  faire, en cours, en attente, terminÃ©, annulÃ©</span>
       </div>
       <div class="feature-item">
-        <span class="feature-key">Priorités</span>
-        <span class="feature-val">Haute, normale ou basse — badge coloré sur chaque tâche</span>
+        <span class="feature-key">PrioritÃ©s</span>
+        <span class="feature-val">Haute, normale ou basse â€” badge colorÃ© sur chaque tÃ¢che</span>
       </div>
       <div class="feature-item">
-        <span class="feature-key">Échéances</span>
-        <span class="feature-val">Date limite avec indicateur visuel (retard, aujourd'hui, bientôt)</span>
+        <span class="feature-key">Ã‰chÃ©ances</span>
+        <span class="feature-val">Date limite avec indicateur visuel (retard, aujourd'hui, bientÃ´t)</span>
       </div>
       <div class="feature-item">
         <span class="feature-key">Recherche</span>
-        <span class="feature-val">Filtrage instantané par texte sur titre et notes</span>
+        <span class="feature-val">Filtrage instantanÃ© par texte sur titre et notes</span>
       </div>
       <div class="feature-item">
         <span class="feature-key">Tri</span>
-        <span class="feature-val">Par date, priorité, échéance ou statut</span>
+        <span class="feature-val">Par date, prioritÃ©, Ã©chÃ©ance ou statut</span>
       </div>
       <div class="feature-item">
         <span class="feature-key">Progression</span>
-        <span class="feature-val">Barre de progression en temps réel sur les tâches terminées</span>
+        <span class="feature-val">Barre de progression en temps rÃ©el sur les tÃ¢ches terminÃ©es</span>
       </div>
       <div class="feature-item">
         <span class="feature-key">Sync</span>
-        <span class="feature-val">Synchronisation Firebase multi-appareils en temps réel</span>
+        <span class="feature-val">Synchronisation Firebase multi-appareils en temps rÃ©el</span>
       </div>
       <div class="feature-item">
-        <span class="feature-key">Sécurisé</span>
-        <span class="feature-val">Accès protégé par un code personnel</span>
+        <span class="feature-key">SÃ©curisÃ©</span>
+        <span class="feature-val">AccÃ¨s protÃ©gÃ© par un code personnel</span>
       </div>
       <div class="feature-item">
         <span class="feature-key">Calendrier</span>
-        <span class="feature-val">Vue mensuelle et planning chronologique dédiés</span>
+        <span class="feature-val">Vue mensuelle et planning chronologique dÃ©diÃ©s</span>
       </div>
       <div class="feature-item">
         <span class="feature-key">Ergonomie</span>
-        <span class="feature-val">Cochez rapidement vos tâches d'un simple clic sur le statut</span>
+        <span class="feature-val">Cochez rapidement vos tÃ¢ches d'un simple clic sur le statut</span>
       </div>
     </div>
   </div>
 
   <footer>
     <div class="footer-links">
-      <a href="./html/confidentialite.html">Confidentialité</a>
-      <a href="./html/donnees.html">Gestion des données</a>
+      <a href="./html/confidentialite.html">ConfidentialitÃ©</a>
+      <a href="./html/donnees.html">Gestion des donnÃ©es</a>
       <a href="https://github.com/sacez53/To-Do-List" target="_blank">Lien vers le projet Github</a>
     </div>
-    <p>© 2026 · Sacha G. Photographe</p>
+    <p>Â© 2026 Â· Sacha G. Photographe</p>
   </footer>
 
   <script>

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8">
-  <title>Ma To-Do List — À propos</title>
+  <title>Ma To-Do List â€” Ã€ propos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="icon" href="../logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="../script/transitions.js"></script>
   <script>
-    // Déconnexion automatique
+    // DÃ©connexion automatique
     sessionStorage.removeItem("auth");
     sessionStorage.removeItem("username");
     sessionStorage.removeItem("encKey");
@@ -56,7 +56,7 @@
       overflow-x: hidden;
     }
 
-    /* ── Nav ── */
+    /* â”€â”€ Nav â”€â”€ */
     nav {
       display: flex;
       align-items: center;
@@ -122,7 +122,7 @@
       color: var(--white);
     }
 
-    /* ── Page header ── */
+    /* â”€â”€ Page header â”€â”€ */
     .page-header {
       display: flex;
       flex-direction: column;
@@ -185,7 +185,7 @@
       }
     }
 
-    /* ── Wrapper ── */
+    /* â”€â”€ Wrapper â”€â”€ */
     .wrapper {
       max-width: 860px;
       margin: 0 auto;
@@ -194,7 +194,7 @@
       flex: 1;
     }
 
-    /* ── Section block ── */
+    /* â”€â”€ Section block â”€â”€ */
     .block {
       border-left: 1px solid var(--line);
       border-right: 1px solid var(--line);
@@ -246,7 +246,7 @@
       margin-top: 0.9rem;
     }
 
-    /* ── Row list (clé / valeur) ── */
+    /* â”€â”€ Row list (clÃ© / valeur) â”€â”€ */
     .row-list {
       list-style: none;
     }
@@ -279,7 +279,7 @@
       line-height: 1.5;
     }
 
-    /* ── Tag chips ── */
+    /* â”€â”€ Tag chips â”€â”€ */
     .chip-list {
       display: flex;
       flex-wrap: wrap;
@@ -299,7 +299,7 @@
       border-radius: 2px;
     }
 
-    /* ── Timeline ── */
+    /* â”€â”€ Timeline â”€â”€ */
     .timeline {
       list-style: none;
     }
@@ -336,7 +336,7 @@
       font-weight: 700;
     }
 
-    /* ── CTA bas ── */
+    /* â”€â”€ CTA bas â”€â”€ */
     .cta-row {
       display: flex;
       justify-content: center;
@@ -376,7 +376,7 @@
       transform: translateX(4px);
     }
 
-    /* ── Footer ── */
+    /* â”€â”€ Footer â”€â”€ */
     footer {
       text-align: center;
       padding: 1.25rem 1rem;
@@ -386,7 +386,7 @@
       color: var(--text-muted);
     }
 
-    /* ── Responsive ── */
+    /* â”€â”€ Responsive â”€â”€ */
     @media (max-width: 480px) {
       .row-list li {
         grid-template-columns: 1fr;
@@ -407,28 +407,38 @@
       }
     }
   </style>
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="../icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js');
+      });
+    }
+  </script>
 </head>
 
 <body>
 
   <nav>
-    <a class="nav-logo" href="../index.html">To‑Do List</a>
+    <a class="nav-logo" href="../index.html">Toâ€‘Do List</a>
     <div class="nav-links">
       <a class="nav-link" href="../index.html">Accueil</a>
-      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
+      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion â†’</a>
     </div>
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Documentation · <span id="app-version">v2.0</span></span>
-    <h1>À propos</h1>
-    <p>Présentation du projet et de son créateur — une application personnelle née d'un besoin simple : mieux organiser
-      chaque journée.</p>
+    <span class="page-tag">Documentation Â· <span id="app-version">v2.0</span></span>
+    <h1>Ã€ propos</h1>
+    <p>PrÃ©sentation du projet et de son crÃ©ateur â€” une application personnelle nÃ©e d'un besoin simple : mieux organiser
+      chaque journÃ©e.</p>
   </header>
 
   <main class="wrapper">
 
-    <!-- 01 — Le projet -->
+    <!-- 01 â€” Le projet -->
     <section class="block" aria-labelledby="section-projet">
       <div class="block-header">
         <span class="block-num">01</span>
@@ -436,77 +446,77 @@
       </div>
       <div class="block-body">
         <p>
-          <strong>Ma To‑Do List</strong> est une application web personnelle de gestion de tâches, conçue pour être
-          rapide, claire et accessible depuis n'importe quel appareil. L'objectif était de disposer d'un outil
-          minimaliste mais complet : pas de superflu, juste l'essentiel pour rester concentré sur ce qui compte.
+          <strong>Ma Toâ€‘Do List</strong> est une application web personnelle de gestion de tÃ¢ches, conÃ§ue pour Ãªtre
+          rapide, claire et accessible depuis n'importe quel appareil. L'objectif Ã©tait de disposer d'un outil
+          minimaliste mais complet : pas de superflu, juste l'essentiel pour rester concentrÃ© sur ce qui compte.
         </p>
         <p>
-          L'application repose sur <strong>Firebase</strong> pour l'authentification et la persistance des données en
-          temps réel. Chaque tâche peut être accompagnée d'un statut, d'une priorité, d'une date d'échéance et de notes
-          libres. Un tableau de bord affiche la progression globale d'un coup d'œil.
+          L'application repose sur <strong>Firebase</strong> pour l'authentification et la persistance des donnÃ©es en
+          temps rÃ©el. Chaque tÃ¢che peut Ãªtre accompagnÃ©e d'un statut, d'une prioritÃ©, d'une date d'Ã©chÃ©ance et de notes
+          libres. Un tableau de bord affiche la progression globale d'un coup d'Å“il.
         </p>
         <p>
-          Le design suit une esthétique monochrome inspirée des interfaces terminal : typographie IBM Plex Mono, grille
-          sur fond sombre, micro-animations sobres. Pensé pour durer, pas pour impressionner.
+          Le design suit une esthÃ©tique monochrome inspirÃ©e des interfaces terminal : typographie IBM Plex Mono, grille
+          sur fond sombre, micro-animations sobres. PensÃ© pour durer, pas pour impressionner.
         </p>
       </div>
     </section>
 
-    <!-- 02 — Fonctionnalités clés -->
+    <!-- 02 â€” FonctionnalitÃ©s clÃ©s -->
     <section class="block" aria-labelledby="section-features">
       <div class="block-header">
         <span class="block-num">02</span>
-        <span class="block-title" id="section-features">Fonctionnalités clés</span>
+        <span class="block-title" id="section-features">FonctionnalitÃ©s clÃ©s</span>
       </div>
       <ul class="row-list">
         <li>
           <span class="row-key">Statuts</span>
-          <span class="row-val">5 états — à faire, en cours, en attente, terminé, annulé</span>
+          <span class="row-val">5 Ã©tats â€” Ã  faire, en cours, en attente, terminÃ©, annulÃ©</span>
         </li>
         <li>
-          <span class="row-key">Priorités</span>
-          <span class="row-val">Haute, normale, basse · badge coloré visible d'un coup d'œil</span>
+          <span class="row-key">PrioritÃ©s</span>
+          <span class="row-val">Haute, normale, basse Â· badge colorÃ© visible d'un coup d'Å“il</span>
         </li>
         <li>
-          <span class="row-key">Échéances</span>
-          <span class="row-val">Date limite avec alerte visuelle : retard, aujourd'hui, bientôt</span>
+          <span class="row-key">Ã‰chÃ©ances</span>
+          <span class="row-val">Date limite avec alerte visuelle : retard, aujourd'hui, bientÃ´t</span>
         </li>
         <li>
           <span class="row-key">Recherche</span>
-          <span class="row-val">Filtrage instantané en temps réel sur titre et notes</span>
+          <span class="row-val">Filtrage instantanÃ© en temps rÃ©el sur titre et notes</span>
         </li>
         <li>
           <span class="row-key">Tri</span>
-          <span class="row-val">Par date de création, priorité, échéance ou statut</span>
+          <span class="row-val">Par date de crÃ©ation, prioritÃ©, Ã©chÃ©ance ou statut</span>
         </li>
         <li>
           <span class="row-key">Progression</span>
-          <span class="row-val">Barre de complétion recalculée à chaque action</span>
+          <span class="row-val">Barre de complÃ©tion recalculÃ©e Ã  chaque action</span>
         </li>
         <li>
-          <span class="row-key">Sync temps réel</span>
-          <span class="row-val">Données Firebase partagées sur tous les appareils connectés</span>
+          <span class="row-key">Sync temps rÃ©el</span>
+          <span class="row-val">DonnÃ©es Firebase partagÃ©es sur tous les appareils connectÃ©s</span>
         </li>
         <li>
-          <span class="row-key">Sécurité</span>
-          <span class="row-val">Accès protégé par authentification Firebase (email + mot de passe)</span>
+          <span class="row-key">SÃ©curitÃ©</span>
+          <span class="row-val">AccÃ¨s protÃ©gÃ© par authentification Firebase (email + mot de passe)</span>
         </li>
         <li>
-          <span class="row-key">Paramètres</span>
+          <span class="row-key">ParamÃ¨tres</span>
           <span class="row-val">Modification du nom, email, mot de passe et suppression de compte</span>
         </li>
         <li>
           <span class="row-key">Calendrier</span>
-          <span class="row-val">Vue mensuelle et planning chronologique sur une page dédiée</span>
+          <span class="row-val">Vue mensuelle et planning chronologique sur une page dÃ©diÃ©e</span>
         </li>
         <li>
           <span class="row-key">Ergonomie</span>
-          <span class="row-val">Cochez rapidement vos tâches d'un simple clic sur leur statut</span>
+          <span class="row-val">Cochez rapidement vos tÃ¢ches d'un simple clic sur leur statut</span>
         </li>
       </ul>
     </section>
 
-    <!-- 03 — Stack technique -->
+    <!-- 03 â€” Stack technique -->
     <section class="block" aria-labelledby="section-stack">
       <div class="block-header">
         <span class="block-num">03</span>
@@ -515,26 +525,26 @@
       <ul class="row-list">
         <li>
           <span class="row-key">Front-end</span>
-          <span class="row-val">HTML5 · CSS3 Vanilla · JavaScript ES2022 (modules natifs)</span>
+          <span class="row-val">HTML5 Â· CSS3 Vanilla Â· JavaScript ES2022 (modules natifs)</span>
         </li>
         <li>
           <span class="row-key">Auth &amp; BDD</span>
-          <span class="row-val">Firebase Authentication + Firestore (temps réel)</span>
+          <span class="row-val">Firebase Authentication + Firestore (temps rÃ©el)</span>
         </li>
         <li>
           <span class="row-key">Typographie</span>
           <span class="row-val">IBM Plex Mono via Google Fonts</span>
         </li>
         <li>
-          <span class="row-key">Hébergement</span>
-          <span class="row-val">Projet local · déploiement possible via Firebase Hosting</span>
+          <span class="row-key">HÃ©bergement</span>
+          <span class="row-val">Projet local Â· dÃ©ploiement possible via Firebase Hosting</span>
         </li>
         <li>
-          <span class="row-key">Dépôt</span>
-          <span class="row-val">GitHub — sacez53/To-Do-List</span>
+          <span class="row-key">DÃ©pÃ´t</span>
+          <span class="row-val">GitHub â€” sacez53/To-Do-List</span>
         </li>
       </ul>
-      <div class="chip-list" aria-label="Technologies utilisées">
+      <div class="chip-list" aria-label="Technologies utilisÃ©es">
         <span class="chip">HTML</span>
         <span class="chip">CSS</span>
         <span class="chip">JavaScript</span>
@@ -545,43 +555,43 @@
       </div>
     </section>
 
-    <!-- 04 — Qui suis‑je ? -->
+    <!-- 04 â€” Qui suisâ€‘je ? -->
     <section class="block" aria-labelledby="section-auteur">
       <div class="block-header">
         <span class="block-num">04</span>
-        <span class="block-title" id="section-auteur">Qui suis‑je ?</span>
+        <span class="block-title" id="section-auteur">Qui suisâ€‘je ?</span>
       </div>
       <div class="block-body">
         <p>
-          Je m'appelle <strong>Sacha G.</strong>, photographe professionnel et autodidacte du développement web.
-          Passionné à la fois par l'image et par le code, je conçois mes propres outils numériques pour optimiser mon
+          Je m'appelle <strong>Sacha G.</strong>, photographe professionnel et autodidacte du dÃ©veloppement web.
+          PassionnÃ© Ã  la fois par l'image et par le code, je conÃ§ois mes propres outils numÃ©riques pour optimiser mon
           organisation au quotidien.
         </p>
         <p>
-          Ce projet est né d'une frustration simple : les applications de tâches existantes étaient soit trop complexes,
-          soit trop limitées. J'ai donc choisi de construire la mienne — from scratch, à mon rythme, selon mes besoins
+          Ce projet est nÃ© d'une frustration simple : les applications de tÃ¢ches existantes Ã©taient soit trop complexes,
+          soit trop limitÃ©es. J'ai donc choisi de construire la mienne â€” from scratch, Ã  mon rythme, selon mes besoins
           exacts.
         </p>
         <p>
-          La photographie m'a appris la rigueur du cadrage et de la lumière ; le développement, celle de la logique et
-          de l'architecture. Les deux se rejoignent dans un goût commun pour les détails qui font la différence.
+          La photographie m'a appris la rigueur du cadrage et de la lumiÃ¨re ; le dÃ©veloppement, celle de la logique et
+          de l'architecture. Les deux se rejoignent dans un goÃ»t commun pour les dÃ©tails qui font la diffÃ©rence.
         </p>
         <p style="margin-top: 1.5rem;">
-          <a href="./developpeur.html" style="color: var(--white); text-decoration: none; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid var(--line-strong); padding: 0.5rem 1rem; border-radius: 2px; transition: all 160ms ease;" onmouseover="this.style.borderColor='var(--white)'" onmouseout="this.style.borderColor='var(--line-strong)'">En savoir plus sur le développeur →</a>
+          <a href="./developpeur.html" style="color: var(--white); text-decoration: none; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid var(--line-strong); padding: 0.5rem 1rem; border-radius: 2px; transition: all 160ms ease;" onmouseover="this.style.borderColor='var(--white)'" onmouseout="this.style.borderColor='var(--line-strong)'">En savoir plus sur le dÃ©veloppeur â†’</a>
         </p>
       </div>
       <ul class="row-list">
         <li>
-          <span class="row-key">Métier</span>
+          <span class="row-key">MÃ©tier</span>
           <span class="row-val">Photographe professionnel</span>
         </li>
         <li>
           <span class="row-key">Code</span>
-          <span class="row-val">Autodidacte · web front-end &amp; Firebase</span>
+          <span class="row-val">Autodidacte Â· web front-end &amp; Firebase</span>
         </li>
         <li>
-          <span class="row-key">Intérêts</span>
-          <span class="row-val">Design minimaliste · IA · outils personnels</span>
+          <span class="row-key">IntÃ©rÃªts</span>
+          <span class="row-val">Design minimaliste Â· IA Â· outils personnels</span>
         </li>
         <li>
           <span class="row-key">GitHub</span>
@@ -590,7 +600,7 @@
       </ul>
     </section>
 
-    <!-- 05 — Historique -->
+    <!-- 05 â€” Historique -->
     <section class="block" aria-labelledby="section-history">
       <div class="block-header">
         <span class="block-num">05</span>
@@ -599,27 +609,27 @@
       <ul class="timeline">
         <li>
           <span class="tl-date">Mai 2026</span>
-          <span class="tl-text"><strong>v3.0</strong> — Intégration de la vue Calendrier sur page dédiée, de la vue
+          <span class="tl-text"><strong>v3.0</strong> â€” IntÃ©gration de la vue Calendrier sur page dÃ©diÃ©e, de la vue
             Planning chronologique et des actions rapides.</span>
         </li>
         <li>
           <span class="tl-date">Avr. 2026</span>
-          <span class="tl-text"><strong>v2.0</strong> — Refonte complète : design monochrome terminal, page À propos,
-            paramètres compte, authentification Firebase, synchronisation multi-appareils.</span>
+          <span class="tl-text"><strong>v2.0</strong> â€” Refonte complÃ¨te : design monochrome terminal, page Ã€ propos,
+            paramÃ¨tres compte, authentification Firebase, synchronisation multi-appareils.</span>
         </li>
         <li>
           <span class="tl-date">Mars 2026</span>
-          <span class="tl-text"><strong>v1.5</strong> — Ajout des statuts avancés, des priorités colorées, de la barre
-            de progression et des filtres en temps réel.</span>
+          <span class="tl-text"><strong>v1.5</strong> â€” Ajout des statuts avancÃ©s, des prioritÃ©s colorÃ©es, de la barre
+            de progression et des filtres en temps rÃ©el.</span>
         </li>
         <li>
-          <span class="tl-date">Fév. 2026</span>
-          <span class="tl-text"><strong>v1.0</strong> — Première version opérationnelle avec ajout/suppression de
-            tâches, dates d'échéance et filtres basiques.</span>
+          <span class="tl-date">FÃ©v. 2026</span>
+          <span class="tl-text"><strong>v1.0</strong> â€” PremiÃ¨re version opÃ©rationnelle avec ajout/suppression de
+            tÃ¢ches, dates d'Ã©chÃ©ance et filtres basiques.</span>
         </li>
         <li>
           <span class="tl-date">Jan. 2026</span>
-          <span class="tl-text"><strong>v0.1</strong> — Prototype initial : liste de tâches locale sans
+          <span class="tl-text"><strong>v0.1</strong> â€” Prototype initial : liste de tÃ¢ches locale sans
             persistance.</span>
         </li>
       </ul>
@@ -628,8 +638,8 @@
     <!-- CTA -->
     <div class="cta-row">
       <a class="cta-btn" href="./login.html" id="cta-connexion">
-        Accéder à l'application
-        <span class="arrow">→</span>
+        AccÃ©der Ã  l'application
+        <span class="arrow">â†’</span>
       </a>
     </div>
 
@@ -638,9 +648,9 @@
   <footer>
     <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 0.75rem;">
       <a href="../index.html" style="color: var(--text-faint); text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; transition: color 160ms ease;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-faint)'">Accueil</a>
-      <a href="./developpeur.html" style="color: var(--text-faint); text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; transition: color 160ms ease;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-faint)'">Le Développeur</a>
+      <a href="./developpeur.html" style="color: var(--text-faint); text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; transition: color 160ms ease;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-faint)'">Le DÃ©veloppeur</a>
     </div>
-    <p>© 2026 · Sacha G. Photographe</p>
+    <p>Â© 2026 Â· Sacha G. Photographe</p>
   </footer>
 
   <script>
