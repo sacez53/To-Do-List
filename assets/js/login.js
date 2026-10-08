@@ -9,7 +9,7 @@ let cachedFirebaseUrl = null;
 
 async function getFirebaseUrl() {
   if (cachedFirebaseUrl) return cachedFirebaseUrl;
-  const res = await fetch("../json/firebase.json");
+  const res = await fetch("../assets/json/firebase.json");
   const config = await res.json();
   if (!config.url || !config.url.trim()) {
     throw new Error("Firebase non configuré dans firebase.json");
@@ -19,7 +19,7 @@ async function getFirebaseUrl() {
 }
 
 async function getSecurityConfig() {
-  const res = await fetch("../json/security.json");
+  const res = await fetch("../assets/json/security.json");
   return await res.json();
 }
 

@@ -7,9 +7,9 @@
   const isRoot  = !window.location.pathname.includes("/html/");
 
   const LINKS = [
-    { href: isRoot ? "./html/commentaires.html" : "./commentaires.html", label: "Commentaires", icon: "💬", key: "commentaires.html" },
-    { href: isRoot ? "./html/apropos.html"      : "./apropos.html",      label: "À propos",     icon: "◉",  key: "apropos.html"     },
-    { href: isRoot ? "./html/developpeur.html"  : "./developpeur.html",  label: "Développeur",  icon: "⌨",  key: "developpeur.html"  },
+    { href: isRoot ? "./pages/commentaires.html" : "./commentaires.html", label: "Commentaires", icon: "💬", key: "commentaires.html" },
+    { href: isRoot ? "./pages/apropos.html"      : "./apropos.html",      label: "À propos",     icon: "◉",  key: "apropos.html"     },
+    { href: isRoot ? "./pages/developpeur.html"  : "./developpeur.html",  label: "Développeur",  icon: "⌨",  key: "developpeur.html"  },
   ];
 
   const CSS = `

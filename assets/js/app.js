@@ -93,9 +93,9 @@ async function init() {
     };
 
     const [settings, ui, fbConfig] = await Promise.all([
-      fetchJson("../json/settings.json"),
-      fetchJson("../json/ui.json"),
-      fetchJson("../json/firebase.json")
+      fetchJson("../assets/json/settings.json"),
+      fetchJson("../assets/json/ui.json"),
+      fetchJson("../assets/json/firebase.json")
     ]);
 
     // Surcharge de la configuration par défaut

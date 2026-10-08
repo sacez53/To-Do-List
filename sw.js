@@ -2,13 +2,13 @@ const CACHE_NAME = 'todo-list-cache-v1';
 const urlsToCache = [
   './',
   './index.html',
-  './style/style.css',
-  './script/transitions.js',
-  './script/burger-menu.js',
-  './logo/list-todo.svg',
+  './assets/css/style.css',
+  './assets/js/transitions.js',
+  './assets/js/burger-menu.js',
+  './assets/logo/list-todo.svg',
   './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {

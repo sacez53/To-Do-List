@@ -7,11 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description"
     content="Ma To-Do List — Une application web minimaliste et performante pour gérer vos tâches quotidiennes.">
-  <link rel="icon" href="./logo/list-todo.svg">
+  <link rel="icon" href="./assets/logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="./script/transitions.js"></script>
+  <script src="./assets/js/transitions.js"></script>
   <script>
     // Déconnexion automatique
     sessionStorage.removeItem("auth");
@@ -379,7 +379,7 @@
   </style>
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#080808">
-  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -394,7 +394,7 @@
   <nav>
     <span class="nav-logo">To‑Do List</span>
     <div class="nav-links">
-      <a class="nav-cta" href="./html/login.html" id="nav-connexion">Connexion →</a>
+      <a class="nav-cta" href="./pages/login.html" id="nav-connexion">Connexion →</a>
     </div>
   </nav>
 
@@ -404,7 +404,7 @@
     <h1>Ma To‑Do<br>List</h1>
     <p class="hero-sub">Gérez vos tâches avec statuts, priorités, échéances et synchronisation multi-appareils via
       Firebase.</p>
-    <a class="hero-btn" href="./html/login.html">
+    <a class="hero-btn" href="./pages/login.html">
       Accéder à l'app
       <span class="arrow">→</span>
     </a>
@@ -459,15 +459,15 @@
 
   <footer>
     <div class="footer-links">
-      <a href="./html/confidentialite.html">Confidentialité</a>
-      <a href="./html/donnees.html">Gestion des données</a>
+      <a href="./pages/confidentialite.html">Confidentialité</a>
+      <a href="./pages/donnees.html">Gestion des données</a>
       <a href="https://github.com/sacez53/To-Do-List" target="_blank">Lien vers le projet Github</a>
     </div>
     <p>© 2026 · Sacha G. Photographe</p>
   </footer>
 
   <script>
-    fetch('./json/version.json')
+    fetch('./assets/json/version.json')
       .then(r => r.json())
       .then(data => {
         if (data.version) {
@@ -476,7 +476,7 @@
       })
       .catch(e => console.error('Erreur chargement version:', e));
   </script>
-  <script src="./script/burger-menu.js"></script>
+  <script src="./assets/js/burger-menu.js"></script>
 </body>
 
 </html>

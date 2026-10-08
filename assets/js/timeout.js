@@ -5,7 +5,7 @@
   let timeoutMinutes = 5; // Valeur par défaut
   
   try {
-    const res = await fetch("../json/security.json");
+    const res = await fetch("../assets/json/security.json");
     const config = await res.json();
     if (typeof config.timeoutMinutes === 'number') {
       timeoutMinutes = config.timeoutMinutes;

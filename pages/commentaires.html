@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="description" content="Laissez un commentaire sur l'application To-Do List."/>
   <meta name="theme-color" content="#080808"/>
-  <link rel="icon" href="../logo/list-todo.svg">
+  <link rel="icon" href="../assets/logo/list-todo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="../script/transitions.js"></script>
+  <script src="../assets/js/transitions.js"></script>
   <style>
     :root{--bg:#080808;--surface:#0f0f0f;--surface-2:#141414;--line:#1e1e1e;--line-strong:#2e2e2e;--text:#efefef;--text-muted:#9a9a9a;--text-faint:#6e6e6e;--white:#fff;--black:#000;--accent:#4ade80;--accent-dim:rgba(74,222,128,.1);--radius:3px;--tr:160ms ease;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:"IBM Plex Mono","Courier New",monospace;}
@@ -108,7 +108,7 @@
   </style>
   <link rel="manifest" href="../manifest.json">
   <meta name="theme-color" content="#080808">
-  <link rel="apple-touch-icon" href="../icons/icon-192.png">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -165,7 +165,7 @@
         <div class="auth-msg-text">
           <p><strong>Connexion requise</strong><br>Vous pouvez lire les commentaires librement, mais il faut un compte pour en publier.</p>
         </div>
-        <a class="auth-msg-link" href="../html/login.html?redirect=commentaires.html">Se connecter →</a>
+        <a class="auth-msg-link" href="../pages/login.html?redirect=commentaires.html">Se connecter →</a>
       </div>
 
       <!-- Liste -->
@@ -178,7 +178,7 @@
 
   <footer>© 2026 · Sacha G.</footer>
 
-  <script src="../script/burger-menu.js"></script>
-  <script src="../script/commentaires.js"></script>
+  <script src="../assets/js/burger-menu.js"></script>
+  <script src="../assets/js/commentaires.js"></script>
 </body>
 </html>

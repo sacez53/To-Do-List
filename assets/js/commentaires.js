@@ -21,7 +21,7 @@ const MAX_CHARS = 500;
 async function init() {
   updateAuthUI();
   try {
-    const r = await fetch("../json/firebase.json");
+    const r = await fetch("../assets/json/firebase.json");
     const cfg = r.ok ? await r.json() : {};
     if (cfg.url && cfg.url.trim()) {
       firebaseUrl = cfg.url.replace(/\/$/, "");
