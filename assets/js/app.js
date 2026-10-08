@@ -281,16 +281,23 @@ function getStatusInfo(s) { return appConfig.statusLabels[s] || appConfig.status
 // ──────────────────────────────────────────────
 // Helpers date d'échéance
 // ──────────────────────────────────────────────
-function getDueInfo(due) {
+function getDueInfo(due, status) {
   if (!due) return null;
+  const d = new Date(due + "T00:00:00");
+  const dateStr = d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  
+  if (status === "done" || status === "cancelled") {
+    return { label: `Prévu le ${dateStr}`, cls: "due-ok" };
+  }
+
   const today = new Date(); today.setHours(0,0,0,0);
-  const d     = new Date(due + "T00:00:00");
   const diff  = Math.round((d - today) / 86400000);
+  
   if (diff < 0)  return { label: "En retard",     cls: "due-overdue" };
   if (diff === 0) return { label: "Aujourd'hui",   cls: "due-today"   };
   if (diff === 1) return { label: "Demain",         cls: "due-soon"    };
   if (diff <= 3) return { label: `Dans ${diff}j`,  cls: "due-soon"    };
-  return { label: new Date(due + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" }), cls: "due-ok" };
+  return { label: dateStr, cls: "due-ok" };
 }
 
 // ──────────────────────────────────────────────
@@ -353,7 +360,7 @@ function render() {
 
   filtered.forEach((todo, i) => {
     const info    = getStatusInfo(todo.status);
-    const dueInfo = getDueInfo(todo.due);
+    const dueInfo = getDueInfo(todo.due, todo.status);
     const prio    = todo.priority || "normal";
 
     const li = document.createElement("li");
