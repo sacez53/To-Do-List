@@ -357,3 +357,126 @@ document.addEventListener("keydown", e => {
     document.body.classList.remove("modal-open");
   }
 });
+
+
+// ══════════════════════════════════════════════════════
+//  5. GESTION DES ARCHIVES
+// ══════════════════════════════════════════════════════
+async function saveTodosToFirebase(todos) {
+    if (!firebaseUrl) await getFirebaseUrl();
+    const body = encKey ? JSON.stringify(await encryptData(todos, encKey)) : JSON.stringify(todos);
+    await fetch(`${userPath(currentUser)}/todos.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body
+    });
+}
+
+function updateArchivedView() {
+    const todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
+    const archivedTasks = todos.filter(t => t.archived);
+    
+    const container = document.getElementById("archived-tasks-container");
+    const msg = document.getElementById("no-archived-msg");
+    
+    if (archivedTasks.length > 0) {
+        container.style.display = "flex";
+        msg.style.display = "none";
+        container.innerHTML = "";
+        
+        archivedTasks.forEach(task => {
+            const row = document.createElement("div");
+            row.style.display = "flex";
+            row.style.justifyContent = "space-between";
+            row.style.alignItems = "center";
+            row.style.padding = "0.5rem";
+            row.style.background = "var(--surface-3)";
+            row.style.borderRadius = "3px";
+            
+            const span = document.createElement("span");
+            span.style.color = "var(--text)";
+            span.style.fontSize = "0.8rem";
+            span.style.overflow = "hidden";
+            span.style.textOverflow = "ellipsis";
+            span.style.whiteSpace = "nowrap";
+            span.textContent = task.text;
+            
+            const btnWrap = document.createElement("div");
+            btnWrap.style.display = "flex";
+            btnWrap.style.gap = "0.5rem";
+            
+            const btnRestore = document.createElement("button");
+            btnRestore.textContent = "Désarchiver";
+            btnRestore.style.background = "transparent";
+            btnRestore.style.border = "1px solid var(--line-strong)";
+            btnRestore.style.color = "var(--text-muted)";
+            btnRestore.style.padding = "0.2rem 0.5rem";
+            btnRestore.style.fontSize = "0.7rem";
+            btnRestore.style.cursor = "pointer";
+            btnRestore.style.borderRadius = "3px";
+            btnRestore.addEventListener("click", async () => {
+                task.archived = false;
+                await saveArchivedChanges(todos);
+            });
+            
+            const btnDelete = document.createElement("button");
+            btnDelete.textContent = "Supprimer";
+            btnDelete.style.background = "transparent";
+            btnDelete.style.border = "1px solid rgba(248, 113, 113, 0.4)";
+            btnDelete.style.color = "#f87171";
+            btnDelete.style.padding = "0.2rem 0.5rem";
+            btnDelete.style.fontSize = "0.7rem";
+            btnDelete.style.cursor = "pointer";
+            btnDelete.style.borderRadius = "3px";
+            btnDelete.addEventListener("click", async () => {
+                if (confirm("Supprimer définitivement cette tâche ?")) {
+                    const newTodos = todos.filter(t => t.id !== task.id);
+                    await saveArchivedChanges(newTodos);
+                }
+            });
+            
+            btnWrap.appendChild(btnRestore);
+            btnWrap.appendChild(btnDelete);
+            row.appendChild(span);
+            row.appendChild(btnWrap);
+            container.appendChild(row);
+        });
+    } else {
+        container.style.display = "none";
+        msg.style.display = "block";
+    }
+}
+
+async function saveArchivedChanges(newTodos) {
+    localStorage.setItem(`todos_${currentUser}`, JSON.stringify(newTodos));
+    updateArchivedView();
+    try {
+        await saveTodosToFirebase(newTodos);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+const btnArchiveDone = document.getElementById("btn-archive-done");
+if (btnArchiveDone) {
+    btnArchiveDone.addEventListener("click", async () => {
+        const todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
+        let changed = false;
+        todos.forEach(t => {
+            if (t.status === "done" && !t.archived) {
+                t.archived = true;
+                changed = true;
+            }
+        });
+        
+        const msgEl = document.getElementById("msg-archive");
+        if (changed) {
+            await saveArchivedChanges(todos);
+            showMsg(msgEl, "✓ Tâches terminées archivées !");
+        } else {
+            showMsg(msgEl, "Aucune tâche terminée à archiver.");
+        }
+    });
+    
+    updateArchivedView();
+}
