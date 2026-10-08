@@ -399,11 +399,14 @@ function updateArchivedView() {
             span.style.overflow = "hidden";
             span.style.textOverflow = "ellipsis";
             span.style.whiteSpace = "nowrap";
+            span.style.flex = "1";
+            span.style.minWidth = "0";
             span.textContent = task.text;
             
             const btnWrap = document.createElement("div");
             btnWrap.style.display = "flex";
             btnWrap.style.gap = "0.5rem";
+            btnWrap.style.flexShrink = "0";
             
             const btnRestore = document.createElement("button");
             btnRestore.textContent = "Désarchiver";
