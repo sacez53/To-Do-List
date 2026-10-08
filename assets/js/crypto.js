@@ -3,11 +3,29 @@
 //  Chargé avant : login.js, app.js, settings.js
 // ══════════════════════════════════════════════════════
 
-// ── 1. Hash SHA-256 (vérification de mot de passe) ─────
+// ── 1. Hash SHA-256 (Ancien hash, gardé pour la migration) ─────
 async function hashPassword(password) {
   const buf  = new TextEncoder().encode(password);
   const hash = await crypto.subtle.digest("SHA-256", buf);
   return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// ── 1.5 Hash PBKDF2 (Nouveau hash fort avec sel) ─────
+async function hashPasswordPBKDF2(password, saltBase64) {
+  const enc  = new TextEncoder();
+  const salt = Uint8Array.from(atob(saltBase64), c => c.charCodeAt(0));
+
+  const baseKey = await crypto.subtle.importKey(
+    "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveBits"]
+  );
+
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, baseKey, 256
+  );
+  
+  return Array.from(new Uint8Array(bits))
     .map(b => b.toString(16).padStart(2, "0"))
     .join("");
 }

@@ -79,9 +79,25 @@ loginForm.addEventListener("submit", async (e) => {
       return;
     }
 
-    // Vérifie le mot de passe
-    const hash = await hashPassword(password);
-    if (hash !== userData.password) {
+    // ── Vérification et Migration du mot de passe ──
+    const oldHash = await hashPassword(password);
+    const isOldHash = (oldHash === userData.password);
+
+    let salt = userData.salt;
+    if (!salt) {
+      salt = generateSalt();
+      // On sauvegarde le sel s'il manquait
+      await fetch(`${fbUrl}/users/${encodeURIComponent(username)}/salt.json`, {
+        method:  "PUT",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(salt)
+      });
+    }
+
+    const strongHash = await hashPasswordPBKDF2(password, salt);
+    const isStrongHash = (strongHash === userData.password);
+
+    if (!isOldHash && !isStrongHash) {
       showError(loginError, "Mot de passe incorrect.");
       document.getElementById("login-pass").value = "";
       document.getElementById("login-pass").focus();
@@ -89,15 +105,14 @@ loginForm.addEventListener("submit", async (e) => {
       return;
     }
 
-    // ── Récupère ou génère un sel (migration comptes sans sel) ──
-    let salt = userData.salt;
-    if (!salt) {
-      salt = generateSalt();
-      await fetch(`${fbUrl}/users/${encodeURIComponent(username)}/salt.json`, {
-        method:  "PUT",
+    // Migration automatique vers PBKDF2 si l'utilisateur est encore sous SHA-256
+    if (isOldHash && oldHash !== strongHash) {
+      await fetch(`${fbUrl}/users/${encodeURIComponent(username)}/password.json`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(salt)
+        body: JSON.stringify(strongHash)
       });
+      console.log("Migration de sécurité du mot de passe réussie !");
     }
 
     // ── Dérive la clé AES-256-GCM depuis le mot de passe ──
@@ -182,8 +197,8 @@ registerForm.addEventListener("submit", async (e) => {
     }
 
     // ── Crée le compte avec sel ──
-    const hash = await hashPassword(password);
     const salt = generateSalt();
+    const hash = await hashPasswordPBKDF2(password, salt);
 
     await fetch(`${fbUrl}/users/${encodeURIComponent(username)}.json`, {
       method:  "PUT",
