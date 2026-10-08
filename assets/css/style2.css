@@ -1255,3 +1255,47 @@ button { -webkit-appearance: none; appearance: none; }
   .settings-section-header { padding: 0.875rem 1rem; }
   .settings-form { padding: 1rem; }
 }
+
+/* ── Tabs Settings ── */
+.settings-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.settings-tabs::-webkit-scrollbar {
+  display: none;
+}
+.settings-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+  border-radius: 4px 4px 0 0;
+}
+.settings-tab-btn.active {
+  color: var(--white);
+  border-bottom-color: var(--v2-accent, var(--white));
+}
+.settings-tab-btn:hover {
+  color: var(--white);
+}
+.settings-tab-content {
+  display: none;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: itemIn 250ms ease both;
+}
+.settings-tab-content.active {
+  display: flex;
+}
