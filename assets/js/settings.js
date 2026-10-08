@@ -480,3 +480,25 @@ if (btnArchiveDone) {
     
     updateArchivedView();
 }
+
+
+// ══════════════════════════════════════════════════════
+//  6. GESTION DES ONGLETS
+// ══════════════════════════════════════════════════════
+const tabBtns = document.querySelectorAll('.settings-tab-btn');
+const tabContents = document.querySelectorAll('.settings-tab-content');
+
+if (tabBtns.length > 0) {
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Retirer la classe active de tous les boutons et contenus
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+      
+      // Ajouter la classe active au bouton cliqué et à son contenu cible
+      btn.classList.add('active');
+      const targetId = btn.getAttribute('data-tab');
+      document.getElementById(targetId).classList.add('active');
+    });
+  });
+}
