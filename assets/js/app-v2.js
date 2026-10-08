@@ -166,6 +166,7 @@ function setSyncStatus(s) {
 // ══════════════════════════════════════════
 function applyFilters(arr) {
   return arr.filter(t => {
+    if (t.archived) return false;
     if (filterStatuses.length   && !filterStatuses.includes(t.status)) return false;
     if (filterPriorities.length && !filterPriorities.includes(t.priority || "normal")) return false;
     if (filterHasNotes  && !(t.notes && t.notes.trim())) return false;
@@ -255,8 +256,9 @@ function render() {
 }
 
 function updateStats() {
-  const total = todos.length;
-  const done  = todos.filter(t => t.status === "done").length;
+  const activeTodos = todos.filter(t => !t.archived);
+  const total = activeTodos.length;
+  const done  = activeTodos.filter(t => t.status === "done").length;
   const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
   if (statTotal)    statTotal.textContent    = `${total} tâche${total>1?"s":""}`;
   if (statDone)     statDone.textContent     = `${done} terminée${done>1?"s":""}`;
