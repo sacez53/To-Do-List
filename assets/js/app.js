@@ -331,7 +331,7 @@ function render() {
   list.innerHTML = "";
 
   let filtered = todos.filter(t =>
-    currentFilter === "all" ? true : t.status === currentFilter
+    !t.archived && (currentFilter === "all" ? true : t.status === currentFilter)
   );
 
   // Recherche textuelle
@@ -447,9 +447,10 @@ function render() {
 // Compteurs + barre de progression
 // ──────────────────────────────────────────────
 function updateCounters() {
-  const total      = todos.length;
-  const done       = todos.filter(t => t.status === "done").length;
-  const inprogress = todos.filter(t => t.status === "inprogress").length;
+  const activeTodos = todos.filter(t => !t.archived);
+  const total      = activeTodos.length;
+  const done       = activeTodos.filter(t => t.status === "done").length;
+  const inprogress = activeTodos.filter(t => t.status === "inprogress").length;
   const pct        = total > 0 ? Math.round((done / total) * 100) : 0;
 
   todoCountEl.textContent       = `${total} tâche${total > 1 ? "s" : ""}`;
