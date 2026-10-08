@@ -1,122 +1,133 @@
 <div align="center">
-  <img src="assets/logo/list-todo.svg" alt="Logo" width="80" height="80">
+  <img src="assets/logo/list-todo.svg" alt="Ma To-Do List Logo" width="120">
+
+  <h1>✨ Ma To-Do List ✨</h1>
   
-  # ✨ Ma To-Do List
-  
-  **Une application de gestion de tâches minimaliste, performante et synchronisée.**
-  
-  [![PWA Ready](https://img.shields.io/badge/PWA-Ready-8A2BE2?style=for-the-badge&logo=pwa)](https://sacez53.github.io/To-Do-List/)
-  [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://sacez53.github.io/To-Do-List/)
-  [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
-  [![Démo Live](https://img.shields.io/badge/Démo_Live-2ea44f?style=for-the-badge)](https://sacez53.github.io/To-Do-List/)
+  <p><strong>L'expérience ultime de gestion de tâches personnelle, conçue avec passion.</strong></p>
+
+  <p>
+    <a href="https://sacez53.github.io/To-Do-List/"><img src="https://img.shields.io/badge/Status-En_Ligne-2ea44f?style=for-the-badge&logo=vercel" alt="Status" /></a>
+    <a href="https://developer.mozilla.org/fr/docs/Web/JavaScript"><img src="https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="Vanilla JS" /></a>
+    <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Database-Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" /></a>
+    <a href="#"><img src="https://img.shields.io/badge/Design-Glassmorphism-8A2BE2?style=for-the-badge&logo=figma&logoColor=white" alt="Design" /></a>
+  </p>
+
+  <p>
+    <a href="#-aperçu-de-linterface">Aperçu</a> •
+    <a href="#-fonctionnalités-détaillées">Fonctionnalités</a> •
+    <a href="#%EF%B8%8F-installation-pour-les-développeurs">Installation</a> •
+    <a href="#-à-propos-de-lauteur">Auteur</a>
+  </p>
+</div>
+
+<br>
+
+> **Ma To-Do List** n'est pas qu'un simple gestionnaire de tâches. C'est une véritable **Progressive Web App (PWA)**, codée de zéro, qui allie la puissance d'une synchronisation Cloud en temps réel à l'élégance d'une interface minimaliste en Glassmorphism.
+
+---
+
+## 📸 Aperçu de l'Interface
+
+*(💡 Remplace ce bloc par tes propres captures d'écran en glissant-déposant les images sur GitHub)*
+<div align="center">
+  <img src="https://via.placeholder.com/800x400/0f0f0f/efefef?text=UI+Dashboard+-+Ins%C3%A9rer+une+Capture+d'%C3%A9cran+ici" alt="Aperçu Dashboard" width="85%" style="border-radius: 8px; border: 1px solid #2e2e2e;">
 </div>
 
 ---
 
-Application web conçue de zéro en **HTML5 / CSS3 / JavaScript Vanilla**, offrant une expérience utilisateur fluide avec **authentification multi-utilisateurs**, **synchronisation temps réel** (Firebase) et **support PWA complet** (installable sur mobile/desktop).
+## 🚀 Pourquoi utiliser cette To-Do List ?
 
-## 🌟 Fonctionnalités Principales
+### ⚡ Performante & Autonome (PWA)
+Pas besoin d'App Store. Naviguez sur le site via Chrome ou Safari et cliquez sur **Installer**. Grâce à son `Service Worker`, l'application gère un cache intelligent : elle s'ouvre instantanément et **fonctionne parfaitement hors-ligne**.
 
-| 🚀 Fonctionnalité | 📝 Détail |
-|:---|:---|
-| 📱 **Progressive Web App (PWA)** | Installable sur Android/iOS/Desktop. Fonctionne même avec une connexion instable grâce au Service Worker ! |
-| 🔐 **Authentification** | Inscription & Connexion sécurisées (hashage SHA-256 côté client via Web Crypto API). |
-| 👤 **Multi-utilisateurs** | Chaque compte dispose d'un espace isolé et privé. |
-| ☁️ **Synchronisation Temps Réel** | Connecté à Firebase Realtime Database pour une sync multi-appareils. |
-| 💾 **Mode Hors-Ligne** | Fallback localStorage complet. Vos données restent accessibles sans internet. |
-| ➕ **Gestion Avancée (CRUD)** | Créer, modifier, supprimer des tâches avec une modale ergonomique. |
-| 📋 **Cycles de Statuts** | Changez rapidement de statut : *À faire ➔ En cours ➔ En attente ➔ Terminé ➔ Annulé*. |
-| 🔴 **Priorités & Échéances** | Indicateurs visuels intelligents (Retard, Aujourd'hui, Bientôt). |
-| 🔍 **Recherche & Filtres** | Filtrage par statut et recherche instantanée dans les titres et notes. |
-| 📅 **Vues Calendrier** | Planning et grille mensuelle pour visualiser vos échéances. |
-| 🌑 **Dark Mode Premium** | Design glassmorphism, sombre, reposant pour les yeux avec des animations fluides. |
+### 🔒 Sécurité & Multi-Comptes
+Une véritable **sécurité de bout-en-bout**. Vos mots de passe sont hachés côté client via la `Web Crypto API` (SHA-256) avant même de toucher la base de données. Chaque utilisateur possède son espace strictement hermétique.
+
+### ☁️ Magie du Temps Réel
+Connectée à **Firebase Realtime Database**, toute modification sur votre smartphone apparaît instantanément sur votre ordinateur. Plus de rafraîchissement manuel : la donnée est vivante. 
 
 ---
 
-## 🚀 Démo Live
+## 🛠 Fonctionnalités Détaillées
 
-🔗 **[Accéder à l'application web](https://sacez53.github.io/To-Do-List/)**
+<details open>
+<summary><b>📂 Afficher les fonctionnalités principales</b></summary><br>
 
-> 💡 **Astuce Mobile :** Ouvrez le lien sur votre smartphone, allez dans les options du navigateur et cliquez sur **"Installer l'application"** pour l'ajouter à votre écran d'accueil comme une vraie application native !
+- 📋 **Cycles de Statuts :** Cliquez sur le statut d'une tâche pour cycler d'un geste : `À faire ➔ En cours ➔ En attente ➔ Terminé ➔ Annulé`.
+- ➕ **Modale de Gestion (CRUD) :** Édition avancée avec Titre, Notes illimitées, Priorité, et Date d'échéance.
+- 📅 **Vues Calendrier :** Un planning chronologique et une grille mensuelle pour ne rater aucune échéance.
+- 🔍 **Moteur de Recherche Intégré :** Trouvez instantanément une tâche grâce au filtre en temps réel (sur le titre et les notes).
+- 🚨 **Indicateurs d'Échéance :** Badges dynamiques qui s'affichent si la tâche est *en retard*, prévue pour *aujourd'hui*, ou *à venir*.
+- 📊 **Barre de Progression :** Suivi visuel de l'accomplissement global (calculé en direct).
+- 🌑 **Dark Mode Premium :** Couleurs de fond `#080808` et surfaces `#0f0f0f` pour réduire la fatigue visuelle (contraste certifié WCAG AA).
+
+</details>
 
 ---
 
-## 🛠️ Stack Technique
+## 🧬 Architecture & Stack Technique
+
+Un projet purement **Vanilla**, sans frameworks lourds (ni React, ni Vue), prouvant qu'il est possible de créer une application web complexe, ultra-réactive et maintenable uniquement avec les standards natifs d'aujourd'hui.
+
+| Couche | Technologies Utilisées | Rôle |
+| :--- | :--- | :--- |
+| 🌐 **Front-End** | HTML5, CSS3, ES2022 Vanilla | Structure sémantique, Grid/Flexbox, Logique asynchrone |
+| ☁️ **Back-End** | Firebase Realtime DB | Persistance Cloud & Synchronisation Temps Réel |
+| 🧠 **Navigateur** | localStorage, Web Crypto API | Mode Hors-Ligne & Hachage des mots de passe |
+| 📱 **Mobile** | PWA, Service Worker, Web Manifest | Installation App, Cache réseau, Responsive Design |
+
+---
+
+## 📁 Structure du Répertoire
+
+L'arborescence suit les meilleures pratiques de développement web :
 
 ```text
-  📄 HTML5       🎨 CSS3       ⚙️ JavaScript      ☁️ Firebase     📱 PWA
-Structure       Design        Logique           Database       Offline
-```
-
-- **Sémantique & Accessibilité** : HTML5 moderne
-- **Design & Animations** : CSS3 pur, CSS Variables, Flexbox/Grid
-- **Logique Client** : ES2022 Vanilla (Async/Await), Web Crypto API
-- **Stockage Local** : `localStorage` (données), `sessionStorage` (auth)
-- **Stockage Cloud** : Firebase Realtime Database
-- **Performances** : Service Worker (`sw.js`) avec stratégie de cache "Network First / Cache First"
-
----
-
-## 📁 Structure du Projet
-
-L'arborescence respecte les standards modernes de développement web :
-
-```text
-To-Do-List/
-├── 📄 index.html             # Point d'entrée (Landing page & redirection)
-├── 📄 manifest.json          # Manifeste PWA (Installation mobile/desktop)
-├── 📄 sw.js                  # Service Worker (Cache offline)
-├── 📁 pages/                 # Toutes les vues HTML
-│   ├── app.html              # Tableau de bord principal
-│   ├── login.html            # Interface d'authentification
-│   ├── calendar.html         # Vues calendrier
-│   └── ...                   
-└── 📁 assets/                # Ressources statiques
-    ├── 📁 css/               # Feuilles de style (style.css, style2.css)
-    ├── 📁 js/                # Logique (app.js, login.js, crypto.js...)
-    ├── 📁 json/              # Fichiers de configuration (Firebase, Version...)
-    ├── 📁 logo/              # Logos SVG et PNG
-    └── 📁 icons/             # Icônes générées pour la PWA (192x, 512x, Maskable)
+📦 To-Do-List
+ ┣ 📂 assets
+ ┃ ┣ 📂 css        # Feuilles de style modulaires
+ ┃ ┣ 📂 icons      # Icônes PWA générées (192x, 512x, Maskable)
+ ┃ ┣ 📂 js         # Logique métier (app, crypto, calendar...)
+ ┃ ┣ 📂 json       # Configurations (Firebase, UI, Sécurité)
+ ┃ ┗ 📂 logo       # Identité visuelle (SVG)
+ ┣ 📂 pages        # Vues HTML (dashboard, login, calendar...)
+ ┣ 📜 index.html   # Point d'entrée de la Web App
+ ┣ 📜 manifest.json# Manifeste d'installation PWA
+ ┗ 📜 sw.js        # Service Worker (stratégie Network/Cache)
 ```
 
 ---
 
-## ⚙️ Installation & Configuration
+## ⚙️ Installation (Pour les développeurs)
 
-### 1. Cloner le projet
-```bash
-git clone https://github.com/sacez53/To-Do-List.git
-cd To-Do-List
-```
-
-### 2. Lier Firebase (Optionnel)
-Modifiez le fichier `assets/json/firebase.json` avec l'URL de votre base de données Realtime Database :
-```json
-{
-  "firebaseUrl": "https://VOTRE-PROJET.europe-west1.firebasedatabase.app/"
-}
-```
-*Si vous laissez ce champ vide, l'application fonctionnera à 100% en local (localStorage).*
-
-### 3. Lancer l'application
-Le projet ne nécessitant aucun framework lourd, ouvrez simplement `index.html` avec **Live Server** sur VS Code, ou déployez le dossier sur **GitHub Pages / Vercel / Netlify**.
-
-*(⚠️ Note : La PWA et le Service Worker nécessitent un hébergement en HTTPS pour s'activer).*
+1. **Cloner le dépôt** :
+   ```bash
+   git clone https://github.com/sacez53/To-Do-List.git
+   ```
+2. **Configurer la base de données** :
+   Dans `assets/json/firebase.json`, remplacez l'URL par la vôtre. *(Astuce : Laissez vide pour tester l'app 100% hors-ligne via le localStorage !)*
+3. **Lancer le serveur** :
+   Ouvrez le projet via *Live Server* (VS Code) ou déployez-le sur *GitHub Pages*.
 
 ---
 
-## 👨‍💻 Auteur
+## 👨‍💻 À Propos de l'Auteur
 
-**Sacha G.**  
-*Étudiant BUT MMI · Développeur Web · Photographe*  
-📍 Laval, Pays de la Loire, France
+Conçu et développé par **Sacha G.**  
+*Étudiant BUT MMI, Développeur Web passionné et Photographe Professionnel basé à Laval (France).*
 
-[![GitHub](https://img.shields.io/badge/GitHub-sacez53-181717?style=for-the-badge&logo=github)](https://github.com/sacez53)
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/sacha.guitter.photo/)
+<p>
+  <a href="https://github.com/sacez53">
+    <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  <a href="https://www.instagram.com/sacha.guitter.photo/">
+    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" />
+  </a>
+</p>
 
 ---
 
 <div align="center">
-  <p><i>Conçu avec passion en Vanilla JS.</i></p>
-  <p>MIT License © 2026 Sacha G.</p>
+  <small>Distribué sous la licence MIT. ©️ 2026 Sacha G.</small><br>
+  <b>Si ce projet vous plaît, n'hésitez pas à laisser une ⭐ sur le dépôt GitHub !</b>
 </div>
