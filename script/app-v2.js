@@ -289,7 +289,8 @@ function renderList(items) {
     `;
     li.querySelector(".v2-badge").addEventListener("click", e => {
       e.stopPropagation();
-      todo.status = todo.status === "done" ? "todo" : "done";
+      const cycle = ["todo", "inprogress", "waiting", "done", "cancelled"];
+      todo.status = cycle[(cycle.indexOf(todo.status) + 1) % cycle.length];
       saveTodos(); render();
     });
     li.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id); });

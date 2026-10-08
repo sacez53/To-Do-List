@@ -370,7 +370,8 @@ function render() {
     badge.textContent = `${info.icon} ${info.label}`;
     badge.addEventListener("click", e => {
       e.stopPropagation(); // Empêche l'ouverture de la modale
-      todo.status = todo.status === "done" ? "todo" : "done";
+      const cycle = ["todo", "inprogress", "waiting", "done", "cancelled"];
+      todo.status = cycle[(cycle.indexOf(todo.status) + 1) % cycle.length];
       saveTodos();
       render();
     });
