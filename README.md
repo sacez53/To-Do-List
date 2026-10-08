@@ -1,201 +1,122 @@
-# ✅ To-Do List — Sacha's experience based ToDo app
-
-[![GitHub Pages](https://img.shields.io/badge/Démo-Live-brightgreen)](https://sacez53.github.io/To-Do-List/)
-[![Firebase](https://img.shields.io/badge/Firebase-Realtime%20DB-orange)](https://firebase.google.com/)
-[![Vanilla JS](https://img.shields.io/badge/Vanilla%20JS-100%25-yellow)](https://sacez53.github.io/To-Do-List/)
-[![Responsive](https://img.shields.io/badge/Responsive-✅-blue)](https://sacez53.github.io/To-Do-List/)
-
-Application de gestion de tâches, conçue en **HTML5 / CSS3 / JavaScript vanilla**, avec **authentification multi-utilisateurs** et **synchronisation temps réel via Firebase Realtime Database**.
+<div align="center">
+  <img src="assets/logo/list-todo.svg" alt="Logo" width="80" height="80">
+  
+  # ✨ Ma To-Do List
+  
+  **Une application de gestion de tâches minimaliste, performante et synchronisée.**
+  
+  [![PWA Ready](https://img.shields.io/badge/PWA-Ready-8A2BE2?style=for-the-badge&logo=pwa)](https://sacez53.github.io/To-Do-List/)
+  [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://sacez53.github.io/To-Do-List/)
+  [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+  [![Démo Live](https://img.shields.io/badge/Démo_Live-2ea44f?style=for-the-badge)](https://sacez53.github.io/To-Do-List/)
+</div>
 
 ---
 
-## ✨ Fonctionnalités
+Application web conçue de zéro en **HTML5 / CSS3 / JavaScript Vanilla**, offrant une expérience utilisateur fluide avec **authentification multi-utilisateurs**, **synchronisation temps réel** (Firebase) et **support PWA complet** (installable sur mobile/desktop).
 
-| Fonctionnalité | Détail |
-|---|---|
-| 🔐 **Authentification** | Inscription / Connexion sécurisées (hash SHA-256 côté client) |
-| 👤 **Multi-utilisateurs** | Chaque compte a ses propres tâches isolées |
-| ☁️ **Sync Firebase** | Synchronisation temps réel entre appareils |
-| 💾 **Fallback localStorage** | Fonctionne hors-ligne si Firebase indisponible |
-| ➕ **CRUD complet** | Créer, lire, modifier, supprimer des tâches via modale |
-| 📋 **Statuts multiples** | À faire · En cours · En attente · Terminé · Annulé |
-| 🔴 **Priorités** | Haute / Normale / Basse |
-| 📅 **Dates d'échéance** | Alertes visuelles (En retard / Aujourd'hui / Bientôt) |
-| 📝 **Notes** | Champ de notes libre par tâche |
-| 🔍 **Recherche** | Recherche en temps réel dans les titres et notes |
-| 🗂️ **Filtres** | Par statut (Toutes / En cours / Terminées…) |
-| 🔃 **Tri** | Par date de création, priorité, échéance ou statut |
-| 📊 **Barre de progression** | Pourcentage de tâches terminées |
-| 🌑 **Design sombre premium** | Interface glassmorphism, animations fluides |
-| 📱 **Responsive** | Mobile-first, navigation optimisée |
-| 🔄 **Indicateur de sync** | Statut de synchronisation Firebase en temps réel |
+## 🌟 Fonctionnalités Principales
+
+| 🚀 Fonctionnalité | 📝 Détail |
+|:---|:---|
+| 📱 **Progressive Web App (PWA)** | Installable sur Android/iOS/Desktop. Fonctionne même avec une connexion instable grâce au Service Worker ! |
+| 🔐 **Authentification** | Inscription & Connexion sécurisées (hashage SHA-256 côté client via Web Crypto API). |
+| 👤 **Multi-utilisateurs** | Chaque compte dispose d'un espace isolé et privé. |
+| ☁️ **Synchronisation Temps Réel** | Connecté à Firebase Realtime Database pour une sync multi-appareils. |
+| 💾 **Mode Hors-Ligne** | Fallback localStorage complet. Vos données restent accessibles sans internet. |
+| ➕ **Gestion Avancée (CRUD)** | Créer, modifier, supprimer des tâches avec une modale ergonomique. |
+| 📋 **Cycles de Statuts** | Changez rapidement de statut : *À faire ➔ En cours ➔ En attente ➔ Terminé ➔ Annulé*. |
+| 🔴 **Priorités & Échéances** | Indicateurs visuels intelligents (Retard, Aujourd'hui, Bientôt). |
+| 🔍 **Recherche & Filtres** | Filtrage par statut et recherche instantanée dans les titres et notes. |
+| 📅 **Vues Calendrier** | Planning et grille mensuelle pour visualiser vos échéances. |
+| 🌑 **Dark Mode Premium** | Design glassmorphism, sombre, reposant pour les yeux avec des animations fluides. |
 
 ---
 
 ## 🚀 Démo Live
 
-```
-https://sacez53.github.io/To-Do-List/
-```
+🔗 **[Accéder à l'application web](https://sacez53.github.io/To-Do-List/)**
 
-> 🔐 Crée un compte, connecte-toi, et retrouve tes tâches sur n'importe quel appareil.
+> 💡 **Astuce Mobile :** Ouvrez le lien sur votre smartphone, allez dans les options du navigateur et cliquez sur **"Installer l'application"** pour l'ajouter à votre écran d'accueil comme une vraie application native !
 
 ---
 
 ## 🛠️ Stack Technique
 
-```
-HTML5        CSS3         Vanilla JS     Firebase
-  📄           🎨             ⚙️              ☁️
-Structure    Design        Logique      Base de données
+```text
+  📄 HTML5       🎨 CSS3       ⚙️ JavaScript      ☁️ Firebase     📱 PWA
+Structure       Design        Logique           Database       Offline
 ```
 
-| Technologie | Usage |
-|---|---|
-| **HTML5 sémantique** | Structure des pages |
-| **CSS3 custom** | Design, animations, responsive |
-| **JavaScript ES2022** | Logique, async/await, Web Crypto API |
-| **Firebase Realtime DB** | Persistance cloud & sync multi-device |
-| **localStorage** | Persistance locale & fallback offline |
-| **sessionStorage** | Gestion de session utilisateur |
-| **Web Crypto API** | Hash SHA-256 des mots de passe |
+- **Sémantique & Accessibilité** : HTML5 moderne
+- **Design & Animations** : CSS3 pur, CSS Variables, Flexbox/Grid
+- **Logique Client** : ES2022 Vanilla (Async/Await), Web Crypto API
+- **Stockage Local** : `localStorage` (données), `sessionStorage` (auth)
+- **Stockage Cloud** : Firebase Realtime Database
+- **Performances** : Service Worker (`sw.js`) avec stratégie de cache "Network First / Cache First"
 
 ---
 
 ## 📁 Structure du Projet
 
-```
+L'arborescence respecte les standards modernes de développement web :
+
+```text
 To-Do-List/
-├── index.html          # 🔀 Redirection automatique vers login.html
-├── login.html          # 🔐 Page d'authentification (connexion + inscription)
-├── login.js            # ⚙️  Logique auth (Firebase, SHA-256, validation)
-├── app.html            # 🗂️  Interface principale de gestion des tâches
-├── app.js              # ⚙️  Logique tâches (CRUD, filtres, tri, sync Firebase)
-├── config.json         # 🔧 URL Firebase Realtime Database
-├── style/
-│   ├── style.css       # 🎨 Styles de la page de login
-│   └── style2.css      # 🎨 Styles de l'application principale
-├── logo/               # 🖼️  Assets logo
-└── README.md           # 📖 Documentation
+├── 📄 index.html             # Point d'entrée (Landing page & redirection)
+├── 📄 manifest.json          # Manifeste PWA (Installation mobile/desktop)
+├── 📄 sw.js                  # Service Worker (Cache offline)
+├── 📁 pages/                 # Toutes les vues HTML
+│   ├── app.html              # Tableau de bord principal
+│   ├── login.html            # Interface d'authentification
+│   ├── calendar.html         # Vues calendrier
+│   └── ...                   
+└── 📁 assets/                # Ressources statiques
+    ├── 📁 css/               # Feuilles de style (style.css, style2.css)
+    ├── 📁 js/                # Logique (app.js, login.js, crypto.js...)
+    ├── 📁 json/              # Fichiers de configuration (Firebase, Version...)
+    ├── 📁 logo/              # Logos SVG et PNG
+    └── 📁 icons/             # Icônes générées pour la PWA (192x, 512x, Maskable)
 ```
 
 ---
 
 ## ⚙️ Installation & Configuration
 
-### 1. Cloner le repo
-
+### 1. Cloner le projet
 ```bash
-git clone https://github.com/sacez53/To-Do-List
+git clone https://github.com/sacez53/To-Do-List.git
 cd To-Do-List
 ```
 
-### 2. Configurer Firebase
-
-Édite `config.json` avec l'URL de ta Firebase Realtime Database :
-
+### 2. Lier Firebase (Optionnel)
+Modifiez le fichier `assets/json/firebase.json` avec l'URL de votre base de données Realtime Database :
 ```json
 {
-  "firebaseUrl": "https://ton-projet-default-rtdb.europe-west1.firebasedatabase.app/"
+  "firebaseUrl": "https://VOTRE-PROJET.europe-west1.firebasedatabase.app/"
 }
 ```
+*Si vous laissez ce champ vide, l'application fonctionnera à 100% en local (localStorage).*
 
-> **Sans Firebase** : laisse `firebaseUrl` vide ou supprime-le – l'app fonctionne en mode local (localStorage uniquement).
+### 3. Lancer l'application
+Le projet ne nécessitant aucun framework lourd, ouvrez simplement `index.html` avec **Live Server** sur VS Code, ou déployez le dossier sur **GitHub Pages / Vercel / Netlify**.
 
-### 3. Règles Firebase recommandées
-
-```json
-{
-  "rules": {
-    ".read": true,
-    ".write": true
-  }
-}
-```
-
-> ⚠️ Pour la production, restreindre les règles d'accès Firebase.
-
-### 4. Lancer
-
-Ouvre `index.html` dans le navigateur ou utilise **Live Server** (VS Code).
-
----
-
-## 🔐 Système d'Authentification
-
-- **Inscription** : username (3–20 caractères alphanumériques) + mot de passe (min. 5 caractères)
-- **Hachage** : le mot de passe est hashé en SHA-256 via la **Web Crypto API** avant envoi
-- **Stockage** : `{ password: hash, todos: [...] }` dans Firebase sous `/users/{username}/`
-- **Session** : gérée par `sessionStorage` (expirée à la fermeture du navigateur)
-- **Isolation** : les tâches de chaque utilisateur sont strictement séparées
-
----
-
-## 🗄️ Structure des Données Firebase
-
-```json
-{
-  "users": {
-    "sacha": {
-      "password": "<sha256_hash>",
-      "todos": [
-        {
-          "id": 1711800000000,
-          "text": "Livraison album client Dupont",
-          "status": "inprogress",
-          "priority": "high",
-          "due": "2026-04-01",
-          "notes": "Exporter en JPEG 72dpi pour le web",
-          "created": "2026-03-30T17:00:00.000Z"
-        }
-      ]
-    }
-  }
-}
-```
-
----
-
-## 🎮 Utilisation
-
-```
-1. 🔐 Connexion / Inscription sur login.html
-2. ➕ Cliquer sur le bouton + pour créer une tâche
-3. 📋 Renseigner : titre, statut, priorité, date d'échéance, notes
-4. 🔍 Rechercher une tâche via la barre de recherche
-5. 🗂️  Filtrer par statut via les boutons de filtre
-6. 🔃 Trier par date, priorité, échéance ou statut
-7. 📊 Suivre la progression globale via la barre de progression
-8. 🔄 Toutes les modifications se synchronisent automatiquement avec Firebase
-9. 🚪 Se déconnecter via le bouton de déconnexion
-```
-
----
-
-## 📱 Responsive Design
-
-| Écran | Comportement |
-|---|---|
-| **Mobile** < 480px | Navigation compacte, tâches pleine largeur |
-| **Tablette** < 768px | Layout adaptatif, compteurs centrés |
-| **Desktop** > 1024px | Interface centrée, max-width optimisée |
+*(⚠️ Note : La PWA et le Service Worker nécessitent un hébergement en HTTPS pour s'activer).*
 
 ---
 
 ## 👨‍💻 Auteur
 
-**Sacha G.**
-*Étudiant BUT MMI · Photographe professionnel*
+**Sacha G.**  
+*Étudiant BUT MMI · Développeur Web · Photographe*  
 📍 Laval, Pays de la Loire, France
 
-[![GitHub](https://img.shields.io/badge/GitHub-sacez53-black)](https://github.com/sacez53)
+[![GitHub](https://img.shields.io/badge/GitHub-sacez53-181717?style=for-the-badge&logo=github)](https://github.com/sacez53)
+[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/sacha.guitter.photo/)
 
 ---
 
-## 📄 Licence
-
-```
-MIT License © 2026 Sacha G.
-Libre d'utilisation, modification et intégration.
-⭐ N'hésite pas à star le repo si le projet t'est utile !
-```
+<div align="center">
+  <p><i>Conçu avec passion en Vanilla JS.</i></p>
+  <p>MIT License © 2026 Sacha G.</p>
+</div>
