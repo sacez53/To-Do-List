@@ -1,8 +1,9 @@
-const CACHE_NAME = 'todo-list-cache-v1';
+const CACHE_NAME = 'todo-list-cache-v2';
 const urlsToCache = [
   './',
   './index.html',
   './assets/css/style.css',
+  './assets/css/style2.css',
   './assets/js/transitions.js',
   './assets/js/burger-menu.js',
   './assets/logo/list-todo.svg',
@@ -21,6 +22,11 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  
+  // Bypass Service Worker cache for Firebase API requests
+  if (event.request.url.includes('firebasedatabase.app')) {
+    return;
+  }
   
   // Stratégie Réseau d'abord (Network First) pour le HTML, Cache d'abord pour le reste
   if (event.request.headers.get('accept').includes('text/html')) {
