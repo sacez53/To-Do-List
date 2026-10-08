@@ -50,6 +50,13 @@
 
     <!-- ── Contenu principal ── -->
     <main class="container settings-container">
+      <nav class="settings-tabs">
+        <button class="settings-tab-btn active" data-tab="tab-account">👤 Compte</button>
+        <button class="settings-tab-btn" data-tab="tab-display">👁️ Affichage</button>
+        <button class="settings-tab-btn" data-tab="tab-archive">📦 Archives</button>
+        <button class="settings-tab-btn" data-tab="tab-danger">⚠️ Danger</button>
+      </nav>
+      <div id="tab-account" class="settings-tab-content active">
 
       <!-- ══ Section : Identifiant ══ -->
       <section class="settings-section" aria-labelledby="section-username-title">
@@ -140,6 +147,9 @@
         </div>
       </section>
 
+            </div>
+
+      <div id="tab-display" class="settings-tab-content">
       <!-- ══ Section : Affichage ══ -->
       <section class="settings-section" aria-labelledby="section-display-title">
         <div class="settings-section-header">
@@ -165,6 +175,9 @@
         </div>
       </section>
 
+            </div>
+
+      <div id="tab-archive" class="settings-tab-content">
       <!-- ══ Section : Archives ══ -->
       <section class="settings-section" aria-labelledby="section-archive-title">
         <div class="settings-section-header">
@@ -188,6 +201,9 @@
         </div>
       </section>
 
+            </div>
+
+      <div id="tab-danger" class="settings-tab-content">
       <!-- ══ Section : Zone de danger ══ -->
       <section class="settings-section settings-section-danger" aria-labelledby="section-danger-title">
         <div class="settings-section-header">
@@ -220,6 +236,7 @@
         </div>
       </section>
 
+          </div>
     </main>
 
     <footer class="footer">
