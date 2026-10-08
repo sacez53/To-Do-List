@@ -1,14 +1,14 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>ParamÃ¨tres â€” Toâ€‘Do List</title>
+    <title>Paramètres — To‑Do List</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#080808" />
-    <meta name="description" content="GÃ©rez votre compte : identifiant, mot de passe et suppression." />
+    <meta name="description" content="Gérez votre compte : identifiant, mot de passe et suppression." />
     <link rel="icon" href="../logo/list-todo.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,34 +27,34 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js');
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
 </head>
   <body>
 
-    <!-- â”€â”€ Header â”€â”€ -->
+    <!-- ── Header ── -->
     <header class="header">
-      <h1>ParamÃ¨tres</h1>
+      <h1>Paramètres</h1>
       <p style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; text-transform: none;">
         <span>Espace de <strong id="user-label" style="color: var(--white); font-weight: 500;"></strong></span>
-        <span style="opacity: 0.5;">Â·</span>
-        <span>Compte & SÃ©curitÃ©</span>
+        <span style="opacity: 0.5;">·</span>
+        <span>Compte & Sécurité</span>
       </p>
       <div class="header-actions">
-        <a class="btn-settings" href="app.html" id="back-btn">â† Retour Ã  l'App</a>
-        <button id="logout-btn">DÃ©connexion</button>
+        <a class="btn-settings" href="app.html" id="back-btn">← Retour à l'App</a>
+        <button id="logout-btn">Déconnexion</button>
       </div>
     </header>
 
-    <!-- â”€â”€ Contenu principal â”€â”€ -->
+    <!-- ── Contenu principal ── -->
     <main class="container settings-container">
 
-      <!-- â•â• Section : Identifiant â•â• -->
+      <!-- ══ Section : Identifiant ══ -->
       <section class="settings-section" aria-labelledby="section-username-title">
         <div class="settings-section-header">
-          <span class="settings-section-icon" aria-hidden="true">ðŸ‘¤</span>
+          <span class="settings-section-icon" aria-hidden="true">👤</span>
           <div>
             <h2 class="settings-section-title" id="section-username-title">Identifiant</h2>
             <p class="settings-section-sub">Modifier votre nom d'utilisateur</p>
@@ -80,7 +80,7 @@
                 type="password"
                 id="confirm-pass-username"
                 class="modal-input"
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 autocomplete="current-password"
               />
             </div>
@@ -92,13 +92,13 @@
         </div>
       </section>
 
-      <!-- â•â• Section : Mot de passe â•â• -->
+      <!-- ══ Section : Mot de passe ══ -->
       <section class="settings-section" aria-labelledby="section-password-title">
         <div class="settings-section-header">
-          <span class="settings-section-icon" aria-hidden="true">ðŸ”‘</span>
+          <span class="settings-section-icon" aria-hidden="true">🔑</span>
           <div>
             <h2 class="settings-section-title" id="section-password-title">Mot de passe</h2>
-            <p class="settings-section-sub">Modifier votre mot de passe â€” re-chiffre toutes vos tÃ¢ches - Cause la supression de vos taches sur votre compte.</p>
+            <p class="settings-section-sub">Modifier votre mot de passe — re-chiffre toutes vos tâches - Cause la supression de vos taches sur votre compte.</p>
           </div>
         </div>
 
@@ -109,7 +109,7 @@
               type="password"
               id="old-password"
               class="modal-input"
-              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+              placeholder="••••••••"
               autocomplete="current-password"
             />
           </div>
@@ -119,7 +119,7 @@
               type="password"
               id="new-password"
               class="modal-input"
-              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+              placeholder="••••••••"
               autocomplete="new-password"
             />
           </div>
@@ -129,7 +129,7 @@
               type="password"
               id="confirm-new-password"
               class="modal-input"
-              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+              placeholder="••••••••"
               autocomplete="new-password"
             />
           </div>
@@ -140,19 +140,19 @@
         </div>
       </section>
 
-      <!-- â•â• Section : Affichage â•â• -->
+      <!-- ══ Section : Affichage ══ -->
       <section class="settings-section" aria-labelledby="section-display-title">
         <div class="settings-section-header">
-          <span class="settings-section-icon" aria-hidden="true">ðŸ‘ï¸</span>
+          <span class="settings-section-icon" aria-hidden="true">👁️</span>
           <div>
-            <h2 class="settings-section-title" id="section-display-title">PrÃ©fÃ©rences d'affichage</h2>
+            <h2 class="settings-section-title" id="section-display-title">Préférences d'affichage</h2>
             <p class="settings-section-sub">Personnaliser l'apparence de l'application</p>
           </div>
         </div>
 
         <div class="settings-form">
           <div class="modal-field">
-            <label for="setting-calendar-view">Vue par dÃ©faut du calendrier</label>
+            <label for="setting-calendar-view">Vue par défaut du calendrier</label>
             <select id="setting-calendar-view" class="modal-select">
               <option value="grid">Mois (Grille)</option>
               <option value="planning">Planning (Liste chronologique)</option>
@@ -160,25 +160,25 @@
           </div>
           <div class="settings-msg" id="msg-display" role="alert" aria-live="polite"></div>
           <button class="btn-save settings-btn" id="btn-save-display">
-            Enregistrer les prÃ©fÃ©rences
+            Enregistrer les préférences
           </button>
         </div>
       </section>
 
-      <!-- â•â• Section : Zone de danger â•â• -->
+      <!-- ══ Section : Zone de danger ══ -->
       <section class="settings-section settings-section-danger" aria-labelledby="section-danger-title">
         <div class="settings-section-header">
-          <span class="settings-section-icon" aria-hidden="true">âš ï¸</span>
+          <span class="settings-section-icon" aria-hidden="true">⚠️</span>
           <div>
             <h2 class="settings-section-title" id="section-danger-title">Zone de danger</h2>
-            <p class="settings-section-sub">Actions irrÃ©versibles</p>
+            <p class="settings-section-sub">Actions irréversibles</p>
           </div>
         </div>
 
         <div class="settings-form">
           <p class="settings-danger-text">
-            La suppression de votre compte effacera dÃ©finitivement toutes vos tÃ¢ches
-            et donnÃ©es. Cette action est <strong>irrÃ©versible</strong>.
+            La suppression de votre compte effacera définitivement toutes vos tâches
+            et données. Cette action est <strong>irréversible</strong>.
           </p>
           <div class="modal-field">
             <label for="confirm-pass-delete">Confirmer avec votre mot de passe</label>
@@ -186,7 +186,7 @@
               type="password"
               id="confirm-pass-delete"
               class="modal-input"
-              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+              placeholder="••••••••"
               autocomplete="current-password"
             />
           </div>
@@ -200,15 +200,15 @@
     </main>
 
     <footer class="footer">
-      <p>Â© 2026 Â· Sacha G.</p>
+      <p>© 2026 · Sacha G.</p>
     </footer>
 
-    <!-- â•â• Modale de confirmation suppression â•â• -->
+    <!-- ══ Modale de confirmation suppression ══ -->
     <div id="delete-overlay" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="delete-confirm-heading">
       <div class="modal confirm-modal">
         <h2 class="modal-heading" id="delete-confirm-heading">Supprimer le compte ?</h2>
         <p class="confirm-text">
-          Toutes vos tÃ¢ches seront supprimÃ©es dÃ©finitivement. Cette action est irrÃ©versible.
+          Toutes vos tâches seront supprimées définitivement. Cette action est irréversible.
         </p>
         <div class="modal-actions">
           <button class="btn-delete-confirm" id="delete-confirm-yes">Supprimer</button>
@@ -222,4 +222,3 @@
     <script src="../script/settings.js"></script>
   </body>
 </html>
-

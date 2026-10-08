@@ -1,8 +1,8 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <title>Commentaires â€” Toâ€‘Do List</title>
+  <title>Commentaires — To‑Do List</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="description" content="Laissez un commentaire sur l'application To-Do List."/>
   <meta name="theme-color" content="#080808"/>
@@ -17,14 +17,14 @@
     html{color-scheme:dark;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;}
     body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg);color:var(--text);background-image:radial-gradient(circle,#161616 1px,transparent 1px);background-size:22px 22px;}
 
-    /* â”€â”€ Top bar â”€â”€ */
+    /* ── Top bar ── */
     .top-bar{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;background:rgba(8,8,8,.95);backdrop-filter:blur(8px);}
     .top-logo{font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color var(--tr);}
     .top-logo:hover{color:var(--white);}
     .top-back{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color var(--tr);}
     .top-back:hover{color:var(--white);}
 
-    /* â”€â”€ Layout â”€â”€ */
+    /* ── Layout ── */
     .page{flex:1;display:flex;flex-direction:column;}
     .hero-section{padding:2.5rem 1.25rem 1.5rem;text-align:center;border-bottom:1px solid var(--line);position:relative;}
     .hero-section::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:48px;height:1px;background:var(--accent);}
@@ -32,16 +32,16 @@
     .page-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
     .page-sub{font-size:.75rem;color:var(--text-muted);letter-spacing:.06em;line-height:1.6;}
 
-    /* â”€â”€ Container â”€â”€ */
+    /* ── Container ── */
     .container{width:100%;max-width:860px;margin:0 auto;padding:1.5rem 1.25rem 5rem;flex:1;}
 
-    /* â”€â”€ Stats bar â”€â”€ */
+    /* ── Stats bar ── */
     .stats-bar{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--line);margin-bottom:1.25rem;}
     #comment-count{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);}
     .refresh-btn{background:none;border:1px solid var(--line-strong);border-radius:var(--radius);color:var(--text-muted);font-size:.65rem;padding:.3rem .6rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:color var(--tr),border-color var(--tr);}
     .refresh-btn:hover{color:var(--white);border-color:var(--white);}
 
-    /* â”€â”€ Formulaire de publication â”€â”€ */
+    /* ── Formulaire de publication ── */
     .compose-box{background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem;position:relative;display:flex;flex-direction:column;gap:.75rem;}
     .compose-box::before{content:"";position:absolute;top:0;left:1.25rem;right:1.25rem;height:1px;background:linear-gradient(to right,transparent,rgba(74,222,128,.12),transparent);}
     .compose-header{display:flex;align-items:center;gap:.6rem;}
@@ -59,7 +59,7 @@
     .cm-logout{margin-left:auto;background:none;border:1px solid var(--line-strong);color:var(--text-faint);border-radius:2px;font-size:.65rem;padding:.2rem .5rem;cursor:pointer;transition:all var(--tr);text-transform:uppercase;letter-spacing:.06em;}
     .cm-logout:hover{color:var(--white);border-color:var(--white);}
 
-    /* â”€â”€ Message non connectÃ© â”€â”€ */
+    /* ── Message non connecté ── */
     #comment-auth-msg{display:none;align-items:center;gap:.75rem;padding:.875rem 1rem;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);margin-bottom:1.5rem;}
     .auth-msg-icon{font-size:1.2rem;flex-shrink:0;}
     .auth-msg-text{flex:1;}
@@ -68,14 +68,14 @@
     .auth-msg-link{display:inline-flex;align-items:center;gap:.3rem;padding:.5rem .875rem;border:1px solid var(--white);border-radius:var(--radius);background:var(--white);color:var(--black);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-decoration:none;flex-shrink:0;transition:background var(--tr),color var(--tr);}
     .auth-msg-link:hover{background:transparent;color:var(--white);}
 
-    /* â”€â”€ Ã‰tats â”€â”€ */
+    /* ── États ── */
     #comments-loading{font-size:.72rem;color:var(--text-muted);text-align:center;padding:2rem 0;letter-spacing:.08em;text-transform:uppercase;display:none;}
     #comments-loading::after{content:"";animation:dots 1.2s steps(3,end) infinite;}
     @keyframes dots{0%{content:""}33%{content:"."}66%{content:".."}100%{content:"..."}}
     #comments-empty{display:none;text-align:center;padding:3rem 0;color:var(--text-faint);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;}
     .cm-error{text-align:center;padding:2rem 0;color:var(--text-faint);font-size:.75rem;letter-spacing:.08em;}
 
-    /* â”€â”€ Cartes commentaires â”€â”€ */
+    /* ── Cartes commentaires ── */
     #comments-list{display:flex;flex-direction:column;gap:.75rem;}
     .cm-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:.875rem 1rem;animation:itemIn 220ms ease both;transition:border-color var(--tr);}
     .cm-card:hover{border-color:var(--line-strong);}
@@ -89,12 +89,12 @@
     .cm-delete{margin-left:auto;background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:.8rem;padding:.2rem;transition:color var(--tr);}
     .cm-delete:hover{color:#ef4444;}
 
-    /* â”€â”€ Footer â”€â”€ */
+    /* ── Footer ── */
     footer{text-align:center;padding:.875rem;border-top:1px solid var(--line);font-size:.7rem;color:var(--text-muted);letter-spacing:.04em;}
 
     @media(min-width:560px){.compose-footer{align-items:center;} #comment-input{min-height:80px;}}
 
-    /* â”€â”€ Responsive Mobile A11y â”€â”€ */
+    /* ── Responsive Mobile A11y ── */
     @media (max-width: 480px) {
       .top-logo, .top-back, .refresh-btn, #comment-submit, .cm-logout, .auth-msg-link, .cm-delete {
         padding-top: 0.75rem;
@@ -112,7 +112,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js');
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
@@ -121,15 +121,15 @@
 
   <!-- Top bar -->
   <div class="top-bar">
-    <a class="top-logo" href="../index.html">Toâ€‘Do List</a>
-    <a class="top-back" href="../index.html">â† Accueil</a>
+    <a class="top-logo" href="../index.html">To‑Do List</a>
+    <a class="top-back" href="../index.html">← Accueil</a>
   </div>
 
   <div class="page">
 
-    <!-- En-tÃªte -->
+    <!-- En-tête -->
     <div class="hero-section">
-      <div class="page-tag">ðŸ’¬ CommunautÃ©</div>
+      <div class="page-tag">💬 Communauté</div>
       <h1 class="page-title">Commentaires</h1>
       <p class="page-sub">Partagez vos retours, suggestions ou impressions sur l'application.</p>
     </div>
@@ -139,18 +139,18 @@
       <!-- Stats -->
       <div class="stats-bar">
         <span id="comment-count">Chargement...</span>
-        <button class="refresh-btn" id="refresh-btn" onclick="loadComments()">â†» Actualiser</button>
+        <button class="refresh-btn" id="refresh-btn" onclick="loadComments()">↻ Actualiser</button>
       </div>
 
-      <!-- Formulaire (connectÃ©) -->
+      <!-- Formulaire (connecté) -->
       <form id="comment-form" autocomplete="off" novalidate style="display:none;flex-direction:column;gap:.75rem;">
         <div class="compose-box">
           <div class="compose-header">
             <div class="compose-avatar">?</div>
             <span id="comment-username-badge">@...</span>
-            <button type="button" id="comment-logout-btn" class="cm-logout" onclick="logoutComment()" title="Se dÃ©connecter">DÃ©connexion</button>
+            <button type="button" id="comment-logout-btn" class="cm-logout" onclick="logoutComment()" title="Se déconnecter">Déconnexion</button>
           </div>
-          <textarea id="comment-input" placeholder="Ã‰crivez votre commentaire..." maxlength="500"></textarea>
+          <textarea id="comment-input" placeholder="Écrivez votre commentaire..." maxlength="500"></textarea>
           <p id="form-error"></p>
           <div class="compose-footer">
             <span id="char-count">0 / 500</span>
@@ -159,27 +159,26 @@
         </div>
       </form>
 
-      <!-- Message non connectÃ© -->
+      <!-- Message non connecté -->
       <div id="comment-auth-msg">
-        <span class="auth-msg-icon">ðŸ”’</span>
+        <span class="auth-msg-icon">🔒</span>
         <div class="auth-msg-text">
           <p><strong>Connexion requise</strong><br>Vous pouvez lire les commentaires librement, mais il faut un compte pour en publier.</p>
         </div>
-        <a class="auth-msg-link" href="../html/login.html?redirect=commentaires.html">Se connecter â†’</a>
+        <a class="auth-msg-link" href="../html/login.html?redirect=commentaires.html">Se connecter →</a>
       </div>
 
       <!-- Liste -->
       <p id="comments-loading">Chargement</p>
-      <p id="comments-empty">Aucun commentaire pour l'instant.<br>Soyez le premier Ã  en laisser un !</p>
+      <p id="comments-empty">Aucun commentaire pour l'instant.<br>Soyez le premier à en laisser un !</p>
       <div id="comments-list"></div>
 
     </main>
   </div>
 
-  <footer>Â© 2026 Â· Sacha G.</footer>
+  <footer>© 2026 · Sacha G.</footer>
 
   <script src="../script/burger-menu.js"></script>
   <script src="../script/commentaires.js"></script>
 </body>
 </html>
-

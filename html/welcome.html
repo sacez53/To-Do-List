@@ -1,9 +1,9 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8" />
-  <title>Chargement â€” Toâ€‘Do List</title>
+  <title>Chargement — To‑Do List</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="../script/transitions.js"></script>
   <style>
-    /* â”€â”€ Tokens â”€â”€ */
+    /* ── Tokens ── */
     :root {
       --bg: #080808;
       --surface: #0f0f0f;
@@ -59,7 +59,7 @@
       position: relative;
     }
 
-    /* â”€â”€ Dot grid â”€â”€ */
+    /* ── Dot grid ── */
     body::before {
       content: "";
       position: fixed;
@@ -70,7 +70,7 @@
       z-index: 0;
     }
 
-    /* â”€â”€ Canvas â”€â”€ */
+    /* ── Canvas ── */
     #c {
       position: fixed;
       inset: 0;
@@ -78,7 +78,7 @@
       z-index: 0;
     }
 
-    /* â”€â”€ Scanline â”€â”€ */
+    /* ── Scanline ── */
     .scanline {
       position: fixed;
       top: 0;
@@ -101,7 +101,7 @@
       }
     }
 
-    /* â”€â”€ Corners â”€â”€ */
+    /* ── Corners ── */
     .corner {
       position: fixed;
       width: 20px;
@@ -155,7 +155,7 @@
       transform: scale(-1);
     }
 
-    /* â”€â”€ HUD labels â”€â”€ */
+    /* ── HUD labels ── */
     .hud {
       position: fixed;
       z-index: 3;
@@ -202,7 +202,7 @@
       }
     }
 
-    /* â”€â”€ Main layout â”€â”€ */
+    /* ── Main layout ── */
     .stage {
       position: relative;
       z-index: 4;
@@ -224,7 +224,7 @@
       }
     }
 
-    /* â”€â”€ Orbit ring system â”€â”€ */
+    /* ── Orbit ring system ── */
     .orbit-wrap {
       position: relative;
       width: 160px;
@@ -357,7 +357,7 @@
       pointer-events: none;
     }
 
-    /* â”€â”€ Date badge â”€â”€ */
+    /* ── Date badge ── */
     .date-badge {
       font-size: 0.55rem;
       letter-spacing: 0.22em;
@@ -371,7 +371,7 @@
       opacity: 0;
     }
 
-    /* â”€â”€ Greeting â”€â”€ */
+    /* ── Greeting ── */
     .greeting-label {
       font-size: 0.58rem;
       letter-spacing: 0.22em;
@@ -443,7 +443,7 @@
       opacity: 0;
     }
 
-    /* â”€â”€ Divider â”€â”€ */
+    /* ── Divider ── */
     .sep {
       width: 320px;
       max-width: 90vw;
@@ -455,7 +455,7 @@
       opacity: 0;
     }
 
-    /* â”€â”€ Loader block â”€â”€ */
+    /* ── Loader block ── */
     .loader-block {
       width: 320px;
       max-width: 90vw;
@@ -546,7 +546,7 @@
       background: var(--text-faint);
     }
 
-    /* â”€â”€ Steps â”€â”€ */
+    /* ── Steps ── */
     .steps {
       width: 320px;
       max-width: 90vw;
@@ -620,7 +620,7 @@
       color: var(--text-faint);
     }
 
-    /* â”€â”€ Footer status â”€â”€ */
+    /* ── Footer status ── */
     .status-line {
       margin-top: 2rem;
       font-size: 0.52rem;
@@ -657,7 +657,7 @@
       }
     }
 
-    /* â”€â”€ Exit â”€â”€ */
+    /* ── Exit ── */
     body.exit {
       transition: opacity 500ms ease;
       opacity: 0;
@@ -669,7 +669,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js');
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
@@ -685,16 +685,16 @@
   <div class="corner br"></div>
 
   <!-- HUD overlays -->
-  <div class="hud hud-tl">Toâ€‘Do List &nbsp;/&nbsp; <span id="app-version"></span></div>
+  <div class="hud hud-tl">To‑Do List &nbsp;/&nbsp; <span id="app-version"></span></div>
   <div class="hud hud-tr" id="clock">--:--:--</div>
-  <div class="hud hud-bl hud-accent" id="hud-status">AUTH Â· OK</div>
-  <div class="hud hud-br" id="hud-date">â€”</div>
+  <div class="hud hud-bl hud-accent" id="hud-status">AUTH · OK</div>
+  <div class="hud hud-br" id="hud-date">—</div>
 
   <!-- Main stage -->
   <div class="stage">
 
     <!-- Date badge -->
-    <div class="date-badge" id="date-badge">â€”</div>
+    <div class="date-badge" id="date-badge">—</div>
 
     <!-- Orbit rings + icon -->
     <div class="orbit-wrap">
@@ -703,12 +703,12 @@
       <div class="ring ring-2"></div>
       <div class="ring ring-3"></div>
       <div class="icon-box">
-        <span class="icon-glyph" id="icon-glyph">âœ“</span>
+        <span class="icon-glyph" id="icon-glyph">✓</span>
       </div>
     </div>
 
     <!-- Greeting -->
-    <span class="greeting-label" id="greeting-label">Initialisationâ€¦</span>
+    <span class="greeting-label" id="greeting-label">Initialisation…</span>
     <h1 class="greeting">
       <span id="greeting-text"></span><span class="cursor" id="cursor"></span>
     </h1>
@@ -739,23 +739,23 @@
     <!-- Steps -->
     <div class="steps" id="steps">
       <div class="step" data-step="0">
-        <div class="step-mark">âœ“</div><span class="step-text">VÃ©rification de la session</span><span class="step-time"
+        <div class="step-mark">✓</div><span class="step-text">Vérification de la session</span><span class="step-time"
           id="st0"></span>
       </div>
       <div class="step" data-step="1">
-        <div class="step-mark">âœ“</div><span class="step-text">Chargement des prÃ©fÃ©rences</span><span class="step-time"
+        <div class="step-mark">✓</div><span class="step-text">Chargement des préférences</span><span class="step-time"
           id="st1"></span>
       </div>
       <div class="step" data-step="2">
-        <div class="step-mark">âœ“</div><span class="step-text">Connexion Ã  Firebase</span><span class="step-time"
+        <div class="step-mark">✓</div><span class="step-text">Connexion à Firebase</span><span class="step-time"
           id="st2"></span>
       </div>
       <div class="step" data-step="3">
-        <div class="step-mark">âœ“</div><span class="step-text">Synchronisation des tÃ¢ches</span><span class="step-time"
+        <div class="step-mark">✓</div><span class="step-text">Synchronisation des tâches</span><span class="step-time"
           id="st3"></span>
       </div>
       <div class="step" data-step="4">
-        <div class="step-mark">âœ“</div><span class="step-text">Application prÃªte</span><span class="step-time"
+        <div class="step-mark">✓</div><span class="step-text">Application prête</span><span class="step-time"
           id="st4"></span>
       </div>
     </div>
@@ -763,7 +763,7 @@
     <!-- Status line -->
     <div class="status-line">
       <div class="status-dot" id="status-dot"></div>
-      <span id="status-text">Connexion chiffrÃ©e Â· AESâ€‘256</span>
+      <span id="status-text">Connexion chiffrée · AES‑256</span>
     </div>
 
   </div><!-- /stage -->
@@ -779,45 +779,45 @@
       })
       .catch(e => console.error('Erreur chargement version:', e));
 
-    // â”€â”€ Guard â”€â”€
+    // ── Guard ──
     if (!sessionStorage.getItem("auth")) {
       window.location.replace("./login.html");
     }
 
-    // â”€â”€ Data â”€â”€
+    // ── Data ──
     const username = sessionStorage.getItem("username") || "utilisateur";
     const hour = new Date().getHours();
 
     let greeting, sub, icon;
     if (hour >= 5 && hour < 12) {
-      greeting = "Bonjour"; sub = "Belle journÃ©e productive en perspective."; icon = "â˜€";
+      greeting = "Bonjour"; sub = "Belle journée productive en perspective."; icon = "☀";
     } else if (hour >= 12 && hour < 14) {
-      greeting = "Bon midi"; sub = "Prenez une pause bien mÃ©ritÃ©e."; icon = "â—Ž";
+      greeting = "Bon midi"; sub = "Prenez une pause bien méritée."; icon = "◎";
     } else if (hour >= 14 && hour < 18) {
-      greeting = "Bonjour"; sub = "Continuez sur votre lancÃ©e !"; icon = "âš¡";
+      greeting = "Bonjour"; sub = "Continuez sur votre lancée !"; icon = "⚡";
     } else if (hour >= 18 && hour < 22) {
-      greeting = "Bonsoir"; sub = "Bonne session du soir !"; icon = "â—";
+      greeting = "Bonsoir"; sub = "Bonne session du soir !"; icon = "◐";
     } else {
-      greeting = "Bonne nuit"; sub = "L'engagement avant tout."; icon = "âœ¦";
+      greeting = "Bonne nuit"; sub = "L'engagement avant tout."; icon = "✦";
     }
 
-    // â”€â”€ Date & time setup â”€â”€
+    // ── Date & time setup ──
     const now = new Date();
     const DAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-    const MONTHS = ["Jan", "FÃ©v", "Mar", "Avr", "Mai", "Jun", "Jul", "AoÃ»", "Sep", "Oct", "Nov", "DÃ©c"];
+    const MONTHS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
     const dateFmt = `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
     document.getElementById("date-badge").textContent = dateFmt;
-    document.getElementById("hud-date").textContent = `${MONTHS[now.getMonth()].toUpperCase()} ${now.getDate()} Â· ${now.getFullYear()}`;
+    document.getElementById("hud-date").textContent = `${MONTHS[now.getMonth()].toUpperCase()} ${now.getDate()} · ${now.getFullYear()}`;
 
     document.getElementById("icon-glyph").textContent = icon;
     document.getElementById("username-el").textContent = "@" + username;
     document.getElementById("subtitle").textContent = sub;
 
     // Update greeting label based on time
-    const greetLabels = { "Bonjour": "Bonne matinÃ©e,", "Bon midi": "Heure du midi,", "Bonsoir": "Bonne soirÃ©e,", "Bonne nuit": "Bonne nuit," };
+    const greetLabels = { "Bonjour": "Bonne matinée,", "Bon midi": "Heure du midi,", "Bonsoir": "Bonne soirée,", "Bonne nuit": "Bonne nuit," };
     document.getElementById("greeting-label").textContent = greetLabels[greeting] || "Bienvenue,";
 
-    // â”€â”€ Clock â”€â”€
+    // ── Clock ──
     function updateClock() {
       const d = new Date(), p = n => String(n).padStart(2, "0");
       document.getElementById("clock").textContent =
@@ -825,7 +825,7 @@
     }
     updateClock(); setInterval(updateClock, 1000);
 
-    // â”€â”€ Typewriter â”€â”€
+    // ── Typewriter ──
     const greetEl = document.getElementById("greeting-text");
     const cursorEl = document.getElementById("cursor");
     let ci = 0;
@@ -839,7 +839,7 @@
     }
     setTimeout(typeChar, 750);
 
-    // â”€â”€ Particle canvas â”€â”€
+    // ── Particle canvas ──
     (function () {
       const cv = document.getElementById("c");
       const ctx = cv.getContext("2d");
@@ -873,7 +873,7 @@
       init(); draw();
     })();
 
-    // â”€â”€ Loader â”€â”€
+    // ── Loader ──
     const TOTAL_MS = 8000;
     const fillEl = document.getElementById("loader-fill");
     const pctEl = document.getElementById("loader-pct");
@@ -885,11 +885,11 @@
     const stepTimeFn = () => { const d = new Date(), p = n => String(n).padStart(2, "0"); return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()); };
 
     const STEPS = [
-      { threshold: 0, label: "VÃ©rification de la session", status: "AUTH Â· OK" },
-      { threshold: 20, label: "Chargement des prÃ©fÃ©rences", status: "PREFS Â· LOAD" },
-      { threshold: 45, label: "Connexion Ã  Firebase", status: "FIREBASE Â· SYNC" },
-      { threshold: 70, label: "Synchronisation des tÃ¢ches", status: "TASKS Â· SYNC" },
-      { threshold: 90, label: "Application prÃªte", status: "READY" }
+      { threshold: 0, label: "Vérification de la session", status: "AUTH · OK" },
+      { threshold: 20, label: "Chargement des préférences", status: "PREFS · LOAD" },
+      { threshold: 45, label: "Connexion à Firebase", status: "FIREBASE · SYNC" },
+      { threshold: 70, label: "Synchronisation des tâches", status: "TASKS · SYNC" },
+      { threshold: 90, label: "Application prête", status: "READY" }
     ];
 
     let startTime = null, currentStep = -1;
@@ -941,8 +941,8 @@
           if (te && !te.textContent) te.textContent = stepTimeFn();
         });
         segs.forEach(s => { s.classList.remove("lit"); s.classList.add("dim"); });
-        labelEl.textContent = "PrÃªt";
-        statusTxt.textContent = "Lancement en coursâ€¦";
+        labelEl.textContent = "Prêt";
+        statusTxt.textContent = "Lancement en cours…";
         
         const urlParams = new URLSearchParams(window.location.search);
         const redirectPage = urlParams.get('redirect');

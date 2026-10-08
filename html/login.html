@@ -1,8 +1,8 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Connexion â€” Toâ€‘Do List</title>
+    <title>Connexion — To‑Do List</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -17,9 +17,9 @@
       :root {
         --bg:#080808; --surface:#0f0f0f; --line:#1e1e1e; --line-strong:#2e2e2e;
         --text:#efefef;
-        /* #9a9a9a sur #080808 â‰ˆ 5.6:1 WCAG AA âœ“ */
+        /* #9a9a9a sur #080808 ≈ 5.6:1 WCAG AA ✓ */
         --text-muted:#9a9a9a;
-        /* #6e6e6e sur #080808 â‰ˆ 4.6:1 WCAG AA âœ“ */
+        /* #6e6e6e sur #080808 ≈ 4.6:1 WCAG AA ✓ */
         --text-faint:#6e6e6e;
         --white:#fff; --black:#000; --radius:3px; --tr:160ms ease;
       }
@@ -34,7 +34,7 @@
         background-size:22px 22px;
       }
 
-      /* â”€â”€ Top bar â”€â”€ */
+      /* ── Top bar ── */
       .top-bar {
         display:flex; align-items:center; justify-content:space-between;
         padding:.875rem 1.25rem;
@@ -45,14 +45,14 @@
       .top-back { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color var(--tr); }
       .top-back:hover { color:var(--white); }
 
-      /* â”€â”€ Zone centrale â”€â”€ */
+      /* ── Zone centrale ── */
       .wrap {
         flex:1; display:flex; align-items:center; justify-content:center;
         padding:1.5rem 1rem;
         padding-bottom:max(1.5rem, env(safe-area-inset-bottom));
       }
 
-      /* â”€â”€ Carte â”€â”€ */
+      /* ── Carte ── */
       .card {
         width:100%; max-width:360px;
         display:flex; flex-direction:column;
@@ -60,7 +60,7 @@
       }
       @keyframes appear { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
-      /* â”€â”€ EntÃªte de carte â”€â”€ */
+      /* ── Entête de carte ── */
       .card-header { text-align:center; margin-bottom:1.75rem; }
       .card-icon {
         display:inline-flex; align-items:center; justify-content:center;
@@ -71,7 +71,7 @@
       .card-title { font-size:.95rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; margin-bottom:.3rem; }
       .card-sub   { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); }
 
-      /* â”€â”€ Onglets â”€â”€ */
+      /* ── Onglets ── */
       .tabs {
         display:grid; grid-template-columns:1fr 1fr;
         border:1px solid var(--line-strong);
@@ -97,7 +97,7 @@
       }
       .tab-btn:not(.active):hover { color:var(--text); }
 
-      /* â”€â”€ Formulaire â”€â”€ */
+      /* ── Formulaire ── */
       .auth-form {
         display:none; flex-direction:column; gap:0;
         border:1px solid var(--line-strong);
@@ -115,7 +115,7 @@
 
       .form-inner { padding:1.25rem 1.1rem; display:flex; flex-direction:column; gap:.75rem; }
 
-      /* â”€â”€ Field â”€â”€ */
+      /* ── Field ── */
       .field { display:flex; flex-direction:column; gap:.3rem; }
       .field label { font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-muted); }
 
@@ -131,13 +131,13 @@
       .input-wrap input:focus { outline:none; border-color:#fff; box-shadow:0 0 0 1px rgba(255,255,255,.05); }
       .input-wrap input.error { border-color:#666; }
 
-      /* IcÃ´ne dans input */
+      /* Icône dans input */
       .input-icon {
         position:absolute; right:.75rem; top:50%; transform:translateY(-50%);
         color:var(--text-muted); font-size:.75rem; line-height:1; pointer-events:none;
       }
 
-      /* Toggle visibilitÃ© mdp */
+      /* Toggle visibilité mdp */
       .toggle-vis {
         position:absolute; right:.75rem; top:50%; transform:translateY(-50%);
         background:none; border:none; color:var(--text-muted); cursor:pointer;
@@ -147,7 +147,7 @@
       }
       .toggle-vis:hover { color:#fff; }
 
-      /* RÃ¨gles de validation */
+      /* Règles de validation */
       .rules {
         font-size:.68rem; color:var(--text-muted); letter-spacing:.04em;
         line-height:1.6; padding:.5rem .75rem;
@@ -156,7 +156,7 @@
       }
       .rules.visible { display:block; }
 
-      /* â”€â”€ Bouton submit â”€â”€ */
+      /* ── Bouton submit ── */
       .submit-btn {
         width:100%; min-height:52px;
         padding:.9rem 1rem;
@@ -171,12 +171,12 @@
       .submit-btn:hover { background:#000; color:#fff; }
       .submit-btn:disabled { opacity:.4; cursor:not-allowed; }
       .submit-btn::after {
-        content:"â†’"; position:absolute; right:1.1rem; top:50%; transform:translateY(-50%);
+        content:"→"; position:absolute; right:1.1rem; top:50%; transform:translateY(-50%);
         opacity:0; transition:opacity var(--tr), right var(--tr);
       }
       .submit-btn:not(:disabled):hover::after { opacity:1; right:.9rem; }
 
-      /* â”€â”€ Messages â”€â”€ */
+      /* ── Messages ── */
       .msg {
         font-size:.72rem; text-transform:uppercase; letter-spacing:.06em;
         text-align:center; padding:.65rem .875rem;
@@ -188,20 +188,20 @@
 
       @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
-      /* â”€â”€ Hint bas â”€â”€ */
+      /* ── Hint bas ── */
       .hint { margin-top:1.25rem; text-align:center; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
 
       /* Footer */
       footer { text-align:center; padding:.875rem; border-top:1px solid var(--line); font-size:.72rem; color:var(--text-muted); letter-spacing:.04em; }
 
-      /* Petits Ã©crans */
+      /* Petits écrans */
       @media(max-height:600px) {
         .card-header { margin-bottom:1rem; }
         .card-icon { display:none; }
         .wrap { padding:.75rem 1rem; }
       }
 
-      /* â”€â”€ Responsive Mobile A11y â”€â”€ */
+      /* ── Responsive Mobile A11y ── */
       @media (max-width: 480px) {
         .top-logo, .top-back {
           padding-top: 0.5rem;
@@ -227,7 +227,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js');
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
@@ -235,16 +235,16 @@
   <body>
 
     <div class="top-bar">
-      <a class="top-logo" href="../index.html">Toâ€‘Do List</a>
-      <a class="top-back" href="../index.html">â† Accueil</a>
+      <a class="top-logo" href="../index.html">To‑Do List</a>
+      <a class="top-back" href="../index.html">← Accueil</a>
     </div>
 
     <div class="wrap">
       <div class="card">
 
-        <!-- En-tÃªte -->
+        <!-- En-tête -->
         <div class="card-header">
-          <div class="card-icon" aria-hidden="true">âœ“</div>
+          <div class="card-icon" aria-hidden="true">✓</div>
           <p class="card-title">Mon espace</p>
           <p class="card-sub">Connexion ou inscription</p>
         </div>
@@ -252,10 +252,10 @@
         <!-- Onglets -->
         <div class="tabs" role="tablist">
           <button class="tab-btn active" id="tab-login"    role="tab" aria-selected="true"  aria-controls="form-login">Connexion</button>
-          <button class="tab-btn"        id="tab-register" role="tab" aria-selected="false" aria-controls="form-register">CrÃ©er un compte</button>
+          <button class="tab-btn"        id="tab-register" role="tab" aria-selected="false" aria-controls="form-register">Créer un compte</button>
         </div>
 
-        <!-- â•â•â• FORMULAIRE CONNEXION â•â•â• -->
+        <!-- ═══ FORMULAIRE CONNEXION ═══ -->
         <form class="auth-form active" id="form-login" role="tabpanel" autocomplete="off" novalidate>
           <div class="form-inner">
 
@@ -270,7 +270,7 @@
             <div class="field">
               <label for="login-pass">Mot de passe</label>
               <div class="input-wrap">
-                <input type="password" id="login-pass" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password" />
+                <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
                 <button type="button" class="toggle-vis" id="toggle-login-pass" tabindex="-1">voir</button>
               </div>
             </div>
@@ -280,7 +280,7 @@
         </form>
         <div class="msg error" id="login-error"></div>
 
-        <!-- â•â•â• FORMULAIRE INSCRIPTION â•â•â• -->
+        <!-- ═══ FORMULAIRE INSCRIPTION ═══ -->
         <form class="auth-form" id="form-register" role="tabpanel" autocomplete="off" novalidate>
           <div class="form-inner">
 
@@ -291,14 +291,14 @@
                 <span class="input-icon">@</span>
               </div>
               <div class="rules" id="user-rules">
-                3 Ã  20 caractÃ¨res Â· lettres, chiffres, _ et - uniquement
+                3 à 20 caractères · lettres, chiffres, _ et - uniquement
               </div>
             </div>
 
             <div class="field">
               <label for="reg-pass">Mot de passe</label>
               <div class="input-wrap">
-                <input type="password" id="reg-pass" placeholder="min. 6 caractÃ¨res" autocomplete="new-password" />
+                <input type="password" id="reg-pass" placeholder="min. 6 caractères" autocomplete="new-password" />
                 <button type="button" class="toggle-vis" id="toggle-reg-pass" tabindex="-1">voir</button>
               </div>
             </div>
@@ -306,27 +306,27 @@
             <div class="field">
               <label for="reg-confirm">Confirmer le mot de passe</label>
               <div class="input-wrap">
-                <input type="password" id="reg-confirm" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="new-password" />
+                <input type="password" id="reg-confirm" placeholder="••••••••" autocomplete="new-password" />
                 <button type="button" class="toggle-vis" id="toggle-reg-confirm" tabindex="-1">voir</button>
               </div>
             </div>
 
           </div>
-          <button type="submit" class="submit-btn" id="register-btn">CrÃ©er mon compte</button>
+          <button type="submit" class="submit-btn" id="register-btn">Créer mon compte</button>
         </form>
         <div class="msg error"   id="register-error"></div>
         <div class="msg success" id="register-success"></div>
 
-        <p class="hint">Chaque compte dispose de ses propres tÃ¢ches</p>
+        <p class="hint">Chaque compte dispose de ses propres tâches</p>
       </div>
     </div>
 
-    <footer>Â© 2026 Â· Sacha G.</footer>
+    <footer>© 2026 · Sacha G.</footer>
 
     <script src="../script/crypto.js"></script>
     <script src="../script/login.js"></script>
     <script>
-      // â”€â”€ Onglets â”€â”€
+      // ── Onglets ──
       const tabLogin    = document.getElementById("tab-login");
       const tabRegister = document.getElementById("tab-register");
       const formLogin   = document.getElementById("form-login");
@@ -345,7 +345,7 @@
       tabLogin.addEventListener("click",    () => switchTab("login"));
       tabRegister.addEventListener("click", () => switchTab("register"));
 
-      // â”€â”€ Toggle visibilitÃ© mots de passe â”€â”€
+      // ── Toggle visibilité mots de passe ──
       function togglePass(btnId, inputId) {
         const btn   = document.getElementById(btnId);
         const field = document.getElementById(inputId);
@@ -359,7 +359,7 @@
       togglePass("toggle-reg-pass",     "reg-pass");
       togglePass("toggle-reg-confirm",  "reg-confirm");
 
-      // â”€â”€ RÃ¨gles identifiant â”€â”€
+      // ── Règles identifiant ──
       document.getElementById("reg-user").addEventListener("focus", () => {
         document.getElementById("user-rules").classList.add("visible");
       });
@@ -369,4 +369,3 @@
     </script>
   </body>
 </html>
-

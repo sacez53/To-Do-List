@@ -1,24 +1,23 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <title>Toâ€‘Do List â€” App</title>
+  <title>To‑Do List — App</title>
   <script>
     // Redirection transparente vers la nouvelle version
     window.location.replace("./app-v2.html");
   </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="manifest" href="../manifest.json">
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../icons/icon-192.png">
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js');
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
 </head>
 <body></body>
 </html>
-

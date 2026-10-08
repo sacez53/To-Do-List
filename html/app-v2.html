@@ -1,9 +1,9 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8" />
-  <title>Toâ€‘Do List â€” App</title>
+  <title>To‑Do List — App</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#080808" />
   <link rel="icon" href="../logo/list-todo.svg">
@@ -14,14 +14,14 @@
   <script src="../script/transitions.js"></script>
   <script>if (!sessionStorage.getItem("auth")) window.location.replace("./login.html");</script>
   <style>
-    /* â”€â”€ V2 tokens â”€â”€ */
+    /* ── V2 tokens ── */
     :root {
       --v2-accent: #4ade80;
       --v2-accent-dim: rgba(74, 222, 128, .12);
       --v2-accent-glow: rgba(74, 222, 128, .25);
     }
 
-    /* â”€â”€ Banner â”€â”€ */
+    /* ── Banner ── */
     .v2-banner {
       background: var(--v2-accent-dim);
       border-bottom: 1px solid rgba(74, 222, 128, .25);
@@ -39,7 +39,7 @@
       border-bottom: 1px solid currentColor;
     }
 
-    /* â”€â”€ Header V2 â”€â”€ */
+    /* ── Header V2 ── */
     .v2-header {
       text-align: center;
       padding: 1.25rem 1rem .875rem;
@@ -138,7 +138,7 @@
       border-color: #fff;
     }
 
-    /* â”€â”€ Sync â”€â”€ */
+    /* ── Sync ── */
     .v2-sync {
       display: inline-flex;
       align-items: center;
@@ -179,7 +179,7 @@
       color: var(--text-muted);
     }
 
-    /* â”€â”€ Stats â”€â”€ */
+    /* ── Stats ── */
     .v2-stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -208,7 +208,7 @@
       box-shadow: 0 0 8px var(--v2-accent-glow);
     }
 
-    /* â”€â”€ Toolbar â”€â”€ */
+    /* ── Toolbar ── */
     .v2-toolbar {
       display: flex;
       gap: .5rem;
@@ -279,7 +279,7 @@
       border-color: #fff;
     }
 
-    /* â”€â”€ Vue switcher â”€â”€ */
+    /* ── Vue switcher ── */
     .v2-view-switcher {
       display: flex;
       border: 1px solid var(--line-strong);
@@ -318,7 +318,7 @@
       color: var(--text);
     }
 
-    /* â”€â”€ Filtre avancÃ© â”€â”€ */
+    /* ── Filtre avancé ── */
     .v2-filter-bar {
       display: flex;
       align-items: center;
@@ -378,7 +378,7 @@
       color: #fff;
     }
 
-    /* â”€â”€ Panel filtres â”€â”€ */
+    /* ── Panel filtres ── */
     .v2-filter-panel {
       display: none;
       background: var(--surface);
@@ -462,12 +462,12 @@
       font-size: .75rem;
     }
 
-    /* â”€â”€ Board â”€â”€ */
+    /* ── Board ── */
     .v2-board {
       min-height: 200px;
     }
 
-    /* â”€â”€ Vue Liste â”€â”€ */
+    /* ── Vue Liste ── */
     .v2-list {
       list-style: none;
       border-top: 1px solid var(--line);
@@ -595,7 +595,7 @@
       text-transform: uppercase;
     }
 
-    /* â”€â”€ Badges statut â”€â”€ */
+    /* ── Badges statut ── */
     .v2-badge {
       display: inline-flex;
       align-items: center;
@@ -639,7 +639,7 @@
       color: var(--text-faint);
     }
 
-    /* â”€â”€ PrioritÃ© â”€â”€ */
+    /* ── Priorité ── */
     .v2-prio {
       font-size: .65rem;
       padding: .1rem .35rem;
@@ -658,7 +658,7 @@
       color: #60a5fa;
     }
 
-    /* â”€â”€ Ã‰chÃ©ance â”€â”€ */
+    /* ── Échéance ── */
     .v2-due {
       font-size: .65rem;
       white-space: nowrap;
@@ -680,7 +680,7 @@
       color: var(--text-faint);
     }
 
-    /* â”€â”€ Ã‰tats texte â”€â”€ */
+    /* ── États texte ── */
     .v2-done {
       text-decoration: line-through;
       color: var(--text-faint);
@@ -695,7 +695,7 @@
       color: var(--text-faint);
     }
 
-    /* â”€â”€ Vue Kanban â”€â”€ */
+    /* ── Vue Kanban ── */
     .v2-board--kanban {
       overflow-x: auto;
     }
@@ -788,7 +788,7 @@
       gap: .3rem;
     }
 
-    /* â”€â”€ Vue Tableau â”€â”€ */
+    /* ── Vue Tableau ── */
     .v2-table {
       width: 100%;
       border-collapse: collapse;
@@ -832,7 +832,7 @@
       white-space: nowrap;
     }
 
-    /* â”€â”€ FAB â”€â”€ */
+    /* ── FAB ── */
     .v2-fab {
       position: fixed;
       bottom: calc(1.5rem + env(safe-area-inset-bottom));
@@ -865,7 +865,7 @@
       margin-top: -1px;
     }
 
-    /* â”€â”€ Footer â”€â”€ */
+    /* ── Footer ── */
     .v2-footer {
       text-align: center;
       padding: .875rem;
@@ -892,7 +892,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js');
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
@@ -902,19 +902,19 @@
 
   <!-- Header -->
   <header class="v2-header">
-    <h1>Toâ€‘Do List</h1>
+    <h1>To‑Do List</h1>
     <p>
       Espace de <strong id="v2-user-label" style="color:#fff;font-weight:500;"></strong>
-      &nbsp;Â·&nbsp;
+      &nbsp;·&nbsp;
       <span class="v2-sync">
         <span class="v2-sync-dot" id="v2-sync-dot"></span>
         <span class="v2-sync-label" id="v2-sync-label">Chargement...</span>
       </span>
     </p>
     <div class="v2-header-actions">
-      <a class="v2-back-btn" href="calendar.html">ðŸ“… Calendrier</a>
-      <a class="v2-back-btn" href="settings.html">â›¯ ParamÃ¨tres</a>
-      <button id="v2-logout-btn">DÃ©connexion</button>
+      <a class="v2-back-btn" href="calendar.html">📅 Calendrier</a>
+      <a class="v2-back-btn" href="settings.html">⛯ Paramètres</a>
+      <button id="v2-logout-btn">Déconnexion</button>
     </div>
   </header>
 
@@ -922,8 +922,8 @@
 
     <!-- Stats -->
     <div class="v2-stats">
-      <span id="v2-stat-total">0 tÃ¢ches</span>
-      <span id="v2-stat-done">0 terminÃ©es</span>
+      <span id="v2-stat-total">0 tâches</span>
+      <span id="v2-stat-done">0 terminées</span>
       <span id="v2-stat-progress">0%</span>
     </div>
     <div class="v2-progress-wrap">
@@ -933,18 +933,18 @@
     <!-- Toolbar -->
     <div class="v2-toolbar">
       <div class="v2-search-wrap">
-        <span class="v2-search-icon">âŒ•</span>
+        <span class="v2-search-icon">⌕</span>
         <input type="search" id="v2-search" class="v2-search" placeholder="Rechercher..." autocomplete="off" />
-        <button class="v2-search-clear" id="v2-search-clear" style="display:none">âœ•</button>
+        <button class="v2-search-clear" id="v2-search-clear" style="display:none">✕</button>
       </div>
       <select id="v2-sort" class="v2-sort">
         <option value="status">Statut</option>
-        <option value="az">A â†’ Z</option>
-        <option value="za">Z â†’ A</option>
-        <option value="created-desc">RÃ©cents</option>
+        <option value="az">A → Z</option>
+        <option value="za">Z → A</option>
+        <option value="created-desc">Récents</option>
         <option value="created-asc">Anciens</option>
-        <option value="priority">PrioritÃ© â†‘</option>
-        <option value="due-asc">Ã‰chÃ©ance â†‘</option>
+        <option value="priority">Priorité ↑</option>
+        <option value="due-asc">Échéance ↑</option>
         <option value="overdue-first">Retards d'abord</option>
         <option value="notes-first">Notes en premier</option>
       </select>
@@ -952,18 +952,18 @@
 
     <!-- Switcher vue -->
     <div class="v2-view-switcher">
-      <button class="v2-view-btn active" data-view="list">â˜° Liste</button>
-      <button class="v2-view-btn" data-view="kanban">â¬› Kanban</button>
-      <button class="v2-view-btn" data-view="table">âŠž Tableau</button>
+      <button class="v2-view-btn active" data-view="list">☰ Liste</button>
+      <button class="v2-view-btn" data-view="kanban">⬛ Kanban</button>
+      <button class="v2-view-btn" data-view="table">⊞ Tableau</button>
     </div>
 
-    <!-- Filtres avancÃ©s -->
+    <!-- Filtres avancés -->
     <div class="v2-filter-bar">
       <button id="v2-filter-toggle" class="v2-filter-toggle">
-        âš™ Filtres avancÃ©s
+        ⚙ Filtres avancés
         <span class="v2-filter-count" id="v2-filter-count"></span>
       </button>
-      <button id="v2-filter-reset" class="v2-filter-reset">RÃ©initialiser</button>
+      <button id="v2-filter-reset" class="v2-filter-reset">Réinitialiser</button>
     </div>
 
     <div id="v2-filter-panel" class="v2-filter-panel">
@@ -972,23 +972,23 @@
         <div class="v2-fp-checks" id="fp-statuses"></div>
       </div>
       <div class="v2-fp-group">
-        <h4>PrioritÃ©</h4>
+        <h4>Priorité</h4>
         <div class="v2-fp-checks" id="fp-priorities"></div>
       </div>
       <div class="v2-fp-group">
-        <h4>Date d'Ã©chÃ©ance</h4>
+        <h4>Date d'échéance</h4>
         <div class="v2-fp-date">
           <label>Avant le</label>
           <input type="date" id="fp-due-before" />
-          <label>AprÃ¨s le</label>
+          <label>Après le</label>
           <input type="date" id="fp-due-after" />
         </div>
       </div>
       <div class="v2-fp-group">
         <h4>Autres</h4>
         <div class="v2-fp-checks">
-          <label class="v2-fp-check"><input type="checkbox" id="fp-has-notes"> ðŸ“ Avec notes</label>
-          <label class="v2-fp-check"><input type="checkbox" id="fp-no-due"> ðŸ“… Sans date</label>
+          <label class="v2-fp-check"><input type="checkbox" id="fp-has-notes"> 📝 Avec notes</label>
+          <label class="v2-fp-check"><input type="checkbox" id="fp-no-due"> 📅 Sans date</label>
         </div>
       </div>
     </div>
@@ -998,45 +998,45 @@
 
   </main>
 
-  <footer class="v2-footer">Â© 2026 Â· Sacha G.</footer>
+  <footer class="v2-footer">© 2026 · Sacha G.</footer>
 
   <!-- FAB -->
-  <button class="v2-fab" id="v2-fab" aria-label="Ajouter une tÃ¢che">
+  <button class="v2-fab" id="v2-fab" aria-label="Ajouter une tâche">
     <span class="v2-fab-icon">+</span>
   </button>
 
-  <!-- Modale ajout/Ã©dition (rÃ©utilisÃ©e de style2.css) -->
+  <!-- Modale ajout/édition (réutilisée de style2.css) -->
   <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
     <div class="modal">
-      <button class="modal-close" id="modal-close" aria-label="Fermer">âœ•</button>
-      <h2 class="modal-heading" id="modal-heading">Nouvelle tÃ¢che</h2>
+      <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+      <h2 class="modal-heading" id="modal-heading">Nouvelle tâche</h2>
       <div class="modal-field">
         <label for="modal-text">Titre</label>
-        <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tÃ¢che..." />
+        <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tâche..." />
       </div>
       <div class="modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
         <div class="modal-field">
           <label for="modal-status">Statut</label>
           <select id="modal-status" class="modal-select">
-            <option value="todo">ðŸ“‹ Ã€ faire</option>
-            <option value="inprogress">âš¡ En cours</option>
-            <option value="waiting">â³ En attente</option>
-            <option value="done">âœ… TerminÃ©</option>
-            <option value="cancelled">âŒ AnnulÃ©</option>
+            <option value="todo">📋 À faire</option>
+            <option value="inprogress">⚡ En cours</option>
+            <option value="waiting">⏳ En attente</option>
+            <option value="done">✅ Terminé</option>
+            <option value="cancelled">❌ Annulé</option>
           </select>
         </div>
         <div class="modal-field">
-          <label for="modal-priority">PrioritÃ©</label>
+          <label for="modal-priority">Priorité</label>
           <select id="modal-priority" class="modal-select">
-            <option value="normal">â€” Normale</option>
-            <option value="high">ðŸ”´ Haute</option>
-            <option value="low">ðŸ”µ Basse</option>
+            <option value="normal">— Normale</option>
+            <option value="high">🔴 Haute</option>
+            <option value="low">🔵 Basse</option>
           </select>
         </div>
       </div>
       <div class="modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
         <div class="modal-field">
-          <label for="modal-due">Date d'Ã©chÃ©ance <span style="opacity:.5;font-size:.65rem;">(optionnel)</span></label>
+          <label for="modal-due">Date d'échéance <span style="opacity:.5;font-size:.65rem;">(optionnel)</span></label>
           <input type="date" id="modal-due" class="modal-input" />
         </div>
         <div class="modal-field">
@@ -1049,7 +1049,7 @@
         <textarea id="modal-notes" class="modal-textarea" placeholder="Ajouter une note..."></textarea>
       </div>
       <div class="modal-actions">
-        <button class="btn-save" id="modal-save">CrÃ©er</button>
+        <button class="btn-save" id="modal-save">Créer</button>
         <button class="btn-delete" id="modal-delete" style="display:none">Supprimer</button>
       </div>
     </div>
@@ -1058,8 +1058,8 @@
   <!-- Modale confirmation -->
   <div id="confirm-overlay" class="modal-overlay" role="alertdialog" aria-modal="true">
     <div class="modal confirm-modal" style="max-width:340px;">
-      <h2 class="modal-heading">Supprimer la tÃ¢che ?</h2>
-      <p style="font-size:.78rem;color:var(--text-muted);">Cette action est irrÃ©versible.</p>
+      <h2 class="modal-heading">Supprimer la tâche ?</h2>
+      <p style="font-size:.78rem;color:var(--text-muted);">Cette action est irréversible.</p>
       <div class="modal-actions">
         <button class="btn-delete" id="confirm-yes">Supprimer</button>
         <button class="btn-save" id="confirm-no">Annuler</button>
