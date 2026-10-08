@@ -3,13 +3,24 @@
 
   <h1>✨ Ma To-Do List ✨</h1>
   
-  <p><strong>L'expérience ultime de gestion de tâches personnelle, conçue avec passion.</strong></p>
+  <!-- ANIMATION TYPING TEXT (Plugin Externe) -->
+  <a href="https://git.io/typing-svg">
+    <img src="https://readme-typing-svg.herokuapp.com?font=IBM+Plex+Mono&weight=600&size=20&pause=1500&color=EFEFEF&center=true&vCenter=true&width=600&lines=L'exp%C3%A9rience+ultime+de+gestion+de+t%C3%A2ches.;Progressive+Web+App+(PWA)+autonome.;Synchronisation+Firebase+en+temps+r%C3%A9el.;Code+100%25+Vanilla+JS+sans+framework.;Un+design+sombre+premium+(Glassmorphism)." alt="Typing SVG" />
+  </a>
 
   <p>
     <a href="https://sacez53.github.io/To-Do-List/"><img src="https://img.shields.io/badge/Status-En_Ligne-2ea44f?style=for-the-badge&logo=vercel" alt="Status" /></a>
     <a href="https://developer.mozilla.org/fr/docs/Web/JavaScript"><img src="https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="Vanilla JS" /></a>
     <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Database-Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" /></a>
     <a href="#"><img src="https://img.shields.io/badge/Design-Glassmorphism-8A2BE2?style=for-the-badge&logo=figma&logoColor=white" alt="Design" /></a>
+  </p>
+
+  <p>
+    <!-- BADGES DYNAMIQUES GITHUB -->
+    <img src="https://img.shields.io/github/repo-size/sacez53/To-Do-List?style=flat-square&color=3b82f6" alt="Repo Size">
+    <img src="https://img.shields.io/github/last-commit/sacez53/To-Do-List?style=flat-square&color=f97316" alt="Last Commit">
+    <img src="https://img.shields.io/github/license/sacez53/To-Do-List?style=flat-square&color=22c55e" alt="License">
+    <img src="https://visitor-badge.laobi.icu/badge?page_id=sacez53.To-Do-List&color=8b5cf6" alt="Visiteurs">
   </p>
 
   <p>
@@ -30,7 +41,7 @@
 
 *(💡 Remplace ce bloc par tes propres captures d'écran en glissant-déposant les images sur GitHub)*
 <div align="center">
-  <img src="https://via.placeholder.com/800x400/0f0f0f/efefef?text=UI+Dashboard+-+Ins%C3%A9rer+une+Capture+d'%C3%A9cran+ici" alt="Aperçu Dashboard" width="85%" style="border-radius: 8px; border: 1px solid #2e2e2e;">
+  <img src="https://via.placeholder.com/800x400/080808/efefef?text=UI+Dashboard+-+Ins%C3%A9rer+une+Capture+d'%C3%A9cran+ici" alt="Aperçu Dashboard" width="85%" style="border-radius: 8px; border: 1px solid #1e1e1e; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);">
 </div>
 
 ---
@@ -68,6 +79,11 @@ Connectée à **Firebase Realtime Database**, toute modification sur votre smart
 ## 🧬 Architecture & Stack Technique
 
 Un projet purement **Vanilla**, sans frameworks lourds (ni React, ni Vue), prouvant qu'il est possible de créer une application web complexe, ultra-réactive et maintenable uniquement avec les standards natifs d'aujourd'hui.
+
+<!-- PLUGIN STATISTIQUES LANGAGES AUX COULEURS DU SITE -->
+<div align="center">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=sacez53&repo=To-Do-List&layout=compact&theme=radical&hide_border=true&bg_color=080808&title_color=EFEFEF&text_color=9A9A9A&icon_color=EFEFEF" alt="Langages les plus utilisés">
+</div>
 
 | Couche | Technologies Utilisées | Rôle |
 | :--- | :--- | :--- |
@@ -124,6 +140,11 @@ Conçu et développé par **Sacha G.**
     <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" />
   </a>
 </p>
+
+<!-- CARTE STATS REPOSITORY AUX COULEURS DU SITE -->
+<div align="center">
+  <img src="https://github-readme-stats.vercel.app/api/pin/?username=sacez53&repo=To-Do-List&theme=radical&hide_border=true&bg_color=080808&title_color=EFEFEF&text_color=9A9A9A&icon_color=EFEFEF" alt="Repo Stats">
+</div>
 
 ---
 
