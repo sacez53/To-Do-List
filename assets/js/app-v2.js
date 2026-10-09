@@ -295,7 +295,7 @@ function renderList(items) {
           ${todo.notes && todo.notes.trim() ? `<span class="v2-note-preview">${escHtml(todo.notes.slice(0, 80))}${todo.notes.length > 80 ? "…" : ""}</span>` : ""}
         </div>
       </div>
-      <button class="v2-edit-btn">Détails</button>
+      <button class="v2-edit-btn">Modifier</button>
     `;
     li.querySelector(".v2-badge").addEventListener("click", e => {
       e.stopPropagation();
@@ -303,8 +303,8 @@ function renderList(items) {
       todo.status = cycle[(cycle.indexOf(todo.status) + 1) % cycle.length];
       saveTodos(); render();
     });
-    li.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id); });
-    li.addEventListener("click", () => openModal(todo.id));
+    li.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id, "edit"); });
+    li.addEventListener("click", () => openModal(todo.id, "view"));
     ul.appendChild(li);
   });
   boardEl.appendChild(ul);
@@ -343,7 +343,7 @@ function renderKanban(items) {
             ${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon">📝</span>` : ""}
           </div>
         `;
-        card.addEventListener("click", () => openModal(todo.id));
+        card.addEventListener("click", () => openModal(todo.id, "view"));
         list.appendChild(card);
       });
     }
@@ -389,10 +389,10 @@ function renderTable(items) {
       <td>${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : `<span class="v2-muted">—</span>`}</td>
       <td>${dueInfo ? `<span class="v2-due ${dueInfo.cls}">${dueInfo.label}</span>` : `<span class="v2-muted">—</span>`}</td>
       <td>${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon" title="${escHtml(todo.notes)}">📝</span>` : `<span class="v2-muted">—</span>`}</td>
-      <td><button class="v2-edit-btn">Détails</button></td>
+      <td><button class="v2-edit-btn">Modifier</button></td>
     `;
-    tr.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id); });
-    tr.addEventListener("click", () => openModal(todo.id));
+    tr.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id, "edit"); });
+    tr.addEventListener("click", () => openModal(todo.id, "view"));
     tbody.appendChild(tr);
   });
   table.appendChild(tbody);
@@ -466,7 +466,48 @@ function resetFilters() {
 // ══════════════════════════════════════════
 //  MODALES
 // ══════════════════════════════════════════
-function openModal(id = null) {
+
+const modalEditBtn = document.getElementById("modal-edit-btn");
+if (modalEditBtn) {
+  modalEditBtn.addEventListener("click", () => {
+    openModal(editingId, 'edit');
+  });
+}
+
+function setModalMode(mode) {
+  const isView = (mode === 'view');
+  
+  // Inputs
+  modalText.readOnly = isView;
+  modalDue.readOnly = isView;
+  if (modalDueTime) modalDueTime.readOnly = isView;
+  modalNotes.readOnly = isView;
+  
+  // Selects
+  modalStatus.disabled = isView;
+  modalPriority.disabled = isView;
+  
+  // Styling
+  document.querySelectorAll('.modal-input, .modal-select, .modal-textarea').forEach(el => {
+    if (isView) el.classList.add('readonly-mode');
+    else el.classList.remove('readonly-mode');
+  });
+  
+  // Buttons
+  if (isView) {
+    modalSave.style.display = 'none';
+    modalDelete.style.display = 'none';
+    if (modalEditBtn) modalEditBtn.style.display = '';
+  } else {
+    modalSave.style.display = '';
+    if (modalEditBtn) modalEditBtn.style.display = 'none';
+    if (editingId) modalDelete.style.display = '';
+    else modalDelete.style.display = 'none';
+  }
+}
+
+function openModal(id = null, mode = 'edit') {
+
   if (id === null) {
     editingId = null;
     modalHeading.textContent  = "Nouvelle tâche";
