@@ -1,4 +1,4 @@
-/* ════════════════════════════════════════
+﻿/* ════════════════════════════════════════
    VARIABLES
 ════════════════════════════════════════ */
 :root {
@@ -1306,29 +1306,36 @@ button { -webkit-appearance: none; appearance: none; }
   gap: 1rem;
 }
 @media (max-width: 767px) {
+  .modal-overlay {
+    align-items: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0; /* Override any padding if present */
+  }
   .modal {
     border-radius: 0;
-    height: 100dvh;
-    max-height: 100dvh;
+    min-height: 100%;
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
     padding-top: max(1.5rem, env(safe-area-inset-top));
-    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
-    overflow-y: hidden;
+    padding-bottom: max(5rem, env(safe-area-inset-bottom));
   }
   .modal::before {
     display: none;
   }
   .modal-body {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 0.25rem;
+    flex: none;
+    overflow-y: visible;
+    padding-right: 0;
   }
   .modal-heading {
     flex-shrink: 0;
   }
   .modal-actions {
     flex-shrink: 0;
-    border-top: 1px solid var(--line);
-    padding-top: 1rem;
-    margin-top: 0;
+    border-top: none;
+    padding-top: 1.5rem;
+    margin-top: auto;
   }
 }
