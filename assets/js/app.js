@@ -359,7 +359,7 @@ function render() {
   }
 
   filtered.forEach((todo, i) => {
-    if (todo.archived) return;
+    // Failsafe removed
     const info    = getStatusInfo(todo.status);
     const dueInfo = getDueInfo(todo.due, todo.status);
     const prio    = todo.priority || "normal";
@@ -601,6 +601,4 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 // Lancement
 // ──────────────────────────────────────────────
 init();
-// Listen for changes from other tabs (like settings)
-window.addEventListener('storage', (e) => { if (e.key === 'todos_' + currentUser) { todos = JSON.parse(e.newValue) || []; render(); } });
-window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { const localStr = localStorage.getItem('todos_' + currentUser); if (localStr) { todos = JSON.parse(localStr) || []; render(); } } });
+// Listeners removed

@@ -61,7 +61,7 @@ function updateCalendarView() {
 function renderPlanning() {
   calendarPlanningList.innerHTML = "";
   
-  const planningTasks = todos.filter(t => t.due && t.status !== "done" && t.status !== "cancelled" && !t.archived);
+  const planningTasks = todos.filter(t => t.due && t.status !== "done" && t.status !== "cancelled");
   
   if (planningTasks.length === 0) {
     calendarPlanningList.innerHTML = "<p style='text-align:center; color:var(--text-faint); margin-top:2rem;'>Aucune tâche planifiée.</p>";
@@ -162,7 +162,7 @@ function renderCalendarGrid() {
       cell.classList.add("today");
     }
     
-    const dayTasks = todos.filter(t => t.due === dateStr && t.status !== "done" && t.status !== "cancelled" && !t.archived);
+    const dayTasks = todos.filter(t => t.due === dateStr && t.status !== "done" && t.status !== "cancelled");
     if (dayTasks.length > 0) {
       cell.classList.add("has-tasks");
       const dot = document.createElement("div");
@@ -246,6 +246,4 @@ calendarNext.addEventListener("click", () => {
 // Initialisation
 updateCalendarView();
 
-// Listen for changes from other tabs (like settings)
-window.addEventListener('storage', (e) => { if (e.key === 'todos_' + currentUser) { todos = JSON.parse(e.newValue) || []; updateCalendarView(); } });
-window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { const localStr = localStorage.getItem('todos_' + currentUser); if (localStr) { todos = JSON.parse(localStr) || []; updateCalendarView(); } } });
+// Listeners removed

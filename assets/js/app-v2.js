@@ -275,7 +275,7 @@ function renderList(items) {
   const ul = document.createElement("ul");
   ul.className = "v2-list";
   items.forEach((todo, i) => {
-    if (todo.archived) return;
+    // Failsafe removed
     const info    = STATUS_INFO[todo.status] || STATUS_INFO.todo;
     const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
     const prio    = todo.priority || "normal";
@@ -330,7 +330,7 @@ function renderKanban(items) {
       list.innerHTML = `<p class="v2-kanban-empty">Vide</p>`;
     } else {
       colItems.forEach(todo => {
-        if (todo.archived) return;
+        // Failsafe removed
         const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
         const prio    = todo.priority || "normal";
         const card = document.createElement("div");
@@ -375,7 +375,7 @@ function renderTable(items) {
   `;
   const tbody = document.createElement("tbody");
   items.forEach(todo => {
-    if (todo.archived) return;
+    // Failsafe removed
     const info    = STATUS_INFO[todo.status] || STATUS_INFO.todo;
     const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
     const prio    = todo.priority || "normal";
@@ -593,6 +593,4 @@ function escHtml(s) {
 buildFilterPanel();
 init();
 
-// Listen for changes from other tabs (like settings)
-window.addEventListener('storage', (e) => { if (e.key === 'todos_' + currentUser) { todos = JSON.parse(e.newValue) || []; render(); } });
-window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { const localStr = localStorage.getItem('todos_' + currentUser); if (localStr) { todos = JSON.parse(localStr) || []; render(); } } });
+// Listeners removed

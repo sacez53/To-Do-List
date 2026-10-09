@@ -1299,3 +1299,36 @@ button { -webkit-appearance: none; appearance: none; }
 .settings-tab-content.active {
   display: flex;
 }
+/* --- AMELIORATION MODALE UI --- */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+@media (max-width: 767px) {
+  .modal {
+    border-radius: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding-top: max(1.5rem, env(safe-area-inset-top));
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    overflow-y: hidden;
+  }
+  .modal::before {
+    display: none;
+  }
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+  .modal-heading {
+    flex-shrink: 0;
+  }
+  .modal-actions {
+    flex-shrink: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 1rem;
+    margin-top: 0;
+  }
+}

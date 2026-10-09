@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
   <img src="assets/logo/list-todo.svg" alt="Ma To-Do List Logo" width="120">
 
   <h1>✨ Ma To-Do List ✨</h1>
@@ -69,6 +69,7 @@ Connectée à **Firebase Realtime Database**, toute modification sur votre smart
 - 📅 **Vues Calendrier :** Un planning chronologique et une grille mensuelle pour ne rater aucune échéance.
 - 🔍 **Moteur de Recherche Intégré :** Trouvez instantanément une tâche grâce au filtre en temps réel (sur le titre et les notes).
 - 🚨 **Indicateurs d'Échéance :** Badges dynamiques qui s'affichent si la tâche est *en retard*, prévue pour *aujourd'hui*, ou *à venir*.
+- 📱 **Mobile-First :** Interface 100% responsive avec modales repensées pour le confort sur smartphone.
 - 📊 **Barre de Progression :** Suivi visuel de l'accomplissement global (calculé en direct).
 - 🌑 **Dark Mode Premium :** Couleurs de fond `#080808` et surfaces `#0f0f0f` pour réduire la fatigue visuelle (contraste certifié WCAG AA).
 
@@ -152,3 +153,4 @@ Conçu et développé par **Sacha G.**
   <small>Distribué sous la licence MIT. ©️ 2026 Sacha G.</small><br>
   <b>Si ce projet vous plaît, n'hésitez pas à laisser une ⭐ sur le dépôt GitHub !</b>
 </div>
+
