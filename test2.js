@@ -1,0 +1,1 @@
+const todos = [{text: 'A', status: 'done', archived: true}, {text: 'B', status: 'done'}]; const currentFilter = 'done'; const filtered = todos.filter(t => !t.archived && (currentFilter === 'all' ? true : t.status === currentFilter)); console.log(filtered);
