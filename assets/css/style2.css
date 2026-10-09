@@ -1339,3 +1339,18 @@ button { -webkit-appearance: none; appearance: none; }
     margin-top: auto;
   }
 }
+
+/* --- READONLY MODE --- */
+.readonly-mode {
+  background: transparent !important;
+  border-color: transparent !important;
+  pointer-events: none;
+  -webkit-appearance: none;
+  box-shadow: none !important;
+  resize: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+select.readonly-mode {
+  background-image: none !important;
+}
