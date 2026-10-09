@@ -245,3 +245,7 @@ calendarNext.addEventListener("click", () => {
 
 // Initialisation
 updateCalendarView();
+
+// Listen for changes from other tabs (like settings)
+window.addEventListener('storage', (e) => { if (e.key === 'todos_' + currentUser) { todos = JSON.parse(e.newValue) || []; updateCalendarView(); } });
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { const localStr = localStorage.getItem('todos_' + currentUser); if (localStr) { todos = JSON.parse(localStr) || []; updateCalendarView(); } } });
