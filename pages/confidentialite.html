@@ -184,31 +184,60 @@
     .row-val { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
 
     footer {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       text-align: center;
-      padding: 1.25rem 1rem;
+      padding: 1.5rem 1rem;
       border-top: 1px solid var(--line);
       font-size: 0.72rem;
       letter-spacing: 0.06em;
       color: var(--text-muted);
+      overflow-x: hidden;
     }
     .footer-links {
       display: flex;
-      justify-content: center;
-      gap: 1.25rem;
-      margin-bottom: 0.5rem;
       flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem 1.25rem;
+      margin-bottom: 0.75rem;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .footer-links a {
       color: var(--text-faint);
       text-decoration: none;
       font-size: 0.68rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       transition: color 160ms ease;
     }
     .footer-links a:hover { color: var(--white); }
 
+    @media (max-width: 600px) {
+      nav {
+        padding: 0.75rem 1rem;
+      }
+      .nav-ghost {
+        display: none;
+      }
+    }
+
     @media (max-width: 480px) {
       .row-list li { grid-template-columns: 1fr; gap: 0.25rem; }
+      .footer-links {
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+      .footer-links a {
+        padding: 0.25rem 0.5rem;
+        display: inline-block;
+      }
+      footer a {
+        padding: 0.25rem 0.5rem;
+        display: inline-block;
+      }
     }
   </style>
 </head>
