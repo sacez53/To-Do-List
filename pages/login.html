@@ -271,7 +271,7 @@
               <label for="login-pass">Mot de passe</label>
               <div class="input-wrap">
                 <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
-                <button type="button" class="toggle-vis" id="toggle-login-pass" tabindex="-1">voir</button>
+                <button type="button" class="toggle-vis" id="toggle-login-pass" tabindex="0" aria-label="Afficher ou masquer le mot de passe">voir</button>
               </div>
             </div>
 
@@ -299,7 +299,7 @@
               <label for="reg-pass">Mot de passe</label>
               <div class="input-wrap">
                 <input type="password" id="reg-pass" placeholder="min. 6 caractères" autocomplete="new-password" />
-                <button type="button" class="toggle-vis" id="toggle-reg-pass" tabindex="-1">voir</button>
+                <button type="button" class="toggle-vis" id="toggle-reg-pass" tabindex="0" aria-label="Afficher ou masquer le mot de passe">voir</button>
               </div>
             </div>
 
@@ -307,8 +307,12 @@
               <label for="reg-confirm">Confirmer le mot de passe</label>
               <div class="input-wrap">
                 <input type="password" id="reg-confirm" placeholder="••••••••" autocomplete="new-password" />
-                <button type="button" class="toggle-vis" id="toggle-reg-confirm" tabindex="-1">voir</button>
+                <button type="button" class="toggle-vis" id="toggle-reg-confirm" tabindex="0" aria-label="Afficher ou masquer le mot de passe">voir</button>
               </div>
+            </div>
+
+            <div class="rules visible" style="border-color: rgba(255,255,255,0.12); color: var(--text-muted); font-size: 0.65rem; line-height: 1.5;">
+              🔒 <strong>Sécurité &amp; Confidentialité :</strong> Chiffrement AES-256-GCM de bout en bout. Aucun e-mail n'est collecté. En cas d'oubli de mot de passe, vos tâches ne pourront pas être récupérées.
             </div>
 
           </div>
@@ -321,7 +325,14 @@
       </div>
     </div>
 
-    <footer>© 2026 · Sacha G.</footer>
+    <footer>
+      <div style="display: flex; justify-content: center; gap: 1.25rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+        <a href="./confidentialite.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">Confidentialité</a>
+        <a href="./mentions-legales.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">Mentions Légales</a>
+        <a href="./cgu.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">CGU</a>
+      </div>
+      <p>© 2026 · Sacha G.</p>
+    </footer>
 
     <script src="../assets/js/crypto.js"></script>
     <script src="../assets/js/login.js"></script>
