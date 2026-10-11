@@ -192,7 +192,37 @@
       .hint { margin-top:1.25rem; text-align:center; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
 
       /* Footer */
-      footer { text-align:center; padding:.875rem; border-top:1px solid var(--line); font-size:.72rem; color:var(--text-muted); letter-spacing:.04em; }
+      footer {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+        padding: 1.25rem 1rem;
+        border-top: 1px solid var(--line);
+        font-size: .72rem;
+        color: var(--text-muted);
+        letter-spacing: .04em;
+        overflow-x: hidden;
+      }
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem 1.25rem;
+        margin-bottom: 0.5rem;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      .footer-links a {
+        color: var(--text-faint);
+        text-decoration: none;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: color 160ms ease;
+      }
+      .footer-links a:hover { color: var(--white); }
 
       /* Petits écrans */
       @media(max-height:600px) {
@@ -215,8 +245,16 @@
           min-height: 44px;
           padding: 0.5rem;
         }
+        .footer-links {
+          flex-direction: column;
+          gap: 0.55rem;
+        }
+        .footer-links a {
+          padding: 0.25rem 0.5rem;
+          display: inline-block;
+        }
         footer a {
-          padding: 0.5rem;
+          padding: 0.25rem 0.5rem;
           display: inline-block;
         }
       }
@@ -326,10 +364,10 @@
     </div>
 
     <footer>
-      <div style="display: flex; justify-content: center; gap: 1.25rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-        <a href="./confidentialite.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">Confidentialité</a>
-        <a href="./mentions-legales.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">Mentions Légales</a>
-        <a href="./cgu.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">CGU</a>
+      <div class="footer-links">
+        <a href="./confidentialite.html">Confidentialité</a>
+        <a href="./mentions-legales.html">Mentions Légales</a>
+        <a href="./cgu.html">CGU</a>
       </div>
       <p>© 2026 · Sacha G.</p>
     </footer>
