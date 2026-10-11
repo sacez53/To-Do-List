@@ -1,11 +1,19 @@
-const CACHE_NAME = 'todo-list-cache-v7';
+const CACHE_NAME = 'todo-list-cache-v8';
 const urlsToCache = [
   './',
   './index.html',
-  './assets/css/style.css',
+  './pages/app-v2.html',
+  './pages/login.html',
+  './pages/donnees.html',
+  './pages/confidentialite.html',
+  './pages/mentions-legales.html',
+  './pages/cgu.html',
   './assets/css/style2.css',
   './assets/js/transitions.js',
   './assets/js/burger-menu.js',
+  './assets/js/crypto.js',
+  './assets/js/timeout.js',
+  './assets/js/donnees.js',
   './assets/logo/list-todo.svg',
   './manifest.json',
   './assets/icons/icon-192.png',
