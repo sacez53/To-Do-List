@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  BURGER-MENU.JS — Menu Responsive Mobile & Desktop
+//  BURGER-MENU.JS — Menu Vertical Responsive
 // ══════════════════════════════════════════
 
 (function () {
@@ -9,9 +9,11 @@
   const LINKS = [
     { href: isRoot ? "./index.html"              : "../index.html",       label: "Accueil",        icon: "🏠", key: "index.html"        },
     { href: isRoot ? "./pages/app-v2.html"       : "./app-v2.html",       label: "Application",    icon: "📋", key: "app-v2.html"       },
+    { href: isRoot ? "./pages/calendar.html"     : "./calendar.html",     label: "Calendrier",     icon: "📅", key: "calendar.html"     },
+    { href: isRoot ? "./pages/settings.html"     : "./settings.html",     label: "Paramètres",     icon: "⛯",  key: "settings.html"     },
+    { href: isRoot ? "./pages/donnees.html"      : "./donnees.html",      label: "Mes Données",    icon: "📦", key: "donnees.html"      },
     { href: isRoot ? "./pages/commentaires.html" : "./commentaires.html", label: "Commentaires",   icon: "💬", key: "commentaires.html"  },
     { href: isRoot ? "./pages/apropos.html"      : "./apropos.html",      label: "À propos",       icon: "◉",  key: "apropos.html"      },
-    { href: isRoot ? "./pages/donnees.html"      : "./donnees.html",      label: "Mes Données",    icon: "📦", key: "donnees.html"      },
     { href: isRoot ? "./pages/confidentialite.html" : "./confidentialite.html", label: "Confidentialité", icon: "🔒", key: "confidentialite.html" },
     { href: isRoot ? "./pages/mentions-legales.html" : "./mentions-legales.html", label: "Mentions Légales", icon: "⚖️", key: "mentions-legales.html" },
     { href: isRoot ? "./pages/cgu.html"          : "./cgu.html",          label: "CGU",            icon: "📄", key: "cgu.html"           },
@@ -74,8 +76,8 @@
       right: 0;
       min-width: 230px;
       max-width: calc(100vw - 20px);
-      max-height: calc(100dvh - 80px);
       max-height: calc(100vh - 80px);
+      max-height: calc(100dvh - 80px);
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
@@ -109,17 +111,13 @@
     }
 
     /* ── Header du menu ── */
-    .bm-handle {
-      display: none;
-    }
-
     .bm-label {
       font-family: "IBM Plex Mono","Courier New",monospace;
       font-size: 0.58rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: #666;
-      padding: 0.65rem 1rem 0.45rem;
+      padding: 0.75rem 1rem 0.5rem;
       border-bottom: 1px solid #161616;
       display: flex;
       align-items: center;
@@ -177,7 +175,7 @@
 
     /* ══════════════════════════════════════════
        OPTIMISATION MOBILE (< 600px)
-       Affichage tiroir bas (Bottom Sheet) complet
+       Volet Vertical Latéral à Droite (Side Drawer)
        ══════════════════════════════════════════ */
     @media (max-width: 600px) {
       .bm-backdrop {
@@ -198,54 +196,84 @@
         pointer-events: all;
       }
 
+      .bm-trigger {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        padding: 5px;
+      }
+
       .bm-dropdown {
         position: fixed;
-        top: auto;
+        top: 0;
         bottom: 0;
-        left: 0;
         right: 0;
-        width: 100vw;
-        max-width: 100vw;
-        min-width: 100vw;
-        max-height: 85dvh;
-        max-height: 85vh;
-        border-radius: 14px 14px 0 0;
-        border: 1px solid #2a2a2a;
-        border-bottom: none;
+        left: auto;
+        width: 290px;
+        max-width: 86vw;
+        min-width: unset;
+        height: 100%;
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100%;
+        max-height: 100vh;
+        max-height: 100dvh;
+        border-radius: 0;
+        border: none;
+        border-left: 1px solid #2a2a2a;
         background: #0d0d0d;
-        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.95);
-        transform: translateY(105%);
+        box-shadow: -10px 0 35px rgba(0, 0, 0, 0.95);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+        transform: translateX(105%);
         transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms ease;
-        padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+        padding-top: max(0.5rem, env(safe-area-inset-top));
+        padding-bottom: max(3rem, calc(env(safe-area-inset-bottom) + 2rem));
         z-index: 99999;
       }
 
       .bm-wrap.bm-open .bm-dropdown {
-        transform: translateY(0);
+        transform: translateX(0);
         opacity: 1;
       }
 
-      .bm-handle {
-        display: block;
-        width: 38px;
-        height: 4px;
-        background: #333;
-        border-radius: 2px;
-        margin: 10px auto 4px auto;
-      }
-
       .bm-label {
-        padding: 0.75rem 1.25rem 0.5rem;
+        padding: 1rem 1.25rem 0.75rem;
         font-size: 0.65rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #1a1a1a;
+        flex-shrink: 0;
       }
 
       .bm-close-btn {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: #161616;
+        border: 1px solid #2a2a2a;
+        border-radius: 3px;
+        color: #efefef;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .bm-close-btn:hover {
+        background: #222;
+        color: #fff;
       }
 
       .bm-link {
-        padding: 0.9rem 1.25rem;
-        font-size: 0.78rem;
+        padding: 0.85rem 1.25rem;
+        font-size: 0.76rem;
+        flex-shrink: 0;
       }
     }
 
@@ -277,7 +305,6 @@
     </button>
     <div class="bm-backdrop" aria-hidden="true"></div>
     <nav class="bm-dropdown" aria-label="Menu principal">
-      <div class="bm-handle" aria-hidden="true"></div>
       <div class="bm-label">
         <span>Navigation</span>
         <button class="bm-close-btn" aria-label="Fermer le menu">✕</button>
