@@ -867,12 +867,44 @@
 
     /* ── Footer ── */
     .v2-footer {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       text-align: center;
-      padding: .875rem;
+      padding: 1.25rem 1rem;
       font-size: .7rem;
       color: var(--text-muted);
       border-top: 1px solid var(--line);
       letter-spacing: .04em;
+      overflow-x: hidden;
+    }
+
+    .v2-footer-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem 1.25rem;
+      margin-bottom: 0.65rem;
+      flex-wrap: wrap;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .v2-footer-links a {
+      color: var(--text-faint);
+      text-decoration: none;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: color 160ms ease;
+    }
+    .v2-footer-links a:hover { color: var(--white); }
+
+    @media (max-width: 480px) {
+      .v2-footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
     }
 
     @media(min-width:560px) {
@@ -999,11 +1031,11 @@
   </main>
 
   <footer class="v2-footer">
-    <div style="display: flex; justify-content: center; gap: 1.25rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-      <a href="./confidentialite.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">Confidentialité</a>
-      <a href="./mentions-legales.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">Mentions Légales</a>
-      <a href="./cgu.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">CGU</a>
-      <a href="./donnees.html" style="color: var(--text-faint); text-decoration: none; font-size: 0.68rem; text-transform: uppercase;">Gestion des données</a>
+    <div class="v2-footer-links">
+      <a href="./confidentialite.html">Confidentialité</a>
+      <a href="./mentions-legales.html">Mentions Légales</a>
+      <a href="./cgu.html">CGU</a>
+      <a href="./donnees.html">Gestion des données</a>
     </div>
     <p>© 2026 · Sacha G.</p>
   </footer>
