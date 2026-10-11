@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Ma To-Do List — Conditions Générales d'Utilisation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="icon" href="../assets/logo/list-todo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="../assets/js/transitions.js"></script>
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #0f0f0f;
+      --line: #1e1e1e;
+      --line-strong: #2e2e2e;
+      --text: #efefef;
+      --text-muted: #9a9a9a;
+      --text-faint: #6e6e6e;
+      --white: #fff;
+      --black: #000;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+    }
+
+    html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--text);
+      background-image: radial-gradient(circle, #161616 1px, transparent 1px);
+      background-size: 22px 22px;
+      overflow-x: hidden;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-logo {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+    .nav-logo:hover { color: var(--white); }
+
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+
+    .nav-ghost {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .nav-ghost:hover { color: var(--white); border-color: var(--text-faint); }
+
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3.5rem 1.25rem 2.5rem;
+      text-align: center;
+      position: relative;
+    }
+    .page-header::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--line-strong));
+    }
+
+    .page-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--line-strong);
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.6rem, 6vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+
+    .page-header p {
+      font-size: clamp(0.82rem, 2.5vw, 0.92rem);
+      color: var(--text-muted);
+      max-width: 55ch;
+      line-height: 1.65;
+    }
+
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 1.25rem 4rem;
+      flex: 1;
+    }
+
+    .block {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      margin-top: 2rem;
+    }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .block-num {
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-faint); min-width: 2ch;
+    }
+    .block-title {
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .block-body {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .block-body p {
+      font-size: 0.87rem;
+      color: var(--text);
+      line-height: 1.8;
+    }
+    .block-body p + p { margin-top: 0.9rem; }
+    .block-body ul {
+      margin: 0.75rem 0 0.75rem 1.5rem;
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.25rem 1rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--text-faint);
+      text-decoration: none;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      transition: color 160ms ease;
+    }
+    .footer-links a:hover { color: var(--white); }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-logo" href="../index.html">To‑Do List</a>
+    <div class="nav-links">
+      <a class="nav-ghost" href="../index.html">Accueil</a>
+      <a class="nav-ghost" href="./app-v2.html">Application</a>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <span class="page-tag">Règles d'Usage</span>
+    <h1>Conditions Générales d'Utilisation</h1>
+    <p>Modalités et règles encadrant l'accès et l'utilisation de l'application Ma To-Do List.</p>
+  </header>
+
+  <main class="wrapper">
+
+    <!-- 01 — Objet -->
+    <section class="block" aria-labelledby="section-objet">
+      <div class="block-header">
+        <span class="block-num">01</span>
+        <span class="block-title" id="section-objet">Objet du service</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Les présentes Conditions Générales d'Utilisation (ci-après « CGU ») définissent les règles d'utilisation du service <strong>Ma To-Do List</strong>, accessible gratuitement en ligne.
+        </p>
+        <p>
+          L'application a pour finalité la création, l'organisation, le suivi chronologique et la synchronisation de tâches personnelles entre plusieurs terminaux.
+        </p>
+      </div>
+    </section>
+
+    <!-- 02 — Compte et Chiffrement -->
+    <section class="block" aria-labelledby="section-compte">
+      <div class="block-header">
+        <span class="block-num">02</span>
+        <span class="block-title" id="section-compte">Compte utilisateur &amp; Responsabilité</span>
+      </div>
+      <div class="block-body">
+        <p>
+          L'accès complet à l'application nécessite la création d'un compte personnel constitué d'un identifiant pseudonyme et d'un mot de passe.
+        </p>
+        <p>
+          <strong>Spécificité technique et sécurité :</strong> Par souci de minimisation et de protection de la vie privée, aucune adresse de courrier électronique n'est collectée lors de l'inscription. De plus, vos tâches font l'objet d'un chiffrement symétrique de bout en bout (AES-256-GCM) dont la clé est dérivée localement de votre mot de passe.
+        </p>
+        <p>
+          En conséquence, <strong>l'utilisateur est seul gardien de son mot de passe</strong>. En cas de perte ou d'oubli, l'éditeur ne dispose d'aucun moyen technique permettant de récupérer, réinitialiser ou déchiffrer les données associées.
+        </p>
+      </div>
+    </section>
+
+    <!-- 03 — Disponibilité -->
+    <section class="block" aria-labelledby="section-dispo">
+      <div class="block-header">
+        <span class="block-num">03</span>
+        <span class="block-title" id="section-dispo">Disponibilité du service &amp; Sauvegardes</span>
+      </div>
+      <div class="block-body">
+        <p>
+          L'application est mise à disposition à titre gracieux. L'éditeur s'efforce de maintenir un accès stable et continu au service, mais ne saurait être tenu pour responsable des éventuelles interruptions de service liées aux réseaux de communication, aux opérations de maintenance ou aux prestataires tiers d'hébergement.
+        </p>
+        <p>
+          Bien qu'un mécanisme de synchronisation en ligne soit actif, il est vivement recommandé à l'utilisateur d'effectuer des sauvegardes régulières de ses listes de tâches grâce à l'outil d'exportation prévu à cet effet dans la rubrique <a href="./donnees.html" style="color: var(--white); font-weight: 700;">Gestion des données</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- 04 — Droit applicable -->
+    <section class="block" aria-labelledby="section-droit">
+      <div class="block-header">
+        <span class="block-num">04</span>
+        <span class="block-title" id="section-droit">Droit applicable &amp; Juridiction</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Les présentes conditions sont régies par le droit français. En cas de différend relatif à l'interprétation ou à l'exécution des présentes, les parties privilégieront une résolution amiable avant toute action judiciaire devant les juridictions compétentes.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="../index.html">Accueil</a>
+      <a href="./mentions-legales.html">Mentions Légales</a>
+      <a href="./confidentialite.html">Confidentialité</a>
+      <a href="./donnees.html">Gestion des données</a>
+    </div>
+    <p>© 2026 · Sacha G. Photographe</p>
+  </footer>
+
+  <script src="../assets/js/burger-menu.js"></script>
+</body>
+
+</html>
