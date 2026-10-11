@@ -44,7 +44,6 @@
       overflow-x: hidden;
     }
 
-    /* ── Nav ── */
     nav {
       display: flex;
       align-items: center;
@@ -80,22 +79,6 @@
     }
     .nav-ghost:hover { color: var(--white); border-color: var(--text-faint); }
 
-    .nav-cta {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--black);
-      text-decoration: none;
-      padding: 0.4rem 0.9rem;
-      background: var(--white);
-      border: 1px solid var(--white);
-      border-radius: 2px;
-      transition: background 160ms ease, color 160ms ease;
-    }
-    .nav-cta:hover { background: transparent; color: var(--white); }
-
-    /* ── Page header ── */
     .page-header {
       display: flex;
       flex-direction: column;
@@ -122,7 +105,6 @@
       border: 1px solid var(--line-strong);
       padding: 0.3rem 0.7rem;
       border-radius: 2px;
-      animation: fadeUp 500ms ease both;
     }
 
     .page-header h1 {
@@ -132,23 +114,15 @@
       text-transform: uppercase;
       line-height: 1.1;
       margin-bottom: 0.75rem;
-      animation: fadeUp 500ms 80ms ease both;
     }
 
     .page-header p {
       font-size: clamp(0.82rem, 2.5vw, 0.92rem);
       color: var(--text-muted);
-      max-width: 44ch;
+      max-width: 55ch;
       line-height: 1.65;
-      animation: fadeUp 500ms 160ms ease both;
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── Wrapper ── */
     .wrapper {
       max-width: 860px;
       margin: 0 auto;
@@ -157,13 +131,11 @@
       flex: 1;
     }
 
-    /* ── Bloc section ── */
     .block {
       border-left: 1px solid var(--line);
       border-right: 1px solid var(--line);
-      animation: fadeUp 500ms 220ms ease both;
+      margin-top: 2rem;
     }
-    .block + .block { margin-top: 2rem; }
 
     .block-header {
       display: flex;
@@ -195,18 +167,15 @@
     }
     .block-body p + p { margin-top: 0.9rem; }
 
-    /* ── Row list ── */
     .row-list { list-style: none; }
     .row-list li {
       display: grid;
-      grid-template-columns: 160px 1fr;
+      grid-template-columns: 180px 1fr;
       align-items: baseline;
       gap: 0.75rem;
       padding: 0.85rem 1rem;
       border-bottom: 1px solid var(--line);
-      transition: background 160ms ease;
     }
-    .row-list li:hover { background: var(--surface); }
     .row-key {
       font-size: 0.72rem; font-weight: 700;
       letter-spacing: 0.1em; text-transform: uppercase;
@@ -214,7 +183,6 @@
     }
     .row-val { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
 
-    /* ── Footer ── */
     footer {
       text-align: center;
       padding: 1.25rem 1rem;
@@ -223,32 +191,26 @@
       letter-spacing: 0.06em;
       color: var(--text-muted);
     }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--text-faint);
+      text-decoration: none;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      transition: color 160ms ease;
+    }
+    .footer-links a:hover { color: var(--white); }
 
-    /* ── Responsive ── */
     @media (max-width: 480px) {
-      .row-list li {
-        grid-template-columns: 1fr;
-        gap: 0.25rem;
-      }
-      .nav-ghost, .nav-cta, .nav-link, .btn-action, .btn-action-ghost, .cta-btn {
-        padding: 0.75rem 1rem;
-      }
-      footer a {
-        padding: 0.5rem;
-        display: inline-block;
-      }
+      .row-list li { grid-template-columns: 1fr; gap: 0.25rem; }
     }
   </style>
-  <link rel="manifest" href="../manifest.json">
-  <meta name="theme-color" content="#080808">
-  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
-      });
-    }
-  </script>
 </head>
 
 <body>
@@ -257,111 +219,129 @@
     <a class="nav-logo" href="../index.html">To‑Do List</a>
     <div class="nav-links">
       <a class="nav-ghost" href="../index.html">Accueil</a>
-      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
+      <a class="nav-ghost" href="./app-v2.html">Application</a>
     </div>
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Légal · <span id="app-version">v2.0</span></span>
-    <h1>Confidentialité</h1>
-    <p>Engagement sur la protection de vos données personnelles et le respect de votre vie privée.</p>
+    <span class="page-tag">Protection des Données · RGPD</span>
+    <h1>Politique de Confidentialité</h1>
+    <p>Engagement de transparence sur les traitements de données personnelles, le chiffrement et vos droits conformément au RGPD.</p>
   </header>
 
   <main class="wrapper">
 
-    <!-- 01 — Collecte -->
-    <section class="block" aria-labelledby="section-collecte">
+    <!-- 01 — Responsable -->
+    <section class="block" aria-labelledby="section-responsable">
       <div class="block-header">
         <span class="block-num">01</span>
-        <span class="block-title" id="section-collecte">Collecte des données</span>
+        <span class="block-title" id="section-responsable">Responsable du traitement</span>
+      </div>
+      <div class="block-body">
+        <p>Le responsable du traitement des données est :</p>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Identité</span>
+          <span class="row-val">[À COMPLÉTER : Sacha G. / Raison sociale]</span>
+        </li>
+        <li>
+          <span class="row-key">Contact DPO / Droits</span>
+          <span class="row-val">[À COMPLÉTER : adresse-contact@domaine.fr]</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 02 — Données collectées -->
+    <section class="block" aria-labelledby="section-collecte">
+      <div class="block-header">
+        <span class="block-num">02</span>
+        <span class="block-title" id="section-collecte">Minimisation des données</span>
       </div>
       <div class="block-body">
         <p>
-          L'application <strong>Ma To‑Do List</strong> collecte uniquement les informations strictement nécessaires à
-          son fonctionnement :
+          L'application applique un principe strict de minimisation (Art. 5.1.c du RGPD). <strong>Aucune adresse e-mail</strong>, aucun numéro de téléphone, aucune coordonnée bancaire et aucun traceur publicitaire ne sont collectés.
         </p>
       </div>
       <ul class="row-list">
         <li>
           <span class="row-key">Compte</span>
-          <span class="row-val">Adresse e-mail et mot de passe (via Firebase Auth) pour sécuriser l'accès à votre espace
-            personnel.</span>
+          <span class="row-val">Identifiant pseudonyme choisi librement par l'utilisateur.</span>
         </li>
         <li>
-          <span class="row-key">Contenu</span>
-          <span class="row-val">Titres, notes, statuts et échéances des tâches que vous créez (stockés sur Firebase
-            Firestore).</span>
+          <span class="row-key">Mot de passe</span>
+          <span class="row-val">Haché localement via PBKDF2 (100 000 itérations, SHA-256) avec un sel cryptographique aléatoire de 16 octets. Aucun mot de passe en clair n'est transmis ni enregistré.</span>
         </li>
         <li>
-          <span class="row-key">Technique</span>
-          <span class="row-val">Jetons de session temporaires (sessionStorage) pour maintenir votre connexion
-            active.</span>
+          <span class="row-key">Tâches</span>
+          <span class="row-val">Titres, échéances, notes, priorités et statuts. <strong>Ces données sont chiffrées de bout en bout en AES-256-GCM</strong> directement dans votre navigateur avant envoi. La clé de déchiffrement reste sur votre appareil et n'est jamais transmise au serveur.</span>
+        </li>
+        <li>
+          <span class="row-key">Stockage technique</span>
+          <span class="row-val"><code>sessionStorage</code> (maintien de session éphémère), <code>localStorage</code> (cache hors-ligne PWA) et Cache API du Service Worker. Aucun cookie publicitaire.</span>
         </li>
       </ul>
     </section>
 
-    <!-- 02 — Usage -->
-    <section class="block" aria-labelledby="section-usage">
-      <div class="block-header">
-        <span class="block-num">02</span>
-        <span class="block-title" id="section-usage">Usage des données</span>
-      </div>
-      <div class="block-body">
-        <p>
-          Vos données sont utilisées exclusivement pour vous fournir le service de gestion de tâches. Aucune donnée
-          n'est revendue, cédée ou utilisée à des fins publicitaires.
-        </p>
-        <p>
-          Le traitement est limité à la synchronisation en temps réel entre vos appareils et à la persistance de vos
-          listes personnelles.
-        </p>
-      </div>
-    </section>
-
-    <!-- 03 — Sécurité -->
-    <section class="block" aria-labelledby="section-securite">
+    <!-- 03 — Finalités et Bases Légales -->
+    <section class="block" aria-labelledby="section-finalites">
       <div class="block-header">
         <span class="block-num">03</span>
-        <span class="block-title" id="section-securite">Sécurité &amp; Hébergement</span>
-      </div>
-      <div class="block-body">
-        <p>
-          L'infrastructure repose sur les services de <strong>Google Firebase</strong>, bénéficiant ainsi de standards
-          de sécurité élevés (chiffrement des données au repos et en transit).
-        </p>
-        <p>
-          L'accès à vos données Firestore est protégé par des règles de sécurité strictes garantissant que seul
-          l'utilisateur authentifié peut lire ou écrire ses propres données.
-        </p>
-      </div>
-    </section>
-
-    <!-- 04 — Vos droits -->
-    <section class="block" aria-labelledby="section-droits">
-      <div class="block-header">
-        <span class="block-num">04</span>
-        <span class="block-title" id="section-droits">Vos droits (RGPD)</span>
-      </div>
-      <div class="block-body">
-        <p>
-          Conformément au RGPD, vous disposez d'un droit total sur vos données :
-        </p>
+        <span class="block-title" id="section-finalites">Finalités &amp; Bases légales</span>
       </div>
       <ul class="row-list">
         <li>
-          <span class="row-key">Accès</span>
-          <span class="row-val">Vous pouvez consulter l'intégralité de vos tâches directement dans l'interface de
-            l'application.</span>
+          <span class="row-key">Gestion des tâches</span>
+          <span class="row-val">Exécution du contrat / service demandé (Art. 6.1.b du RGPD).</span>
+        </li>
+        <li>
+          <span class="row-key">Sécurité applicative</span>
+          <span class="row-val">Intérêt légitime de l'éditeur à prévenir les abus et protéger l'infrastructure (Art. 6.1.f du RGPD).</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 04 — Sous-traitants & Hébergement -->
+    <section class="block" aria-labelledby="section-soustraitants">
+      <div class="block-header">
+        <span class="block-num">04</span>
+        <span class="block-title" id="section-soustraitants">Hébergement &amp; Transferts</span>
+      </div>
+      <div class="block-body">
+        <p>
+          La base de données en temps réel est hébergée sur <strong>Google Firebase Realtime Database</strong> dans la région européenne <code>europe-west1</code> (Belgique).
+        </p>
+        <p>
+          Google Cloud / Firebase agit en tant que sous-traitant technique. Les garanties relatives aux transferts éventuels reposent sur le Data Privacy Framework UE-USA et les Clauses Contractuelles Types de la Commission européenne.
+        </p>
+      </div>
+    </section>
+
+    <!-- 05 — Vos Droits -->
+    <section class="block" aria-labelledby="section-droits">
+      <div class="block-header">
+        <span class="block-num">05</span>
+        <span class="block-title" id="section-droits">Vos droits (RGPD Articles 15 à 21)</span>
+      </div>
+      <div class="block-body">
+        <p>Conformément au RGPD, vous disposez d'un contrôle direct sur vos données :</p>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Accès &amp; Rectification</span>
+          <span class="row-val">Vous pouvez modifier votre identifiant, mot de passe et tâches en temps réel depuis les paramètres.</span>
         </li>
         <li>
           <span class="row-key">Portabilité</span>
-          <span class="row-val">Un outil d'exportation (JSON/CSV) est disponible dans la section <a href="./donnees.html"
-              style="color: var(--white); font-weight: 700;">Gestion des données</a>.</span>
+          <span class="row-val">Un outil d'export complet au format standard JSON et CSV est accessible sur la page <a href="./donnees.html" style="color: var(--white); font-weight: 700;">Gestion des données</a>.</span>
         </li>
         <li>
-          <span class="row-key">Suppression</span>
-          <span class="row-val">Vous pouvez supprimer votre compte et l'intégralité des données associées de façon
-            irréversible depuis vos paramètres.</span>
+          <span class="row-key">Effacement</span>
+          <span class="row-val">Vous pouvez supprimer définitivement votre compte et l'intégralité de vos tâches stockées depuis la rubrique « Paramètres » ou « Gestion des données ».</span>
+        </li>
+        <li>
+          <span class="row-key">Réclamation</span>
+          <span class="row-val">En cas de litige, vous pouvez saisir l'autorité de contrôle compétente en France, la <strong>CNIL</strong> (Commission Nationale de l'Informatique et des Libertés — cnil.fr).</span>
         </li>
       </ul>
     </section>
@@ -369,19 +349,16 @@
   </main>
 
   <footer>
+    <div class="footer-links">
+      <a href="../index.html">Accueil</a>
+      <a href="./mentions-legales.html">Mentions Légales</a>
+      <a href="./cgu.html">CGU</a>
+      <a href="./donnees.html">Gestion des données</a>
+    </div>
     <p>© 2026 · Sacha G. Photographe</p>
   </footer>
 
-  <script>
-    fetch('../assets/json/version.json')
-      .then(r => r.json())
-      .then(data => {
-        if (data.version) {
-          document.getElementById('app-version').textContent = data.version;
-        }
-      })
-      .catch(e => console.error('Erreur chargement version:', e));
-  </script>
+  <script src="../assets/js/burger-menu.js"></script>
 </body>
 
 </html>
