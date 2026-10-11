@@ -4,11 +4,15 @@
 
 (function () {
   const path    = window.location.pathname.split("/").pop() || "index.html";
-  const isRoot  = !window.location.pathname.includes("/html/");
+  const isRoot  = !window.location.pathname.includes("/pages/") && !window.location.pathname.includes("/html/");
 
   const LINKS = [
     { href: isRoot ? "./pages/commentaires.html" : "./commentaires.html", label: "Commentaires", icon: "💬", key: "commentaires.html" },
     { href: isRoot ? "./pages/apropos.html"      : "./apropos.html",      label: "À propos",     icon: "◉",  key: "apropos.html"     },
+    { href: isRoot ? "./pages/donnees.html"      : "./donnees.html",      label: "Mes Données",  icon: "📦", key: "donnees.html"     },
+    { href: isRoot ? "./pages/confidentialite.html" : "./confidentialite.html", label: "Confidentialité", icon: "🔒", key: "confidentialite.html" },
+    { href: isRoot ? "./pages/mentions-legales.html" : "./mentions-legales.html", label: "Mentions Légales", icon: "⚖️", key: "mentions-legales.html" },
+    { href: isRoot ? "./pages/cgu.html"          : "./cgu.html",          label: "CGU",          icon: "📄", key: "cgu.html"          },
     { href: isRoot ? "./pages/developpeur.html"  : "./developpeur.html",  label: "Développeur",  icon: "⌨",  key: "developpeur.html"  },
   ];
 
