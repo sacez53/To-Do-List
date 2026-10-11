@@ -22,13 +22,36 @@ let firebaseUrl = null;
 
 async function getFirebaseUrl() {
   if (firebaseUrl) return firebaseUrl;
-  const res    = await fetch("../assets/json/config.json");
+  const res    = await fetch("../assets/json/firebase.json");
   const config = await res.json();
-  if (!config.firebaseUrl || !config.firebaseUrl.trim()) {
+  if (!config.url || !config.url.trim()) {
     throw new Error("Firebase non configuré.");
   }
-  firebaseUrl = config.firebaseUrl.replace(/\/$/, "");
+  firebaseUrl = config.url.replace(/\/$/, "");
   return firebaseUrl;
+}
+
+async function verifyUserPassword(username, password) {
+  await getFirebaseUrl();
+  const res = await fetch(`${userPath(username)}.json`);
+  const userData = await res.json();
+  if (!userData || !userData.password) {
+    return { ok: false, reason: "Identifiant introuvable." };
+  }
+  const oldHash = await hashPassword(password);
+  const isOldHash = (oldHash === userData.password);
+
+  let isStrongHash = false;
+  if (userData.salt) {
+    const strongHash = await hashPasswordPBKDF2(password, userData.salt);
+    isStrongHash = (strongHash === userData.password);
+  }
+
+  if (!isOldHash && !isStrongHash) {
+    return { ok: false, reason: "Mot de passe incorrect." };
+  }
+
+  return { ok: true, userData, isOldHash, isStrongHash };
 }
 
 function userPath(username) {
@@ -96,11 +119,9 @@ btnChangeUsername.addEventListener("click", async () => {
     const fbUrl = await getFirebaseUrl();
 
     // 1. Vérifie le mot de passe
-    const hash       = await hashPassword(password);
-    const passRes    = await fetch(`${userPath(currentUser)}/password.json`);
-    const storedHash = await passRes.json();
-    if (hash !== storedHash) {
-      showMsg(msgEl, "Mot de passe incorrect.", true);
+    const authCheck = await verifyUserPassword(currentUser, password);
+    if (!authCheck.ok) {
+      showMsg(msgEl, authCheck.reason || "Mot de passe incorrect.", true);
       setLoading(btnChangeUsername, false, USERNAME_LABEL); return;
     }
 
@@ -175,18 +196,17 @@ btnChangePassword.addEventListener("click", async () => {
     const fbUrl = await getFirebaseUrl();
 
     // 1. Vérifie l'ancien mot de passe
-    const oldHash    = await hashPassword(oldPass);
-    const passRes    = await fetch(`${userPath(currentUser)}/password.json`);
-    const storedHash = await passRes.json();
-    if (oldHash !== storedHash) {
-      showMsg(msgEl, "Mot de passe actuel incorrect.", true);
+    const authCheck = await verifyUserPassword(currentUser, oldPass);
+    if (!authCheck.ok) {
+      showMsg(msgEl, authCheck.reason || "Mot de passe actuel incorrect.", true);
       setLoading(btnChangePassword, false, PASSWORD_LABEL); return;
     }
 
-    // 2. Récupère le sel du compte
-    const saltRes = await fetch(`${userPath(currentUser)}/salt.json`);
-    const salt    = await saltRes.json();
-    if (!salt) throw new Error("Sel introuvable — compte corrompu.");
+    // 2. Récupère ou génère le sel du compte
+    let salt = authCheck.userData.salt;
+    if (!salt) {
+      salt = generateSalt();
+    }
 
     // 3. Récupère les tâches chiffrées
     const todosRes  = await fetch(`${userPath(currentUser)}/todos.json`);
@@ -200,14 +220,14 @@ btnChangePassword.addEventListener("click", async () => {
       todos = todosData;
     }
 
-    // 5. Hache le nouveau mot de passe
-    const newHash = await hashPassword(newPass);
+    // 5. Hache le nouveau mot de passe avec PBKDF2
+    const newHash = await hashPasswordPBKDF2(newPass, salt);
 
     // 6. Dérive la nouvelle clé (même sel + nouveau mot de passe)
     const newKey = await deriveKey(newPass, salt);
 
     // 7. Re-chiffre les tâches avec la nouvelle clé
-    const updates = { password: newHash };
+    const updates = { password: newHash, salt: salt };
     if (todos.length > 0) {
       updates.todos = await encryptData(todos, newKey);
     }
@@ -222,6 +242,7 @@ btnChangePassword.addEventListener("click", async () => {
     // 9. Met à jour la session avec la nouvelle clé
     const newKeyB64 = await exportKey(newKey);
     sessionStorage.setItem("encKey", newKeyB64);
+    sessionStorage.setItem("encSalt", salt);
     encKey = newKey;
 
     // Vide les champs
@@ -289,12 +310,9 @@ btnDeleteAccount.addEventListener("click", async () => {
     const fbUrl = await getFirebaseUrl();
 
     // Vérifie le mot de passe avant d'ouvrir la modale
-    const hash       = await hashPassword(password);
-    const passRes    = await fetch(`${userPath(currentUser)}/password.json`);
-    const storedHash = await passRes.json();
-
-    if (hash !== storedHash) {
-      showMsg(msgEl, "Mot de passe incorrect.", true);
+    const authCheck = await verifyUserPassword(currentUser, password);
+    if (!authCheck.ok) {
+      showMsg(msgEl, authCheck.reason || "Mot de passe incorrect.", true);
       setLoading(btnDeleteAccount, false, DELETE_LABEL); return;
     }
 
@@ -335,6 +353,7 @@ deleteConfirmYes.addEventListener("click", async () => {
 
     // Nettoie la session et le localStorage
     localStorage.removeItem(`todos_${currentUser}`);
+    localStorage.removeItem(`calendarView_${currentUser}`);
     sessionStorage.clear();
 
     // Redirige vers l'accueil
