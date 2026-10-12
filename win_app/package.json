@@ -1,0 +1,16 @@
+{
+  "name": "todolist-app",
+  "version": "1.0.0",
+  "description": "Application To-Do List Windows",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager . ToDoList --platform=win32 --arch=x64 --out=release --overwrite --icon=assets/icons/icon.ico --prune=true"
+  },
+  "author": "Sacha G.",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-packager": "^17.1.2"
+  }
+}
