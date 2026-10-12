@@ -29,7 +29,7 @@
       --accent-glow: rgba(255, 255, 255, 0.25);
       --white: #fff;
       --black: #000;
-      --duration: 5000;
+      --duration: 3500;
     }
 
     *,
@@ -832,12 +832,12 @@
     function typeChar() {
       if (ci < greeting.length) {
         greetEl.textContent += greeting[ci++];
-        setTimeout(typeChar, 55 + Math.random() * 40);
+        setTimeout(typeChar, 45 + Math.random() * 30);
       } else {
-        setTimeout(() => cursorEl.classList.add("hidden"), 1200);
+        setTimeout(() => cursorEl.classList.add("hidden"), 800);
       }
     }
-    setTimeout(typeChar, 750);
+    setTimeout(typeChar, 500);
 
     // ── Particle canvas ──
     (function () {
@@ -874,7 +874,7 @@
     })();
 
     // ── Loader ──
-    const TOTAL_MS = 8000;
+    const TOTAL_MS = 3500;
     const fillEl = document.getElementById("loader-fill");
     const pctEl = document.getElementById("loader-pct");
     const pctHud = document.getElementById("hud-date");  // repurpose after init
@@ -948,11 +948,11 @@
         const redirectPage = urlParams.get('redirect');
         const finalUrl = redirectPage ? `./${redirectPage}` : "./app-v2.html";
         
-        setTimeout(() => { window.transitionTo(finalUrl, 420); }, 320);
+        setTimeout(() => { window.transitionTo(finalUrl, 420); }, 250);
       }
     }
 
-    setTimeout(() => requestAnimationFrame(tick), 500);
+    setTimeout(() => requestAnimationFrame(tick), 300);
   </script>
 </body>
 
