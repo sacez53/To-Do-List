@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style2.css" />
+  <link rel="stylesheet" href="../assets/css/style2.css?v=11" />
   <script src="../assets/js/transitions.js"></script>
   <script>if (!sessionStorage.getItem("auth")) window.location.replace("./login.html");</script>
   <style>
@@ -541,6 +541,12 @@
       color: var(--text);
       word-break: break-word;
       line-height: 1.45;
+      cursor: pointer;
+      transition: color .16s;
+    }
+
+    .v2-item-text:hover {
+      color: var(--white);
     }
 
     .v2-item-meta {
@@ -568,22 +574,23 @@
 
     .v2-edit-btn {
       flex-shrink: 0;
-      min-height: 40px;
-      padding: .25rem .6rem;
-      border: 1px solid transparent;
-      border-radius: 3px;
-      background: transparent;
+      min-height: 34px;
+      padding: .35rem .75rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      background: var(--surface);
       color: var(--text-muted);
       cursor: pointer;
-      font-size: .7rem;
+      font-size: .72rem;
       text-transform: uppercase;
       letter-spacing: .05em;
-      transition: color .16s, border-color .16s;
+      transition: color .16s, border-color .16s, background .16s;
     }
 
     .v2-edit-btn:hover {
       color: #fff;
-      border-color: var(--line-strong);
+      border-color: #fff;
+      background: var(--line);
     }
 
     .v2-empty {
@@ -924,7 +931,9 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
+        navigator.serviceWorker.register('../sw.js')
+          .then(reg => reg.update())
+          .catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
@@ -1134,7 +1143,7 @@
 
   <script src="../assets/js/crypto.js"></script>
   <script src="../assets/js/timeout.js"></script>
-  <script src="../assets/js/app-v2.js"></script>
+  <script src="../assets/js/app-v2.js?v=11"></script>
 </body>
 
 </html>
