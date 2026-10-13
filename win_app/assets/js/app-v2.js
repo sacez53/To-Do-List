@@ -99,7 +99,7 @@ async function init() {
   }
 
   try {
-    const r = await fetch("./assets/json/firebase.json");
+    const r = await fetch("../assets/json/firebase.json");
     const cfg = r.ok ? await r.json() : {};
     if (cfg.url && cfg.url.trim()) {
       firebaseUrl = cfg.url.replace(/\/$/, "");
@@ -119,11 +119,9 @@ async function init() {
   const viewTaskId = urlParams.get("viewTask");
   const editTaskId = urlParams.get("editTask");
   if (viewTaskId) {
-    const idNum = parseInt(viewTaskId, 10);
-    openModal(idNum, "view");
+    openModal(viewTaskId, "view");
   } else if (editTaskId) {
-    const idNum = parseInt(editTaskId, 10);
-    openModal(idNum, "edit");
+    openModal(editTaskId, "edit");
   }
 }
 
@@ -307,7 +305,7 @@ function renderList(items) {
     li.innerHTML = `
       <div class="v2-item-left">
         <button class="v2-badge v2-badge--${todo.status}" title="Changer le statut">${info.icon} ${info.label}</button>
-        <div class="v2-item-body">
+        <div class="v2-item-body" title="Cliquer pour voir le résumé">
           <span class="v2-item-text ${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</span>
           <div class="v2-item-meta">
             ${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : ""}
@@ -317,7 +315,7 @@ function renderList(items) {
           ${todo.notes && todo.notes.trim() ? `<span class="v2-note-preview">${escHtml(todo.notes.slice(0, 80))}${todo.notes.length > 80 ? "…" : ""}</span>` : ""}
         </div>
       </div>
-      <button class="v2-edit-btn">Modifier</button>
+      <button class="v2-edit-btn" title="Modifier la tâche">Modifier</button>
     `;
     li.querySelector(".v2-badge").addEventListener("click", e => {
       e.stopPropagation();
@@ -359,7 +357,7 @@ function renderKanban(items) {
         card.className = "v2-card";
         card.innerHTML = `
           <div class="v2-card-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem;">
-            <p class="v2-card-text ${todo.status === "done" ? "v2-done" : ""}" style="margin-bottom:0;flex:1;">${escHtml(todo.text)}</p>
+            <p class="v2-card-text ${todo.status === "done" ? "v2-done" : ""}" style="margin-bottom:0;flex:1;cursor:pointer;" title="Cliquer pour voir le résumé">${escHtml(todo.text)}</p>
             <button class="v2-edit-btn v2-card-edit-btn" title="Modifier la tâche" style="min-height:unset;padding:.2rem .45rem;font-size:.65rem;flex-shrink:0;">Modifier</button>
           </div>
           <div class="v2-card-meta">
@@ -414,15 +412,24 @@ function renderTable(items) {
     const tr = document.createElement("tr");
     tr.className = "v2-table-row";
     tr.innerHTML = `
-      <td class="v2-table-text">
+      <td class="v2-table-text" title="Cliquer pour voir le résumé">
         <span class="${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</span>
       </td>
-      <td><span class="v2-badge v2-badge--${todo.status}">${info.icon} ${info.label}</span></td>
+      <td><button class="v2-badge v2-badge--${todo.status}" title="Changer le statut" style="background:transparent;cursor:pointer;">${info.icon} ${info.label}</button></td>
       <td>${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : `<span class="v2-muted">—</span>`}</td>
       <td>${dueInfo ? `<span class="v2-due ${dueInfo.cls}">${dueInfo.label}</span>` : `<span class="v2-muted">—</span>`}</td>
       <td>${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon" title="${escHtml(todo.notes)}">📝</span>` : `<span class="v2-muted">—</span>`}</td>
-      <td><button class="v2-edit-btn">Modifier</button></td>
+      <td><button class="v2-edit-btn" title="Modifier la tâche">Modifier</button></td>
     `;
+    const tbBadge = tr.querySelector(".v2-badge");
+    if (tbBadge) {
+      tbBadge.addEventListener("click", e => {
+        e.stopPropagation();
+        const cycle = ["todo", "inprogress", "waiting", "done", "cancelled"];
+        todo.status = cycle[(cycle.indexOf(todo.status) + 1) % cycle.length];
+        saveTodos(); render();
+      });
+    }
     tr.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id, "edit"); });
     tr.addEventListener("click", () => openModal(todo.id, "view"));
     tbody.appendChild(tr);
@@ -547,9 +554,9 @@ function openModal(id = null, mode = 'edit') {
     return;
   }
 
-  const todo = todos.find(t => t.id === id);
+  const todo = todos.find(t => String(t.id) === String(id));
   if (!todo) return;
-  editingId = id;
+  editingId = todo.id;
 
   if (mode === "view") {
     // ── Mode récapitulatif ──
@@ -565,17 +572,17 @@ function openModal(id = null, mode = 'edit') {
     if (recapStatus) {
       const info = STATUS_INFO[todo.status] || STATUS_INFO.todo;
       recapStatus.textContent = `${info.icon} ${info.label}`;
-      recapStatus.className = `v2-badge v2-badge--${todo.status}`;
+      recapStatus.className = `v2-badge v2-badge--${todo.status || 'todo'}`;
     }
 
     if (recapPriority) {
       const prio = todo.priority || "normal";
       if (prio !== "normal") {
-        recapPriority.textContent = PRIORITY_LABEL[prio];
+        recapPriority.textContent = PRIORITY_LABEL[prio] || prio;
         recapPriority.className = `v2-prio v2-prio--${prio}`;
         recapPriority.style.display = "";
       } else {
-        recapPriority.textContent = "— Normale";
+        recapPriority.textContent = "— Priorité normale";
         recapPriority.className = "v2-prio";
         recapPriority.style.display = "";
       }
@@ -583,9 +590,15 @@ function openModal(id = null, mode = 'edit') {
 
     if (recapDue) {
       const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
-      if (dueInfo) {
-        const d = new Date(todo.due + "T00:00:00");
-        const dateFull = d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+      if (dueInfo && todo.due) {
+        let dateFull = todo.due;
+        try {
+          const parts = todo.due.split("-");
+          if (parts.length === 3) {
+            const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            dateFull = d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+          }
+        } catch(e) {}
         const timeSuffix = todo.dueTime ? ` ⏱ ${todo.dueTime}` : "";
         recapDue.textContent = `📅 ${dateFull}${timeSuffix} (${dueInfo.label})`;
         recapDue.className = `v2-due ${dueInfo.cls}`;
@@ -719,17 +732,17 @@ modalSave.addEventListener("click", () => {
   if (editingId === null) {
     todos.push({ id:Date.now(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), created:new Date().toISOString() });
   } else {
-    const idx = todos.findIndex(t => t.id === editingId);
+    const idx = todos.findIndex(t => String(t.id) === String(editingId));
     if (idx !== -1) Object.assign(todos[idx], { text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim() });
   }
   saveTodos(); render(); closeModal();
 });
 
 modalDelete.addEventListener("click", () => {
-  if (!editingId) return;
+  if (editingId === null) return;
   const id = editingId;
   closeModal();
-  openConfirm(() => { todos = todos.filter(t => t.id !== id); saveTodos(); render(); });
+  openConfirm(() => { todos = todos.filter(t => String(t.id) !== String(id)); saveTodos(); render(); });
 });
 
 document.getElementById("v2-logout-btn").addEventListener("click", () => {
