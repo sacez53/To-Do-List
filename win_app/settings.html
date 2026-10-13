@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>Paramètres — To‑Do List</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#080808" />
     <meta name="description" content="Gérez votre compte : identifiant, mot de passe et suppression." />
     <link rel="icon" href="./assets/logo/list-todo.svg">
@@ -18,6 +21,10 @@
         window.location.replace("./login.html");
       }
     </script>
+    
+  <meta name="theme-color" content="#080808">
+  
+  
 </head>
   <body>
 
@@ -92,7 +99,7 @@
           <span class="settings-section-icon" aria-hidden="true">🔑</span>
           <div>
             <h2 class="settings-section-title" id="section-password-title">Mot de passe</h2>
-            <p class="settings-section-sub">Modifier votre mot de passe — réinitialise vos tâches chiffrées.</p>
+            <p class="settings-section-sub">Modifier votre mot de passe — re-chiffre toutes vos tâches - Cause la supression de vos taches sur votre compte.</p>
           </div>
         </div>
 
@@ -134,7 +141,7 @@
         </div>
       </section>
 
-      </div>
+            </div>
 
       <div id="tab-display" class="settings-tab-content">
       <!-- ══ Section : Affichage ══ -->
@@ -162,7 +169,7 @@
         </div>
       </section>
 
-      </div>
+            </div>
 
       <div id="tab-archive" class="settings-tab-content">
       <!-- ══ Section : Archives ══ -->
@@ -188,7 +195,7 @@
         </div>
       </section>
 
-      </div>
+            </div>
 
       <div id="tab-danger" class="settings-tab-content">
       <!-- ══ Section : Zone de danger ══ -->
@@ -223,11 +230,12 @@
         </div>
       </section>
 
-      </div>
+          </div>
     </main>
 
-    <footer class="footer" style="margin-top: 3rem; padding: 1.5rem 1rem; border-top: 1px solid var(--line); text-align: center; font-size: 0.72rem; color: var(--text-faint);">
-      <p>© 2026 · Sacha G. — To-Do List Windows</p>
+    <footer class="footer">
+      
+      <p>© 2026 · Sacha G.</p>
     </footer>
 
     <!-- ══ Modale de confirmation suppression ══ -->
