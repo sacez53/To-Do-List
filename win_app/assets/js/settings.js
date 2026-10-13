@@ -22,7 +22,7 @@ let firebaseUrl = null;
 
 async function getFirebaseUrl() {
   if (firebaseUrl) return firebaseUrl;
-  const res    = await fetch("./assets/json/firebase.json");
+  const res    = await fetch("../assets/json/firebase.json");
   const config = await res.json();
   if (!config.url || !config.url.trim()) {
     throw new Error("Firebase non configuré.");
