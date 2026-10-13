@@ -534,6 +534,16 @@ button { -webkit-appearance: none; appearance: none; }
   border-top: 1px solid var(--line);
 }
 
+#modal-delete {
+  grid-column: 1 / -1;
+}
+
+#modal-delete:hover,
+#modal-delete:active {
+  border-color: rgba(248, 113, 113, 0.6);
+  color: #f87171;
+}
+
 .btn-save {
   min-height: var(--tap);
   padding: 0.6rem 1rem;
