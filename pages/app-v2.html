@@ -1045,12 +1045,29 @@
     <span class="v2-fab-icon">+</span>
   </button>
 
-  <!-- Modale ajout/édition (réutilisée de style2.css) -->
+  <!-- Modale ajout/édition/récapitulatif (réutilisée de style2.css) -->
   <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
     <div class="modal">
       <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
       <h2 class="modal-heading" id="modal-heading">Nouvelle tâche</h2>
-      <div class="modal-body">
+
+      <!-- Vue récapitulative (lecture seule) -->
+      <div class="modal-recap" id="modal-recap" style="display:none;">
+        <div class="modal-recap-title" id="recap-title"></div>
+        <div class="modal-recap-badges">
+          <span class="v2-badge" id="recap-status"></span>
+          <span class="v2-prio" id="recap-priority"></span>
+          <span class="v2-due" id="recap-due"></span>
+        </div>
+        <div class="modal-recap-section">
+          <div class="modal-recap-label">Notes</div>
+          <div class="modal-recap-notes" id="recap-notes"></div>
+        </div>
+        <div class="modal-recap-meta" id="recap-meta"></div>
+      </div>
+
+      <!-- Corps du formulaire (édition / création) -->
+      <div class="modal-body" id="modal-body">
       <div class="modal-field">
         <label for="modal-text">Titre</label>
         <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tâche..." />
@@ -1091,8 +1108,13 @@
       </div>
       </div>
       <div class="modal-actions">
+        <!-- Mode récapitulatif -->
+        <button class="btn-save" id="modal-edit-btn" style="display:none;">Modifier</button>
+        <button class="btn-delete" id="modal-close-recap-btn" style="display:none;">Fermer</button>
+
+        <!-- Mode édition / création -->
         <button class="btn-save" id="modal-save">Créer</button>
-        <button class="btn-save" id="modal-edit-btn" style="display:none; background: transparent; border: 1px solid var(--text-faint); color: var(--white);">Modifier</button>
+        <button class="btn-delete" id="modal-cancel-edit-btn" style="display:none;">Annuler</button>
         <button class="btn-delete" id="modal-delete" style="display:none">Supprimer</button>
       </div>
     </div>
