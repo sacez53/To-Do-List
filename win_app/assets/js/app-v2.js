@@ -38,6 +38,17 @@ const modalDelete   = document.getElementById("modal-delete");
 const confirmOverlay= document.getElementById("confirm-overlay");
 const confirmYes    = document.getElementById("confirm-yes");
 const confirmNo     = document.getElementById("confirm-no");
+const modalBody          = document.getElementById("modal-body");
+const modalEditBtn       = document.getElementById("modal-edit-btn");
+const modalCloseRecapBtn = document.getElementById("modal-close-recap-btn");
+const modalCancelEditBtn = document.getElementById("modal-cancel-edit-btn");
+const modalRecap         = document.getElementById("modal-recap");
+const recapTitle         = document.getElementById("recap-title");
+const recapStatus        = document.getElementById("recap-status");
+const recapPriority      = document.getElementById("recap-priority");
+const recapDue           = document.getElementById("recap-due");
+const recapNotes         = document.getElementById("recap-notes");
+const recapMeta          = document.getElementById("recap-meta");
 
 // ── État ──
 let todos        = [];
@@ -103,6 +114,17 @@ async function init() {
   }
 
   render();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const viewTaskId = urlParams.get("viewTask");
+  const editTaskId = urlParams.get("editTask");
+  if (viewTaskId) {
+    const idNum = parseInt(viewTaskId, 10);
+    openModal(idNum, "view");
+  } else if (editTaskId) {
+    const idNum = parseInt(editTaskId, 10);
+    openModal(idNum, "edit");
+  }
 }
 
 // ══════════════════════════════════════════
@@ -336,13 +358,23 @@ function renderKanban(items) {
         const card = document.createElement("div");
         card.className = "v2-card";
         card.innerHTML = `
-          <p class="v2-card-text ${todo.status === "done" ? "v2-done" : ""}">${escHtml(todo.text)}</p>
+          <div class="v2-card-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem;">
+            <p class="v2-card-text ${todo.status === "done" ? "v2-done" : ""}" style="margin-bottom:0;flex:1;">${escHtml(todo.text)}</p>
+            <button class="v2-edit-btn v2-card-edit-btn" title="Modifier la tâche" style="min-height:unset;padding:.2rem .45rem;font-size:.65rem;flex-shrink:0;">Modifier</button>
+          </div>
           <div class="v2-card-meta">
             ${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : ""}
             ${dueInfo ? `<span class="v2-due ${dueInfo.cls}">📅 ${dueInfo.label}</span>` : ""}
             ${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon">📝</span>` : ""}
           </div>
         `;
+        const cardEditBtn = card.querySelector(".v2-card-edit-btn");
+        if (cardEditBtn) {
+          cardEditBtn.addEventListener("click", e => {
+            e.stopPropagation();
+            openModal(todo.id, "edit");
+          });
+        }
         card.addEventListener("click", () => openModal(todo.id, "view"));
         list.appendChild(card);
       });
@@ -467,75 +499,159 @@ function resetFilters() {
 //  MODALES
 // ══════════════════════════════════════════
 
-const modalEditBtn = document.getElementById("modal-edit-btn");
+// Événements boutons de modale
 if (modalEditBtn) {
   modalEditBtn.addEventListener("click", () => {
-    openModal(editingId, 'edit');
+    if (editingId !== null) openModal(editingId, "edit");
   });
 }
 
-function setModalMode(mode) {
-  const isView = (mode === 'view');
-  
-  // Inputs
-  modalText.readOnly = isView;
-  modalDue.readOnly = isView;
-  if (modalDueTime) modalDueTime.readOnly = isView;
-  modalNotes.readOnly = isView;
-  
-  // Selects
-  modalStatus.disabled = isView;
-  modalPriority.disabled = isView;
-  
-  // Styling
-  document.querySelectorAll('.modal-input, .modal-select, .modal-textarea').forEach(el => {
-    if (isView) el.classList.add('readonly-mode');
-    else el.classList.remove('readonly-mode');
+if (modalCloseRecapBtn) {
+  modalCloseRecapBtn.addEventListener("click", closeModal);
+}
+
+if (modalCancelEditBtn) {
+  modalCancelEditBtn.addEventListener("click", () => {
+    if (editingId !== null) {
+      openModal(editingId, "view");
+    } else {
+      closeModal();
+    }
   });
-  
-  // Buttons
-  if (isView) {
-    modalSave.style.display = 'none';
-    modalDelete.style.display = 'none';
-    if (modalEditBtn) modalEditBtn.style.display = '';
-  } else {
-    modalSave.style.display = '';
-    if (modalEditBtn) modalEditBtn.style.display = 'none';
-    if (editingId) modalDelete.style.display = '';
-    else modalDelete.style.display = 'none';
-  }
 }
 
 function openModal(id = null, mode = 'edit') {
-
   if (id === null) {
     editingId = null;
-    modalHeading.textContent  = "Nouvelle tâche";
-    modalSave.textContent     = "Créer";
-    modalText.value           = "";
-    modalStatus.value         = "todo";
-    modalPriority.value       = "normal";
-    modalDue.value            = "";
+    modalHeading.textContent = "Nouvelle tâche";
+    modalSave.textContent = "Créer";
+    modalText.value = "";
+    modalStatus.value = "todo";
+    modalPriority.value = "normal";
+    modalDue.value = "";
     if (modalDueTime) modalDueTime.value = "";
-    modalNotes.value          = "";
+    modalNotes.value = "";
+
+    if (modalRecap) modalRecap.style.display = "none";
+    if (modalBody) modalBody.style.display = "flex";
+
+    modalSave.style.display = "";
+    if (modalCancelEditBtn) modalCancelEditBtn.style.display = "";
+    modalDelete.style.display = "none";
+    if (modalEditBtn) modalEditBtn.style.display = "none";
+    if (modalCloseRecapBtn) modalCloseRecapBtn.style.display = "none";
+
+    modalOverlay.classList.add("open");
+    document.body.classList.add("modal-open");
+    setTimeout(() => modalText.focus(), 60);
+    return;
+  }
+
+  const todo = todos.find(t => t.id === id);
+  if (!todo) return;
+  editingId = id;
+
+  if (mode === "view") {
+    // ── Mode récapitulatif ──
+    modalHeading.textContent = "Récapitulatif";
+
+    if (recapTitle) {
+      recapTitle.textContent = todo.text;
+      recapTitle.className = "modal-recap-title" +
+        (todo.status === "done" ? " v2-done" : "") +
+        (todo.status === "cancelled" ? " v2-cancelled" : "");
+    }
+
+    if (recapStatus) {
+      const info = STATUS_INFO[todo.status] || STATUS_INFO.todo;
+      recapStatus.textContent = `${info.icon} ${info.label}`;
+      recapStatus.className = `v2-badge v2-badge--${todo.status}`;
+    }
+
+    if (recapPriority) {
+      const prio = todo.priority || "normal";
+      if (prio !== "normal") {
+        recapPriority.textContent = PRIORITY_LABEL[prio];
+        recapPriority.className = `v2-prio v2-prio--${prio}`;
+        recapPriority.style.display = "";
+      } else {
+        recapPriority.textContent = "— Normale";
+        recapPriority.className = "v2-prio";
+        recapPriority.style.display = "";
+      }
+    }
+
+    if (recapDue) {
+      const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
+      if (dueInfo) {
+        const d = new Date(todo.due + "T00:00:00");
+        const dateFull = d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+        const timeSuffix = todo.dueTime ? ` ⏱ ${todo.dueTime}` : "";
+        recapDue.textContent = `📅 ${dateFull}${timeSuffix} (${dueInfo.label})`;
+        recapDue.className = `v2-due ${dueInfo.cls}`;
+        recapDue.style.display = "";
+      } else {
+        recapDue.textContent = "📅 Aucune date d'échéance";
+        recapDue.className = "v2-due due-ok";
+        recapDue.style.display = "";
+      }
+    }
+
+    if (recapNotes) {
+      if (todo.notes && todo.notes.trim()) {
+        recapNotes.textContent = todo.notes;
+        recapNotes.classList.remove("is-empty");
+      } else {
+        recapNotes.textContent = "Aucune note";
+        recapNotes.classList.add("is-empty");
+      }
+    }
+
+    if (recapMeta) {
+      if (todo.created) {
+        const d = new Date(todo.created);
+        const dateStr = d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+        const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        recapMeta.textContent = `Créée le ${dateStr} à ${timeStr}`;
+        recapMeta.style.display = "";
+      } else {
+        recapMeta.style.display = "none";
+      }
+    }
+
+    if (modalRecap) modalRecap.style.display = "flex";
+    if (modalBody) modalBody.style.display = "none";
+
+    if (modalEditBtn) modalEditBtn.style.display = "";
+    if (modalCloseRecapBtn) modalCloseRecapBtn.style.display = "";
+    modalSave.style.display = "none";
+    if (modalCancelEditBtn) modalCancelEditBtn.style.display = "none";
     modalDelete.style.display = "none";
   } else {
-    const todo = todos.find(t => t.id === id);
-    if (!todo) return;
-    editingId = id;
-    modalHeading.textContent  = "Modifier la tâche";
-    modalSave.textContent     = "Enregistrer";
-    modalText.value           = todo.text;
-    modalStatus.value         = todo.status;
-    modalPriority.value       = todo.priority || "normal";
-    modalDue.value            = todo.due || "";
+    // ── Mode édition ──
+    modalHeading.textContent = "Modifier la tâche";
+    modalSave.textContent = "Enregistrer";
+    modalText.value = todo.text;
+    modalStatus.value = todo.status;
+    modalPriority.value = todo.priority || "normal";
+    modalDue.value = todo.due || "";
     if (modalDueTime) modalDueTime.value = todo.dueTime || "";
-    modalNotes.value          = todo.notes || "";
+    modalNotes.value = todo.notes || "";
+
+    if (modalRecap) modalRecap.style.display = "none";
+    if (modalBody) modalBody.style.display = "flex";
+
+    modalSave.style.display = "";
+    if (modalCancelEditBtn) modalCancelEditBtn.style.display = "";
     modalDelete.style.display = "";
+    if (modalEditBtn) modalEditBtn.style.display = "none";
+    if (modalCloseRecapBtn) modalCloseRecapBtn.style.display = "none";
+
+    setTimeout(() => modalText.focus(), 60);
   }
+
   modalOverlay.classList.add("open");
   document.body.classList.add("modal-open");
-  setTimeout(() => modalText.focus(), 60);
 }
 
 function closeModal() {
