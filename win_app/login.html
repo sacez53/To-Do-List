@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>Connexion — To‑Do List</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#080808" />
     <link rel="icon" href="./assets/logo/list-todo.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +17,9 @@
       :root {
         --bg:#080808; --surface:#0f0f0f; --line:#1e1e1e; --line-strong:#2e2e2e;
         --text:#efefef;
+        /* #9a9a9a sur #080808 ≈ 5.6:1 WCAG AA ✓ */
         --text-muted:#9a9a9a;
+        /* #6e6e6e sur #080808 ≈ 4.6:1 WCAG AA ✓ */
         --text-faint:#6e6e6e;
         --white:#fff; --black:#000; --radius:3px; --tr:160ms ease;
       }
@@ -27,7 +32,6 @@
         background:var(--bg); color:var(--text);
         background-image:radial-gradient(circle,#161616 1px,transparent 1px);
         background-size:22px 22px;
-        user-select: none;
       }
 
       /* ── Top bar ── */
@@ -36,35 +40,21 @@
         padding:.875rem 1.25rem;
         border-bottom:1px solid var(--line);
       }
-      .top-logo {
-        font-size:.78rem;
-        font-weight:700;
-        letter-spacing:.18em;
-        text-transform:uppercase;
-        color:var(--text-muted);
-        display:flex;
-        align-items:center;
-        gap:0.5rem;
-      }
-      .top-badge {
-        font-size:.65rem;
-        letter-spacing:.12em;
-        text-transform:uppercase;
-        color:var(--text-faint);
-        border:1px solid var(--line-strong);
-        padding:0.2rem 0.5rem;
-        border-radius:2px;
-      }
+      .top-logo { font-size:.78rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; }
+      .top-logo:hover { color:var(--text); }
+      .top-back { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color var(--tr); }
+      .top-back:hover { color:var(--white); }
 
       /* ── Zone centrale ── */
       .wrap {
         flex:1; display:flex; align-items:center; justify-content:center;
         padding:1.5rem 1rem;
+        padding-bottom:max(1.5rem, env(safe-area-inset-bottom));
       }
 
       /* ── Carte ── */
       .card {
-        width:100%; max-width:380px;
+        width:100%; max-width:360px;
         display:flex; flex-direction:column;
         animation:appear 360ms ease both;
       }
@@ -89,7 +79,7 @@
         margin-bottom:0;
       }
       .tab-btn {
-        padding:.75rem .5rem;
+        padding:.7rem .5rem;
         background:transparent;
         border:none;
         border-bottom:1px solid var(--line-strong);
@@ -117,6 +107,7 @@
       }
       .auth-form.active { display:flex; }
 
+      /* Reflet haut */
       .auth-form::before {
         content:""; position:absolute; top:0; left:1.25rem; right:1.25rem; height:1px;
         background:linear-gradient(to right, transparent, rgba(255,255,255,.07), transparent);
@@ -133,11 +124,12 @@
         width:100%; min-height:48px;
         padding:.85rem 2.75rem .85rem .9rem;
         border:1px solid #1e1e1e; border-radius:var(--radius);
-        background:#000; color:var(--text); font-size:15px;
+        background:#000; color:var(--text); font-size:16px;
         transition:border-color var(--tr), box-shadow var(--tr);
       }
       .input-wrap input::placeholder { color:var(--text-faint); }
       .input-wrap input:focus { outline:none; border-color:#fff; box-shadow:0 0 0 1px rgba(255,255,255,.05); }
+      .input-wrap input.error { border-color:#666; }
 
       /* Icône dans input */
       .input-icon {
@@ -166,7 +158,7 @@
 
       /* ── Bouton submit ── */
       .submit-btn {
-        width:100%; min-height:50px;
+        width:100%; min-height:52px;
         padding:.9rem 1rem;
         border:none; border-top:1px solid #1a1a1a;
         background:#fff; color:#000;
@@ -191,33 +183,91 @@
         border:1px solid var(--line-strong); border-top:none;
         background:#0a0a0a; display:none;
       }
-      .msg.error.visible   { display:block; color:#f87171; animation:shake 280ms ease; }
-      .msg.success.visible { display:block; color:#4ade80; }
+      .msg.error.visible   { display:block; color:#aaaaaa; animation:shake 280ms ease; }
+      .msg.success.visible { display:block; color:var(--text-muted); }
 
       @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
+      /* ── Hint bas ── */
       .hint { margin-top:1.25rem; text-align:center; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
 
       /* Footer */
       footer {
         width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
         text-align: center;
         padding: 1.25rem 1rem;
         border-top: 1px solid var(--line);
         font-size: .72rem;
+        color: var(--text-muted);
+        letter-spacing: .04em;
+        overflow-x: hidden;
+      }
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem 1.25rem;
+        margin-bottom: 0.5rem;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      .footer-links a {
         color: var(--text-faint);
-        letter-spacing: .05em;
+        text-decoration: none;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: color 160ms ease;
+      }
+      .footer-links a:hover { color: var(--white); }
+
+      /* Petits écrans */
+      @media(max-height:600px) {
+        .card-header { margin-bottom:1rem; }
+        .card-icon { display:none; }
+        .wrap { padding:.75rem 1rem; }
+      }
+
+      /* ── Responsive Mobile A11y ── */
+      @media (max-width: 480px) {
+        .top-logo, .top-back {
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+        }
+        .tab-btn {
+          padding-top: 0.85rem;
+          padding-bottom: 0.85rem;
+        }
+        .toggle-vis {
+          min-height: 44px;
+          padding: 0.5rem;
+        }
+        .footer-links {
+          flex-direction: column;
+          gap: 0.55rem;
+        }
+        .footer-links a {
+          padding: 0.25rem 0.5rem;
+          display: inline-block;
+        }
+        footer a {
+          padding: 0.25rem 0.5rem;
+          display: inline-block;
+        }
       }
     </style>
-  </head>
+    
+  <meta name="theme-color" content="#080808">
+  
+  
+</head>
   <body>
 
     <div class="top-bar">
-      <div class="top-logo">
-        <img src="./assets/logo/list-todo.svg" alt="" width="16" height="16" style="vertical-align:middle; filter: invert(1); opacity:0.8;">
-        To‑Do List
-      </div>
-      <div class="top-badge">Windows App</div>
+      <span class="top-logo">To‑Do List</span>
     </div>
 
     <div class="wrap">
@@ -293,7 +343,7 @@
             </div>
 
             <div class="rules visible" style="border-color: rgba(255,255,255,0.12); color: var(--text-muted); font-size: 0.65rem; line-height: 1.5;">
-              🔒 <strong>Sécurité &amp; Confidentialité :</strong> Chiffrement AES-256-GCM de bout en bout. Aucun e-mail n'est collecté.
+              🔒 <strong>Sécurité &amp; Confidentialité :</strong> Chiffrement AES-256-GCM de bout en bout. Aucun e-mail n'est collecté. En cas d'oubli de mot de passe, vos tâches ne pourront pas être récupérées.
             </div>
 
           </div>
@@ -307,7 +357,8 @@
     </div>
 
     <footer>
-      <p>© 2026 · Sacha G. — To-Do List Windows</p>
+      
+      <p>© 2026 · Sacha G.</p>
     </footer>
 
     <script src="./assets/js/crypto.js"></script>
