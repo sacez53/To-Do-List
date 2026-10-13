@@ -114,8 +114,8 @@ function renderPlanning() {
       
       li.style.cursor = "pointer";
       li.addEventListener("click", () => {
-        // Redirige vers app.html et ouvre la modale
-        window.location.href = `app.html?viewTask=${t.id}`;
+        // Redirige vers app-v2.html et ouvre le récapitulatif
+        window.location.href = `app-v2.html?viewTask=${t.id}`;
       });
       
       ul.appendChild(li);
