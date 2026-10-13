@@ -1397,3 +1397,69 @@ button { -webkit-appearance: none; appearance: none; }
 select.readonly-mode {
   background-image: none !important;
 }
+
+/* --- MODALE RECAPITULATIF --- */
+.modal-recap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fadeIn 160ms ease;
+}
+.modal-recap-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+  word-break: break-word;
+}
+.modal-recap-title.v2-done {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+.modal-recap-title.v2-cancelled {
+  text-decoration: line-through;
+  color: var(--text-faint);
+}
+.modal-recap-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.modal-recap-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.modal-recap-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+.modal-recap-notes {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.875rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 52px;
+}
+.modal-recap-notes.is-empty {
+  color: var(--text-faint);
+  font-style: italic;
+}
+.modal-recap-meta {
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
