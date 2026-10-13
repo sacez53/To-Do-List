@@ -23,7 +23,7 @@ function createWindow() {
 
   Menu.setApplicationMenu(null);
 
-  mainWindow.loadFile(path.join(__dirname, 'login.html'));
+  mainWindow.loadFile(path.join(__dirname, 'src', 'login.html'));
 
   mainWindow.on('closed', () => {
     mainWindow = null;
