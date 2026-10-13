@@ -368,8 +368,9 @@ deleteConfirmYes.addEventListener("click", async () => {
     localStorage.removeItem(`calendarView_${currentUser}`);
     sessionStorage.clear();
 
-    // Redirige vers l'accueil
-    window.transitionTo("../index.html");
+    // Redirige vers l'accueil ou la connexion
+    const logoutDest = window.location.pathname.includes('/pages/') ? "../index.html" : "./login.html";
+    window.transitionTo(logoutDest);
 
   } catch (err) {
     console.error(err);

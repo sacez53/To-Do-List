@@ -930,7 +930,7 @@
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('../sw.js')
           .then(reg => reg.update())
@@ -1041,12 +1041,6 @@
   </main>
 
   <footer class="v2-footer">
-    <div class="v2-footer-links">
-      <a href="./confidentialite.html" data-i18n="footer_privacy">Confidentialité</a>
-      <a href="./mentions-legales.html" data-i18n="footer_legal">Mentions Légales</a>
-      <a href="./cgu.html" data-i18n="footer_cgu">CGU</a>
-      <a href="./donnees.html" data-i18n="footer_data">Gestion des données</a>
-    </div>
     <p>© 2026 · Sacha G.</p>
   </footer>
 

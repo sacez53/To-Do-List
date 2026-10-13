@@ -930,7 +930,7 @@
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('../sw.js')
           .then(reg => reg.update())

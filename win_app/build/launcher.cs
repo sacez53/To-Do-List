@@ -13,26 +13,51 @@ namespace ToDoListLauncher
             try
             {
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string exePath = Path.Combine(baseDir, "release", "ToDoList-win32-x64", "ToDoList.exe");
                 
-                if (File.Exists(exePath))
+                string[] candidates = new string[]
                 {
-                    ProcessStartInfo psi = new ProcessStartInfo(exePath);
-                    psi.WorkingDirectory = Path.GetDirectoryName(exePath);
-                    Process.Start(psi);
-                    return;
+                    Path.Combine(baseDir, "release", "ToDoList-win32-x64", "ToDoList.exe"),
+                    Path.Combine(baseDir, "ToDoList-win32-x64", "ToDoList.exe"),
+                    Path.Combine(baseDir, "..", "..", "release", "ToDoList-win32-x64", "ToDoList.exe"),
+                    Path.Combine(baseDir, "..", "release", "ToDoList-win32-x64", "ToDoList.exe"),
+                    Path.Combine(baseDir, "dist", "win-unpacked", "To-Do List.exe"),
+                    Path.Combine(baseDir, "..", "..", "dist", "win-unpacked", "To-Do List.exe"),
+                    Path.Combine(baseDir, "..", "dist", "win-unpacked", "To-Do List.exe")
+                };
+
+                foreach (string candidate in candidates)
+                {
+                    string fullPath = Path.GetFullPath(candidate);
+                    if (File.Exists(fullPath))
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo(fullPath);
+                        psi.WorkingDirectory = Path.GetDirectoryName(fullPath);
+                        Process.Start(psi);
+                        return;
+                    }
                 }
 
-                string nodeElectron = Path.Combine(baseDir, "node_modules", "electron", "dist", "electron.exe");
-                if (File.Exists(nodeElectron))
+                string[] electronCandidates = new string[]
                 {
-                    ProcessStartInfo psi = new ProcessStartInfo(nodeElectron, ".");
-                    psi.WorkingDirectory = baseDir;
-                    Process.Start(psi);
-                    return;
+                    Path.Combine(baseDir, "node_modules", "electron", "dist", "electron.exe"),
+                    Path.Combine(baseDir, "..", "..", "node_modules", "electron", "dist", "electron.exe"),
+                    Path.Combine(baseDir, "..", "node_modules", "electron", "dist", "electron.exe")
+                };
+
+                foreach (string ec in electronCandidates)
+                {
+                    string fullEc = Path.GetFullPath(ec);
+                    if (File.Exists(fullEc))
+                    {
+                        string appDir = File.Exists(Path.Combine(baseDir, "package.json")) ? baseDir : Path.GetFullPath(Path.Combine(baseDir, "..", ".."));
+                        ProcessStartInfo psi = new ProcessStartInfo(fullEc, ".");
+                        psi.WorkingDirectory = appDir;
+                        Process.Start(psi);
+                        return;
+                    }
                 }
 
-                MessageBox.Show("Fichier exécutable introuvable dans release\\ToDoList-win32-x64\\ToDoList.exe", "Erreur - To-Do List", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Fichier exécutable To-Do List introuvable.", "Erreur - To-Do List", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {

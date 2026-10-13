@@ -135,7 +135,13 @@ loginForm.addEventListener("submit", async (e) => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const redirectPage = urlParams.get('redirect');
-    const nextUrl = redirectPage ? `./${redirectPage}` : `./welcome.html`;
+    const isElectron = typeof window !== 'undefined' && (
+      window.location.pathname.includes('/src/') ||
+      !window.location.pathname.includes('/pages/') ||
+      (navigator.userAgent && navigator.userAgent.toLowerCase().includes('electron'))
+    );
+    const defaultApp = isElectron ? './app.html' : './welcome.html';
+    const nextUrl = redirectPage ? `./${redirectPage}` : defaultApp;
     window.transitionTo(nextUrl);
 
   } catch (err) {
@@ -229,7 +235,13 @@ registerForm.addEventListener("submit", async (e) => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const redirectPage = urlParams.get('redirect');
-    const nextUrl = redirectPage ? `./${redirectPage}` : `./welcome.html`;
+    const isElectron = typeof window !== 'undefined' && (
+      window.location.pathname.includes('/src/') ||
+      !window.location.pathname.includes('/pages/') ||
+      (navigator.userAgent && navigator.userAgent.toLowerCase().includes('electron'))
+    );
+    const defaultApp = isElectron ? './app.html' : './welcome.html';
+    const nextUrl = redirectPage ? `./${redirectPage}` : defaultApp;
 
     showSuccess(registerSuccess, t("success_account_created"));
     setTimeout(() => { window.transitionTo(nextUrl); }, 900);

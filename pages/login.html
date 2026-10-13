@@ -452,6 +452,12 @@
           if (langPicker) langPicker.value = e.target.value;
         });
       }
+
+      window.addEventListener("languageChanged", (e) => {
+        const l = (e.detail && e.detail.lang) ? e.detail.lang : getLanguage();
+        if (langPicker) langPicker.value = l;
+        if (regLang) regLang.value = l;
+      });
     </script>
   </body>
 </html>

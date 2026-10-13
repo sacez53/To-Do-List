@@ -117,8 +117,9 @@ function renderPlanning() {
       
       li.style.cursor = "pointer";
       li.addEventListener("click", () => {
-        // Redirige vers app-v2.html et ouvre le récapitulatif
-        window.location.href = `app-v2.html?viewTask=${t.id}`;
+        // Redirige vers la vue des tâches et ouvre le récapitulatif
+        const targetApp = window.location.pathname.includes('/pages/') ? 'app-v2.html' : 'app.html';
+        window.location.href = `${targetApp}?viewTask=${t.id}`;
       });
       
       ul.appendChild(li);
