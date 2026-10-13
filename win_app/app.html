@@ -21,6 +21,24 @@
       --v2-accent-glow: rgba(74, 222, 128, .25);
     }
 
+    /* ── Banner ── */
+    .v2-banner {
+      background: var(--v2-accent-dim);
+      border-bottom: 1px solid rgba(74, 222, 128, .25);
+      padding: .5rem 1rem;
+      text-align: center;
+      font-size: .7rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--v2-accent);
+    }
+
+    .v2-banner a {
+      color: var(--v2-accent);
+      text-decoration: none;
+      border-bottom: 1px solid currentColor;
+    }
+
     /* ── Header V2 ── */
     .v2-header {
       text-align: center;
@@ -41,11 +59,25 @@
     }
 
     .v2-header h1 {
-      font-size: clamp(1.1rem, 4vw, 1.6rem);
+      font-size: clamp(1rem, 4vw, 1.6rem);
       font-weight: 700;
       letter-spacing: .12em;
       text-transform: uppercase;
       margin-bottom: .2rem;
+    }
+
+    .v2-beta {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      font-size: .6rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--v2-accent);
+      border: 1px solid rgba(74, 222, 128, .4);
+      padding: .1rem .4rem;
+      border-radius: 2px;
+      margin-left: .5rem;
     }
 
     .v2-header p {
@@ -133,7 +165,7 @@
     }
 
     .v2-sync-error {
-      background: #ef4444;
+      background: #666;
     }
 
     .v2-sync-offline {
@@ -224,9 +256,10 @@
       transform: translateY(-50%);
       background: none;
       border: none;
-      color: var(--text-faint);
+      color: var(--text-muted);
       cursor: pointer;
-      font-size: .75rem;
+      font-size: .8rem;
+      padding: .2rem;
     }
 
     .v2-sort {
@@ -234,20 +267,70 @@
       border: 1px solid var(--line-strong);
       border-radius: 3px;
       background: var(--surface);
-      color: var(--text-muted);
+      color: var(--text);
       font-size: .75rem;
       cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
-    /* ── Switcher ── */
+    .v2-sort:focus {
+      outline: none;
+      border-color: #fff;
+    }
+
+    /* ── Vue switcher ── */
     .v2-view-switcher {
       display: flex;
-      gap: .4rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 3px;
+      overflow: hidden;
       margin-bottom: .75rem;
     }
 
     .v2-view-btn {
-      padding: .35rem .7rem;
+      flex: 1;
+      padding: .5rem .4rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      cursor: pointer;
+      transition: background .16s, color .16s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .3rem;
+    }
+
+    .v2-view-btn:not(:last-child) {
+      border-right: 1px solid var(--line-strong);
+    }
+
+    .v2-view-btn.active {
+      background: var(--surface-2);
+      color: #fff;
+    }
+
+    .v2-view-btn:not(.active):hover {
+      color: var(--text);
+    }
+
+    /* ── Filtre avancé ── */
+    .v2-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .75rem;
+    }
+
+    .v2-filter-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .4rem .75rem;
       border: 1px solid var(--line-strong);
       border-radius: 3px;
       background: transparent;
@@ -256,120 +339,364 @@
       text-transform: uppercase;
       letter-spacing: .06em;
       cursor: pointer;
-      transition: all .16s;
+      transition: color .16s, border-color .16s;
     }
 
-    .v2-view-btn.active {
-      background: var(--surface-2);
-      border-color: var(--text-muted);
+    .v2-filter-toggle:hover,
+    .v2-filter-toggle.active {
       color: #fff;
-    }
-
-    /* ── Filtres ── */
-    .v2-filter-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .v2-filter-toggle {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: .72rem;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      display: inline-flex;
-      align-items: center;
-      gap: .4rem;
-    }
-
-    .v2-filter-toggle:hover {
-      color: #fff;
+      border-color: #fff;
     }
 
     .v2-filter-count {
-      background: var(--v2-accent-dim);
-      color: var(--v2-accent);
+      background: var(--v2-accent);
+      color: #000;
       border-radius: 50%;
       width: 16px;
       height: 16px;
-      display: inline-flex;
+      font-size: .55rem;
+      display: none;
       align-items: center;
       justify-content: center;
-      font-size: .6rem;
+      font-weight: 700;
     }
 
     .v2-filter-reset {
-      background: none;
-      border: none;
+      padding: .4rem .75rem;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      background: transparent;
       color: var(--text-faint);
-      font-size: .68rem;
-      cursor: pointer;
+      font-size: .7rem;
       text-transform: uppercase;
       letter-spacing: .06em;
-      display: none;
+      cursor: pointer;
+      transition: color .16s;
     }
 
+    .v2-filter-reset:hover {
+      color: #fff;
+    }
+
+    /* ── Panel filtres ── */
     .v2-filter-panel {
       display: none;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-      border: 1px solid var(--line);
-      border-radius: 3px;
       background: var(--surface);
-      margin-bottom: 1rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 3px;
+      padding: 1rem;
+      margin-bottom: .75rem;
+      animation: slideDown 180ms ease;
     }
 
     .v2-filter-panel.open {
       display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
     }
 
     .v2-fp-group h4 {
-      font-size: .68rem;
+      font-size: .65rem;
       text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--text-faint);
+      letter-spacing: .1em;
+      color: var(--text-muted);
       margin-bottom: .5rem;
     }
 
     .v2-fp-checks {
       display: flex;
       flex-direction: column;
-      gap: .35rem;
+      gap: .3rem;
     }
 
     .v2-fp-check {
-      font-size: .72rem;
-      color: var(--text-muted);
-      cursor: pointer;
       display: flex;
       align-items: center;
       gap: .4rem;
+      font-size: .72rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .v2-fp-check:hover {
+      color: #fff;
+    }
+
+    .v2-fp-check input {
+      accent-color: var(--v2-accent);
+      cursor: pointer;
     }
 
     .v2-fp-date {
       display: flex;
       flex-direction: column;
-      gap: .3rem;
-      font-size: .68rem;
+      gap: .4rem;
+    }
+
+    .v2-fp-date label {
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
       color: var(--text-muted);
     }
 
-    .v2-fp-date input {
-      padding: .3rem .4rem;
-      background: #000;
+    .v2-fp-date input[type=date] {
+      width: 100%;
+      padding: .4rem .5rem;
       border: 1px solid var(--line-strong);
+      border-radius: 3px;
+      background: var(--surface-2);
       color: var(--text);
-      font-size: .72rem;
-      border-radius: 2px;
+      font-size: .75rem;
     }
 
-    /* ── Kanban ── */
-    .v2-kanban-wrap {
+    /* ── Board ── */
+    .v2-board {
+      min-height: 200px;
+    }
+
+    /* ── Vue Liste ── */
+    .v2-list {
+      list-style: none;
+      border-top: 1px solid var(--line);
+    }
+
+    .v2-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: .75rem;
+      padding: .9rem 0;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      position: relative;
+      transition: background .16s, padding .16s;
+      animation: itemIn 220ms ease both;
+    }
+
+    @keyframes itemIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .v2-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--v2-accent);
+      opacity: 0;
+      transition: opacity .16s;
+    }
+
+    .v2-item:hover {
+      background: var(--surface);
+      padding-left: .75rem;
+      padding-right: .4rem;
+    }
+
+    .v2-item:hover::before {
+      opacity: 1;
+    }
+
+    .v2-item-left {
+      display: flex;
+      align-items: flex-start;
+      gap: .55rem;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .v2-item-body {
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .v2-item-text {
+      font-size: .88rem;
+      color: var(--text);
+      word-break: break-word;
+      line-height: 1.45;
+    }
+
+    .v2-item-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .35rem;
+      margin-top: .1rem;
+    }
+
+    .v2-note-preview {
+      font-size: .72rem;
+      color: var(--text-muted);
+      font-style: italic;
+      border-left: 1px solid var(--line-strong);
+      padding-left: .4rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .v2-note-icon {
+      font-size: .75rem;
+      cursor: help;
+    }
+
+    .v2-edit-btn {
+      flex-shrink: 0;
+      min-height: 40px;
+      padding: .25rem .6rem;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      transition: color .16s, border-color .16s;
+    }
+
+    .v2-edit-btn:hover {
+      color: #fff;
+      border-color: var(--line-strong);
+    }
+
+    .v2-empty {
+      padding: 3rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: .78rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Badges statut ── */
+    .v2-badge {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      font-size: .65rem;
+      padding: .12rem .4rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 3px;
+      color: var(--text-muted);
+      background: transparent;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform .1s, border-color .16s, color .16s;
+    }
+
+    .v2-badge:hover {
+      transform: scale(1.05);
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .v2-badge--done {
+      border-color: rgba(74, 222, 128, .4);
+      color: var(--v2-accent);
+    }
+
+    .v2-badge--inprogress {
+      border-color: rgba(250, 204, 21, .3);
+      color: #facc15;
+    }
+
+    .v2-badge--waiting {
+      border-color: rgba(148, 163, 184, .3);
+      color: #94a3b8;
+    }
+
+    .v2-badge--cancelled {
+      border-color: rgba(100, 100, 100, .3);
+      color: var(--text-faint);
+    }
+
+    /* ── Priorité ── */
+    .v2-prio {
+      font-size: .65rem;
+      padding: .1rem .35rem;
+      border-radius: 3px;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+
+    .v2-prio--high {
+      border-color: rgba(248, 113, 113, .4);
+      color: #f87171;
+    }
+
+    .v2-prio--low {
+      border-color: rgba(96, 165, 250, .4);
+      color: #60a5fa;
+    }
+
+    /* ── Échéance ── */
+    .v2-due {
+      font-size: .65rem;
+      white-space: nowrap;
+    }
+
+    .due-overdue {
+      color: #f87171;
+    }
+
+    .due-today {
+      color: #facc15;
+    }
+
+    .due-soon {
+      color: #fb923c;
+    }
+
+    .due-ok {
+      color: var(--text-faint);
+    }
+
+    /* ── États texte ── */
+    .v2-done {
+      text-decoration: line-through;
+      color: var(--text-faint);
+    }
+
+    .v2-cancelled {
+      text-decoration: line-through;
+      opacity: .3;
+    }
+
+    .v2-muted {
+      color: var(--text-faint);
+    }
+
+    /* ── Vue Kanban ── */
+    .v2-board--kanban {
       overflow-x: auto;
     }
 
@@ -461,7 +788,7 @@
       gap: .3rem;
     }
 
-    /* ── Tableau ── */
+    /* ── Vue Tableau ── */
     .v2-table {
       width: 100%;
       border-collapse: collapse;
@@ -541,12 +868,43 @@
     /* ── Footer ── */
     .v2-footer {
       width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       text-align: center;
       padding: 1.25rem 1rem;
       font-size: .7rem;
-      color: var(--text-faint);
+      color: var(--text-muted);
       border-top: 1px solid var(--line);
       letter-spacing: .04em;
+      overflow-x: hidden;
+    }
+
+    .v2-footer-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem 1.25rem;
+      margin-bottom: 0.65rem;
+      flex-wrap: wrap;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .v2-footer-links a {
+      color: var(--text-faint);
+      text-decoration: none;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: color 160ms ease;
+    }
+    .v2-footer-links a:hover { color: var(--white); }
+
+    @media (max-width: 480px) {
+      .v2-footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
     }
 
     @media(min-width:560px) {
@@ -560,6 +918,10 @@
       }
     }
   </style>
+  
+  <meta name="theme-color" content="#080808">
+  
+  
 </head>
 
 <body>
@@ -663,7 +1025,8 @@
   </main>
 
   <footer class="v2-footer">
-    <p>© 2026 · Sacha G. — To-Do List Windows</p>
+    
+    <p>© 2026 · Sacha G.</p>
   </footer>
 
   <!-- FAB -->
@@ -671,12 +1034,29 @@
     <span class="v2-fab-icon">+</span>
   </button>
 
-  <!-- Modale ajout/édition -->
+  <!-- Modale ajout/édition/récapitulatif (réutilisée de style2.css) -->
   <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
     <div class="modal">
       <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
       <h2 class="modal-heading" id="modal-heading">Nouvelle tâche</h2>
-      <div class="modal-body">
+
+      <!-- Vue récapitulative (lecture seule) -->
+      <div class="modal-recap" id="modal-recap" style="display:none;">
+        <div class="modal-recap-title" id="recap-title"></div>
+        <div class="modal-recap-badges">
+          <span class="v2-badge" id="recap-status"></span>
+          <span class="v2-prio" id="recap-priority"></span>
+          <span class="v2-due" id="recap-due"></span>
+        </div>
+        <div class="modal-recap-section">
+          <div class="modal-recap-label">Notes</div>
+          <div class="modal-recap-notes" id="recap-notes"></div>
+        </div>
+        <div class="modal-recap-meta" id="recap-meta"></div>
+      </div>
+
+      <!-- Corps du formulaire (édition / création) -->
+      <div class="modal-body" id="modal-body">
       <div class="modal-field">
         <label for="modal-text">Titre</label>
         <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tâche..." />
@@ -717,8 +1097,13 @@
       </div>
       </div>
       <div class="modal-actions">
+        <!-- Mode récapitulatif -->
+        <button class="btn-save" id="modal-edit-btn" style="display:none;">Modifier</button>
+        <button class="btn-delete" id="modal-close-recap-btn" style="display:none;">Fermer</button>
+
+        <!-- Mode édition / création -->
         <button class="btn-save" id="modal-save">Créer</button>
-        <button class="btn-save" id="modal-edit-btn" style="display:none; background: transparent; border: 1px solid var(--text-faint); color: var(--white);">Modifier</button>
+        <button class="btn-delete" id="modal-cancel-edit-btn" style="display:none;">Annuler</button>
         <button class="btn-delete" id="modal-delete" style="display:none">Supprimer</button>
       </div>
     </div>
@@ -742,3 +1127,4 @@
 </body>
 
 </html>
+
