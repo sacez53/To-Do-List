@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Paramètres — To‑Do List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#080808" />
+    <meta name="description" content="Gérez votre compte : identifiant, mot de passe et suppression." />
+    <link rel="icon" href="./assets/logo/list-todo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/style2.css" />
+    <script src="./assets/js/transitions.js"></script>
+    <script>
+      // Garde d'authentification
+      if (!sessionStorage.getItem("auth")) {
+        window.location.replace("./login.html");
+      }
+    </script>
+    
+  <meta name="theme-color" content="#080808">
+  
+  
+</head>
+  <body>
+
+    <!-- ── Header ── -->
+    <header class="header">
+      <h1>Paramètres</h1>
+      <p style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; text-transform: none;">
+        <span>Espace de <strong id="user-label" style="color: var(--white); font-weight: 500;"></strong></span>
+        <span style="opacity: 0.5;">·</span>
+        <span>Compte & Sécurité</span>
+      </p>
+      <div class="header-actions">
+        <a class="btn-settings" href="./app.html" id="back-btn">← Retour à l'App</a>
+        <button id="logout-btn">Déconnexion</button>
+      </div>
+    </header>
+
+    <!-- ── Contenu principal ── -->
+    <main class="container settings-container">
+      <nav class="settings-tabs">
+        <button class="settings-tab-btn active" data-tab="tab-account">👤 Compte</button>
+        <button class="settings-tab-btn" data-tab="tab-display">👁️ Affichage</button>
+        <button class="settings-tab-btn" data-tab="tab-archive">📦 Archives</button>
+        <button class="settings-tab-btn" data-tab="tab-danger">⚠️ Danger</button>
+      </nav>
+      <div id="tab-account" class="settings-tab-content active">
+
+      <!-- ══ Section : Identifiant ══ -->
+      <section class="settings-section" aria-labelledby="section-username-title">
+        <div class="settings-section-header">
+          <span class="settings-section-icon" aria-hidden="true">👤</span>
+          <div>
+            <h2 class="settings-section-title" id="section-username-title">Identifiant</h2>
+            <p class="settings-section-sub">Modifier votre nom d'utilisateur</p>
+          </div>
+        </div>
+
+        <div class="settings-form">
+          <div class="modal-field">
+            <label for="new-username">Nouvel identifiant</label>
+            <input
+              type="text"
+              id="new-username"
+              class="modal-input"
+              placeholder="votre_identifiant"
+              autocomplete="off"
+              maxlength="20"
+            />
+          </div>
+          <div class="modal-field">
+            <label for="confirm-pass-username">Confirmer avec votre mot de passe</label>
+            <div class="settings-input-wrap">
+              <input
+                type="password"
+                id="confirm-pass-username"
+                class="modal-input"
+                placeholder="••••••••"
+                autocomplete="current-password"
+              />
+            </div>
+          </div>
+          <div class="settings-msg" id="msg-username" role="alert" aria-live="polite"></div>
+          <button class="btn-save settings-btn" id="btn-change-username">
+            Changer d'identifiant
+          </button>
+        </div>
+      </section>
+
+      <!-- ══ Section : Mot de passe ══ -->
+      <section class="settings-section" aria-labelledby="section-password-title">
+        <div class="settings-section-header">
+          <span class="settings-section-icon" aria-hidden="true">🔑</span>
+          <div>
+            <h2 class="settings-section-title" id="section-password-title">Mot de passe</h2>
+            <p class="settings-section-sub">Modifier votre mot de passe — re-chiffre toutes vos tâches - Cause la supression de vos taches sur votre compte.</p>
+          </div>
+        </div>
+
+        <div class="settings-form">
+          <div class="modal-field">
+            <label for="old-password">Mot de passe actuel</label>
+            <input
+              type="password"
+              id="old-password"
+              class="modal-input"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+          </div>
+          <div class="modal-field">
+            <label for="new-password">Nouveau mot de passe <span class="label-opt">(min. 5 car.)</span></label>
+            <input
+              type="password"
+              id="new-password"
+              class="modal-input"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            />
+          </div>
+          <div class="modal-field">
+            <label for="confirm-new-password">Confirmer le nouveau mot de passe</label>
+            <input
+              type="password"
+              id="confirm-new-password"
+              class="modal-input"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            />
+          </div>
+          <div class="settings-msg" id="msg-password" role="alert" aria-live="polite"></div>
+          <button class="btn-save settings-btn" id="btn-change-password">
+            Changer le mot de passe
+          </button>
+        </div>
+      </section>
+
+            </div>
+
+      <div id="tab-display" class="settings-tab-content">
+      <!-- ══ Section : Affichage ══ -->
+      <section class="settings-section" aria-labelledby="section-display-title">
+        <div class="settings-section-header">
+          <span class="settings-section-icon" aria-hidden="true">👁️</span>
+          <div>
+            <h2 class="settings-section-title" id="section-display-title">Préférences d'affichage</h2>
+            <p class="settings-section-sub">Personnaliser l'apparence de l'application</p>
+          </div>
+        </div>
+
+        <div class="settings-form">
+          <div class="modal-field">
+            <label for="setting-calendar-view">Vue par défaut du calendrier</label>
+            <select id="setting-calendar-view" class="modal-select">
+              <option value="grid">Mois (Grille)</option>
+              <option value="planning">Planning (Liste chronologique)</option>
+            </select>
+          </div>
+          <div class="settings-msg" id="msg-display" role="alert" aria-live="polite"></div>
+          <button class="btn-save settings-btn" id="btn-save-display">
+            Enregistrer les préférences
+          </button>
+        </div>
+      </section>
+
+            </div>
+
+      <div id="tab-archive" class="settings-tab-content">
+      <!-- ══ Section : Archives ══ -->
+      <section class="settings-section" aria-labelledby="section-archive-title">
+        <div class="settings-section-header">
+          <span class="settings-section-icon" aria-hidden="true">📦</span>
+          <div>
+            <h2 class="settings-section-title" id="section-archive-title">Archives</h2>
+            <p class="settings-section-sub">Gérer vos tâches terminées et archivées</p>
+          </div>
+        </div>
+
+        <div class="settings-form">
+          <button class="btn-save settings-btn" id="btn-archive-done" style="margin-bottom: 1rem; background-color: var(--surface-2); border-color: var(--line-strong);">
+            Archiver toutes les tâches terminées
+          </button>
+          
+          <div id="archived-tasks-container" style="display: none; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; border-top: 1px solid var(--line-strong); padding-top: 1rem;">
+             <!-- Archived tasks list -->
+          </div>
+          <p id="no-archived-msg" style="color: var(--text-muted); font-size: 0.8rem; text-align: center; margin-top: 1rem;">Aucune tâche archivée.</p>
+          <div class="settings-msg" id="msg-archive" role="alert" aria-live="polite"></div>
+        </div>
+      </section>
+
+            </div>
+
+      <div id="tab-danger" class="settings-tab-content">
+      <!-- ══ Section : Zone de danger ══ -->
+      <section class="settings-section settings-section-danger" aria-labelledby="section-danger-title">
+        <div class="settings-section-header">
+          <span class="settings-section-icon" aria-hidden="true">⚠️</span>
+          <div>
+            <h2 class="settings-section-title" id="section-danger-title">Zone de danger</h2>
+            <p class="settings-section-sub">Actions irréversibles</p>
+          </div>
+        </div>
+
+        <div class="settings-form">
+          <p class="settings-danger-text">
+            La suppression de votre compte effacera définitivement toutes vos tâches
+            et données. Cette action est <strong>irréversible</strong>.
+          </p>
+          <div class="modal-field">
+            <label for="confirm-pass-delete">Confirmer avec votre mot de passe</label>
+            <input
+              type="password"
+              id="confirm-pass-delete"
+              class="modal-input"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+          </div>
+          <div class="settings-msg" id="msg-delete" role="alert" aria-live="polite"></div>
+          <button class="btn-delete-confirm settings-btn" id="btn-delete-account">
+            Supprimer mon compte
+          </button>
+        </div>
+      </section>
+
+          </div>
+    </main>
+
+    <footer class="footer">
+      
+      <p>© 2026 · Sacha G.</p>
+    </footer>
+
+    <!-- ══ Modale de confirmation suppression ══ -->
+    <div id="delete-overlay" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="delete-confirm-heading">
+      <div class="modal confirm-modal">
+        <h2 class="modal-heading" id="delete-confirm-heading">Supprimer le compte ?</h2>
+        <p class="confirm-text">
+          Toutes vos tâches seront supprimées définitivement. Cette action est irréversible.
+        </p>
+        <div class="modal-actions">
+          <button class="btn-delete-confirm" id="delete-confirm-yes">Supprimer</button>
+          <button class="btn-cancel-confirm" id="delete-confirm-no">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./assets/js/crypto.js"></script>
+    <script src="./assets/js/timeout.js"></script>
+    <script src="./assets/js/settings.js"></script>
+  </body>
+</html>
