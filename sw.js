@@ -1,4 +1,4 @@
-const CACHE_NAME = 'todo-list-cache-v13';
+const CACHE_NAME = 'todo-list-cache-v14';
 const urlsToCache = [
   './',
   './index.html',
@@ -7,6 +7,8 @@ const urlsToCache = [
   './pages/settings.html',
   './pages/login.html',
   './pages/donnees.html',
+  './pages/apropos.html',
+  './pages/developpeur.html',
   './pages/confidentialite.html',
   './pages/mentions-legales.html',
   './pages/cgu.html',

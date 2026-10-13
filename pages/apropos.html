@@ -475,10 +475,9 @@
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Documentation · <span id="app-version">v2.0</span></span>
+    <span class="page-tag">Documentation · <span id="app-version">v5.2</span></span>
     <h1>À propos</h1>
-    <p>Présentation du projet et de son créateur — une application personnelle née d'un besoin simple : mieux organiser
-      chaque journée.</p>
+    <p>Présentation du projet et de son créateur — une application moderne, bilingue et multi-plateforme pour organiser efficacement chaque journée.</p>
   </header>
 
   <main class="wrapper">
@@ -491,18 +490,13 @@
       </div>
       <div class="block-body">
         <p>
-          <strong>Ma To‑Do List</strong> est une application web personnelle de gestion de tâches, conçue pour être
-          rapide, claire et accessible depuis n'importe quel appareil. L'objectif était de disposer d'un outil
-          minimaliste mais complet : pas de superflu, juste l'essentiel pour rester concentré sur ce qui compte.
+          <strong>Ma To‑Do List</strong> est une solution complète de gestion de tâches personnelle, disponible en <strong>Progressive Web App (PWA)</strong> et en <strong>application de bureau Windows native autonome</strong>. Conçue pour être rapide, élégante et ultra-sécurisée, elle permet de gérer ses projets au quotidien sans distraction ni superflu.
         </p>
         <p>
-          L'application repose sur <strong>Firebase</strong> pour l'authentification et la persistance des données en
-          temps réel. Chaque tâche peut être accompagnée d'un statut, d'une priorité, d'une date d'échéance et de notes
-          libres. Un tableau de bord affiche la progression globale d'un coup d'œil.
+          L'application repose sur <strong>Firebase Realtime Database</strong> pour la synchronisation instantanée entre vos appareils, couplée à un <strong>chiffrement de bout en bout AES-256-GCM</strong> côté client : vos données restent strictement confidentielles et aucun e-mail n'est collecté.
         </p>
         <p>
-          Le design suit une esthétique monochrome inspirée des interfaces terminal : typographie IBM Plex Mono, grille
-          sur fond sombre, micro-animations sobres. Pensé pour durer, pas pour impressionner.
+          L'expérience utilisateur s'articule autour de l'architecture moderne <strong>V2</strong> (vues Liste, Kanban et Tableau), d'un support bilingue intégral (Français 🇫🇷 et Anglais 🇬🇧) et d'un design monochrome soigné inspiré des interfaces terminal (Dark Mode, typographie IBM Plex Mono, conformité WCAG AA).
         </p>
       </div>
     </section>
@@ -515,48 +509,52 @@
       </div>
       <ul class="row-list">
         <li>
+          <span class="row-key">Vues V2</span>
+          <span class="row-val">3 modes d'affichage complets : Liste dynamique, Kanban visuel et Tableau interactif</span>
+        </li>
+        <li>
+          <span class="row-key">Bilingue</span>
+          <span class="row-val">Support bilingue complet (Français / Anglais) sélectionnable à l'inscription et dans l'installeur</span>
+        </li>
+        <li>
+          <span class="row-key">Double modale</span>
+          <span class="row-val">Récapitulatif en lecture seule (clic sur le texte) et modale d'édition dédiée (bouton « Modifier »)</span>
+        </li>
+        <li>
           <span class="row-key">Statuts</span>
-          <span class="row-val">5 états — à faire, en cours, en attente, terminé, annulé</span>
+          <span class="row-val">5 états — à faire, en cours, en attente, terminé, annulé avec cycles rapides</span>
+        </li>
+        <li>
+          <span class="row-key">Filtres avancés</span>
+          <span class="row-val">Multi-critères combinables : statuts, priorités, dates (avant/après), notes et sans échéance</span>
         </li>
         <li>
           <span class="row-key">Priorités</span>
-          <span class="row-val">Haute, normale, basse · badge coloré visible d'un coup d'œil</span>
+          <span class="row-val">Haute, normale, basse · badge distinctif visible immédiatement</span>
         </li>
         <li>
           <span class="row-key">Échéances</span>
-          <span class="row-val">Date limite avec alerte visuelle : retard, aujourd'hui, bientôt</span>
+          <span class="row-val">Date et heure limites avec alertes visuelles (retard, aujourd'hui, demain, à venir)</span>
         </li>
         <li>
-          <span class="row-key">Recherche</span>
-          <span class="row-val">Filtrage instantané en temps réel sur titre et notes</span>
+          <span class="row-key">Recherche & Tri</span>
+          <span class="row-val">Filtrage instantané en temps réel et tri multi-modes (statut, priorité, date, A-Z)</span>
         </li>
         <li>
-          <span class="row-key">Tri</span>
-          <span class="row-val">Par date de création, priorité, échéance ou statut</span>
+          <span class="row-key">Sécurité E2E</span>
+          <span class="row-val">Chiffrement AES-256-GCM et hachage PBKDF2 avec sel unique (zéro e-mail collecté)</span>
         </li>
         <li>
-          <span class="row-key">Progression</span>
-          <span class="row-val">Barre de complétion recalculée à chaque action</span>
-        </li>
-        <li>
-          <span class="row-key">Sync temps réel</span>
-          <span class="row-val">Données Firebase partagées sur tous les appareils connectés</span>
-        </li>
-        <li>
-          <span class="row-key">Sécurité</span>
-          <span class="row-val">Accès protégé par authentification Firebase (email + mot de passe)</span>
-        </li>
-        <li>
-          <span class="row-key">Paramètres</span>
-          <span class="row-val">Modification du nom, email, mot de passe et suppression de compte</span>
+          <span class="row-key">Sync & Offline</span>
+          <span class="row-val">Synchronisation temps réel Firebase et persistance hors-ligne transparente</span>
         </li>
         <li>
           <span class="row-key">Calendrier</span>
-          <span class="row-val">Vue mensuelle et planning chronologique sur une page dédiée</span>
+          <span class="row-val">Vue mensuelle avec indicateurs et planning chronologique détaillé</span>
         </li>
         <li>
-          <span class="row-key">Ergonomie</span>
-          <span class="row-val">Cochez rapidement vos tâches d'un simple clic sur leur statut</span>
+          <span class="row-key">App Windows</span>
+          <span class="row-val">Application de bureau autonome, lanceur natif et installeur officiel NSIS (Setup.exe)</span>
         </li>
       </ul>
     </section>
@@ -573,8 +571,16 @@
           <span class="row-val">HTML5 · CSS3 Vanilla · JavaScript ES2022 (modules natifs)</span>
         </li>
         <li>
-          <span class="row-key">Auth &amp; BDD</span>
-          <span class="row-val">Firebase Authentication + Firestore (temps réel)</span>
+          <span class="row-key">Application Bureau</span>
+          <span class="row-val">Electron 44 · C# (.NET 8 Native Launcher) · NSIS Installer</span>
+        </li>
+        <li>
+          <span class="row-key">Sécurité &amp; Chiffrement</span>
+          <span class="row-val">Web Crypto API (AES-256-GCM + PBKDF2 100 000 itérations)</span>
+        </li>
+        <li>
+          <span class="row-key">Base de données</span>
+          <span class="row-val">Firebase Realtime Database (payload chiffré de bout en bout)</span>
         </li>
         <li>
           <span class="row-key">Typographie</span>
@@ -582,7 +588,7 @@
         </li>
         <li>
           <span class="row-key">Hébergement</span>
-          <span class="row-val">Projet local · déploiement possible via Firebase Hosting</span>
+          <span class="row-val">Projet local PWA · déploiement possible via Firebase Hosting</span>
         </li>
         <li>
           <span class="row-key">Dépôt</span>
@@ -590,11 +596,16 @@
         </li>
       </ul>
       <div class="chip-list" aria-label="Technologies utilisées">
-        <span class="chip">HTML</span>
-        <span class="chip">CSS</span>
-        <span class="chip">JavaScript</span>
-        <span class="chip">Firebase</span>
-        <span class="chip">Firestore</span>
+        <span class="chip">HTML5</span>
+        <span class="chip">CSS3</span>
+        <span class="chip">JavaScript ES2022</span>
+        <span class="chip">AES-256-GCM</span>
+        <span class="chip">PBKDF2</span>
+        <span class="chip">Firebase Realtime DB</span>
+        <span class="chip">Electron 44</span>
+        <span class="chip">C# / .NET</span>
+        <span class="chip">NSIS</span>
+        <span class="chip">PWA &amp; Service Worker</span>
         <span class="chip">IBM Plex Mono</span>
         <span class="chip">Git</span>
       </div>
@@ -652,6 +663,22 @@
         <span class="block-title" id="section-history">Historique des versions</span>
       </div>
       <ul class="timeline">
+        <li>
+          <span class="tl-date">Oct. 2026</span>
+          <span class="tl-text"><strong>v5.2</strong> — Support bilingue intégral (Français &amp; Anglais), installeur Windows officiel bilingue (NSIS), modale dédiée de visualisation (résumé en lecture seule) et synchronisation des préférences de langue.</span>
+        </li>
+        <li>
+          <span class="tl-date">Oct. 2026</span>
+          <span class="tl-text"><strong>v5.1</strong> — Séparation stricte des modales (résumé en consultation vs. édition via bouton dédié), lanceur natif C# ultra-rapide et packaging standalone Windows.</span>
+        </li>
+        <li>
+          <span class="tl-date">Oct. 2026</span>
+          <span class="tl-text"><strong>v5.0</strong> — Application de bureau native Windows (Electron), refonte architecturale des versions, chiffrement client AES-256-GCM zéro-connaissance (aucune collecte d'email ni de données en clair).</span>
+        </li>
+        <li>
+          <span class="tl-date">Juin 2026</span>
+          <span class="tl-text"><strong>v4.0</strong> — Interface V2 multi-vues (Liste détaillée, tableau Kanban drag-and-drop, vue Tableau interactive), nouveau moteur de recherche et filtres combinés.</span>
+        </li>
         <li>
           <span class="tl-date">Mai 2026</span>
           <span class="tl-text"><strong>v3.0</strong> — Intégration de la vue Calendrier sur page dédiée, de la vue
