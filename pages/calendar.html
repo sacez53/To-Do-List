@@ -16,6 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style2.css" />
   <script src="../assets/js/transitions.js"></script>
+  <script src="../assets/js/i18n.js?v=13"></script>
   <script>
     // Garde d'authentification
     if (!sessionStorage.getItem("auth")) {
@@ -38,15 +39,15 @@
 
   <!-- ── Header ── -->
   <header class="header">
-    <h1>Calendrier</h1>
+    <h1 data-i18n="calendar_title">Calendrier</h1>
     <p
       style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; text-transform: none;">
-      <span>Espace de <strong id="user-label" style="color: var(--white); font-weight: 500;"></strong></span>
+      <span><span data-i18n="space_of">Espace de</span> <strong id="user-label" style="color: var(--white); font-weight: 500;"></strong></span>
       <span style="opacity: 0.5;">·</span>
-      <span>Vue d'ensemble</span>
+      <span data-i18n="calendar_overview">Vue d'ensemble</span>
     </p>
     <div class="header-actions">
-      <a class="btn-settings" href="app.html" id="back-btn">← Retour à l'App</a>
+      <a class="btn-settings" href="app.html" id="back-btn" data-i18n="back_to_app">← Retour à l'App</a>
     </div>
   </header>
 
@@ -54,15 +55,15 @@
   <main class="container">
     <div class="calendar-page-content">
       <div class="calendar-view-toggles" style="margin-bottom: 2rem;">
-        <button id="calendar-view-grid" class="calendar-view-btn active" title="Vue Mois">Mois</button>
-        <button id="calendar-view-planning" class="calendar-view-btn" title="Vue Planning">Planning</button>
+        <button id="calendar-view-grid" class="calendar-view-btn active" data-i18n="view_month" title="Vue Mois">Mois</button>
+        <button id="calendar-view-planning" class="calendar-view-btn" data-i18n="view_planning" title="Vue Planning">Planning</button>
       </div>
 
       <div id="calendar-grid-container">
         <div class="calendar-header">
-          <button id="calendar-prev" class="calendar-nav" aria-label="Mois précédent">◀</button>
+          <button id="calendar-prev" class="calendar-nav" data-i18n-aria="prev_month" aria-label="Mois précédent">◀</button>
           <h2 class="modal-heading" id="calendar-heading" style="margin: 0; font-size: 1.2rem;">Mois</h2>
-          <button id="calendar-next" class="calendar-nav" aria-label="Mois suivant">▶</button>
+          <button id="calendar-next" class="calendar-nav" data-i18n-aria="next_month" aria-label="Mois suivant">▶</button>
         </div>
         <div class="calendar-weekdays" style="font-size: 0.8rem; margin-bottom: 1rem;">
           <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>

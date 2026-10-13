@@ -64,7 +64,7 @@ function renderPlanning() {
   const planningTasks = todos.filter(t => t.due && t.status !== "done" && t.status !== "cancelled");
   
   if (planningTasks.length === 0) {
-    calendarPlanningList.innerHTML = "<p style='text-align:center; color:var(--text-faint); margin-top:2rem;'>Aucune tâche planifiée.</p>";
+    calendarPlanningList.innerHTML = `<p style='text-align:center; color:var(--text-faint); margin-top:2rem;'>${t("no_planning_tasks")}</p>`;
     return;
   }
   
@@ -98,8 +98,11 @@ function renderPlanning() {
     if (isOverdue) header.classList.add("overdue");
     if (isToday) header.classList.add("today");
     
-    const displayDate = d.toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' });
-    header.textContent = isToday ? `Aujourd'hui (${displayDate})` : (isOverdue ? `En retard (${displayDate})` : displayDate);
+    const locale = getLanguage() === "en" ? "en-US" : "fr-FR";
+    const displayDate = d.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+    const todayLabel = getLanguage() === "en" ? "Today" : "Aujourd'hui";
+    const overdueLabel = getLanguage() === "en" ? "Overdue" : "En retard";
+    header.textContent = isToday ? `${todayLabel} (${displayDate})` : (isOverdue ? `${overdueLabel} (${displayDate})` : displayDate);
     
     groupDiv.appendChild(header);
     
@@ -114,8 +117,8 @@ function renderPlanning() {
       
       li.style.cursor = "pointer";
       li.addEventListener("click", () => {
-        // Redirige vers app.html et ouvre la modale
-        window.location.href = `app.html?viewTask=${t.id}`;
+        // Redirige vers app-v2.html et ouvre le récapitulatif
+        window.location.href = `app-v2.html?viewTask=${t.id}`;
       });
       
       ul.appendChild(li);
@@ -126,11 +129,19 @@ function renderPlanning() {
   });
 }
 
+function updateCalendarWeekdays() {
+  const container = document.querySelector(".calendar-weekdays");
+  if (!container) return;
+  const days = t("days_short") || ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+  container.innerHTML = days.map(d => `<span>${d}</span>`).join("");
+}
+
 function renderCalendarGrid() {
+  updateCalendarWeekdays();
   const year = currentCalendarDate.getFullYear();
   const month = currentCalendarDate.getMonth();
   
-  const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+  const monthNames = t("months") || ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
   calendarHeading.textContent = `${monthNames[month]} ${year}`;
   
   calendarGrid.innerHTML = "";
@@ -247,3 +258,6 @@ calendarNext.addEventListener("click", () => {
 updateCalendarView();
 
 // Listeners removed
+window.addEventListener("languageChanged", () => {
+  updateCalendarView();
+});

@@ -1,7 +1,27 @@
 const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 let mainWindow;
+
+function getInstallerLanguage() {
+  const possiblePaths = [
+    path.join(process.resourcesPath || '', '..', 'lang.txt'),
+    path.join(__dirname, '..', 'lang.txt'),
+    path.join(__dirname, 'lang.txt'),
+    path.join(process.cwd(), 'lang.txt')
+  ];
+  for (const p of possiblePaths) {
+    try {
+      if (fs.existsSync(p)) {
+        const content = fs.readFileSync(p, 'utf8').trim().toLowerCase();
+        if (content.startsWith('en')) return 'en';
+        if (content.startsWith('fr')) return 'fr';
+      }
+    } catch (e) {}
+  }
+  return null;
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -22,6 +42,26 @@ function createWindow() {
   });
 
   Menu.setApplicationMenu(null);
+
+  const initialLang = getInstallerLanguage();
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    if (initialLang) {
+      mainWindow.webContents.executeJavaScript(`
+        (function() {
+          try {
+            if (!localStorage.getItem('installer_lang_initialized')) {
+              localStorage.setItem('installer_lang_initialized', 'true');
+              localStorage.setItem('lang', '${initialLang}');
+              if (typeof setLanguage === 'function') {
+                setLanguage('${initialLang}');
+              }
+            }
+          } catch(e) {}
+        })();
+      `).catch(() => {});
+    }
+  });
 
   mainWindow.loadFile(path.join(__dirname, 'src', 'login.html'));
 

@@ -69,23 +69,54 @@ let filterHasNotes   = false;
 let filterNoDue      = false;
 
 // ── Constantes ──
+// ── Constantes & Traductions dynamiques ──
 const STATUS_ORDER = ["inprogress","todo","waiting","done","cancelled"];
-const STATUS_INFO  = {
-  todo:       { label:"À faire",     icon:"📋" },
-  inprogress: { label:"En cours",    icon:"⚡" },
-  waiting:    { label:"En attente",  icon:"⏳" },
-  done:       { label:"Terminé",     icon:"✅" },
-  cancelled:  { label:"Annulé",      icon:"❌" }
-};
 const PRIORITY_ORDER = { high:0, normal:1, low:2 };
-const PRIORITY_LABEL = { high:"🔴 Haute", normal:"— Normale", low:"🔵 Basse" };
-const KANBAN_COLS = [
-  { id:"todo",       label:"À faire",    icon:"📋" },
-  { id:"inprogress", label:"En cours",   icon:"⚡" },
-  { id:"waiting",    label:"En attente", icon:"⏳" },
-  { id:"done",       label:"Terminé",    icon:"✅" },
-  { id:"cancelled",  label:"Annulé",     icon:"❌" }
-];
+
+function getStatusInfo(s) {
+  const icons = { todo:"📋", inprogress:"⚡", waiting:"⏳", done:"✅", cancelled:"❌" };
+  const labels = {
+    todo: t("status_todo"),
+    inprogress: t("status_inprogress"),
+    waiting: t("status_waiting"),
+    done: t("status_done"),
+    cancelled: t("status_cancelled")
+  };
+  return { label: labels[s] || s, icon: icons[s] || "○" };
+}
+
+function getPriorityLabel(p) {
+  const map = {
+    high: "🔴 " + t("prio_high"),
+    normal: "— " + t("prio_normal"),
+    low: "🔵 " + t("prio_low")
+  };
+  return map[p] || p;
+}
+
+function getKanbanCols() {
+  return [
+    { id:"todo",       label: t("status_todo"),       icon:"📋" },
+    { id:"inprogress", label: t("status_inprogress"), icon:"⚡" },
+    { id:"waiting",    label: t("status_waiting"),    icon:"⏳" },
+    { id:"done",       label: t("status_done"),       icon:"✅" },
+    { id:"cancelled",  label: t("status_cancelled"),  icon:"❌" }
+  ];
+}
+
+const STATUS_INFO = new Proxy({}, {
+  get(target, prop) {
+    if (typeof prop === "string") return getStatusInfo(prop);
+    return target[prop];
+  }
+});
+
+const PRIORITY_LABEL = new Proxy({}, {
+  get(target, prop) {
+    if (typeof prop === "string") return getPriorityLabel(prop);
+    return target[prop];
+  }
+});
 
 // ══════════════════════════════════════════
 //  INIT
@@ -177,7 +208,12 @@ function saveTodos() {
 function setSyncStatus(s) {
   if (!syncDot || !syncLabel) return;
   syncDot.className = `v2-sync-dot v2-sync-${s}`;
-  const labels = { syncing:"Sync...", synced:"Synchronisé", error:"Hors ligne", offline:"Local" };
+  const labels = {
+    syncing: t("syncing"),
+    synced:  t("synced"),
+    error:   t("offline"),
+    offline: t("offline")
+  };
   syncLabel.textContent = labels[s] || "";
 }
 
@@ -204,8 +240,8 @@ function applyFilters(arr) {
 function applySort(arr) {
   const copy = [...arr];
   switch(currentSort) {
-    case "az":           return copy.sort((a,b) => a.text.localeCompare(b.text, "fr"));
-    case "za":           return copy.sort((a,b) => b.text.localeCompare(a.text, "fr"));
+    case "az":           return copy.sort((a,b) => a.text.localeCompare(b.text, getLanguage()));
+    case "za":           return copy.sort((a,b) => b.text.localeCompare(a.text, getLanguage()));
     case "created-desc": return copy.sort((a,b) => (a.created||0) < (b.created||0) ? 1 : -1);
     case "created-asc":  return copy.sort((a,b) => (a.created||0) > (b.created||0) ? 1 : -1);
     case "priority":     return copy.sort((a,b) => (PRIORITY_ORDER[a.priority||"normal"]||1) - (PRIORITY_ORDER[b.priority||"normal"]||1));
@@ -242,19 +278,21 @@ function getDueInfo(due, dueTime, status) {
   if (!due) return null;
   const d = new Date(due + "T00:00:00");
   const timeSuffix = dueTime ? ` ⏱ ${dueTime}` : "";
-  const dateStr = d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+  const isEn = getLanguage() === "en";
+  const locale = isEn ? "en-US" : "fr-FR";
+  const dateStr = d.toLocaleDateString(locale, {day:"numeric",month:"short"});
   
   if (status === "done" || status === "cancelled") {
-    return { label: `Prévu le ${dateStr}` + timeSuffix, cls: "due-ok" };
+    return { label: (isEn ? `Scheduled ${dateStr}` : `Prévu le ${dateStr}`) + timeSuffix, cls: "due-ok" };
   }
 
   const today = new Date(); today.setHours(0,0,0,0);
   const diff = Math.round((d - today) / 86400000);
   
-  if (diff < 0)  return { label:"En retard" + timeSuffix,    cls:"due-overdue" };
-  if (diff === 0) return { label:"Aujourd'hui" + timeSuffix, cls:"due-today" };
-  if (diff === 1) return { label:"Demain" + timeSuffix,       cls:"due-soon" };
-  if (diff <= 3)  return { label:`Dans ${diff}j` + timeSuffix, cls:"due-soon" };
+  if (diff < 0)  return { label: (isEn ? "Overdue" : "En retard") + timeSuffix,    cls:"due-overdue" };
+  if (diff === 0) return { label: (isEn ? "Today" : "Aujourd'hui") + timeSuffix, cls:"due-today" };
+  if (diff === 1) return { label: (isEn ? "Tomorrow" : "Demain") + timeSuffix,       cls:"due-soon" };
+  if (diff <= 3)  return { label: (isEn ? `In ${diff}d` : `Dans ${diff}j`) + timeSuffix, cls:"due-soon" };
   return { label: dateStr + timeSuffix, cls:"due-ok" };
 }
 
@@ -280,8 +318,8 @@ function updateStats() {
   const total = activeTodos.length;
   const done  = activeTodos.filter(t => t.status === "done").length;
   const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
-  if (statTotal)    statTotal.textContent    = `${total} tâche${total>1?"s":""}`;
-  if (statDone)     statDone.textContent     = `${done} terminée${done>1?"s":""}`;
+  if (statTotal)    statTotal.textContent    = t("stat_tasks", { count: total, s: total > 1 ? "s" : "" });
+  if (statDone)     statDone.textContent     = t("stat_done", { count: done, s: done > 1 ? "s" : "" });
   if (statProgress) statProgress.textContent = `${pct}%`;
   if (progressBar)  progressBar.style.width  = pct + "%";
 }
@@ -289,7 +327,7 @@ function updateStats() {
 // ── Vue Liste ──
 function renderList(items) {
   if (items.length === 0) {
-    boardEl.innerHTML = `<p class="v2-empty">${searchQuery ? `Aucun résultat pour « ${searchQuery} »` : "Aucune tâche."}</p>`;
+    boardEl.innerHTML = `<p class="v2-empty">${searchQuery ? t("search_no_results", { query: searchQuery }) : t("empty_tasks")}</p>`;
     return;
   }
   const ul = document.createElement("ul");
@@ -304,8 +342,8 @@ function renderList(items) {
     li.style.animationDelay = `${i*30}ms`;
     li.innerHTML = `
       <div class="v2-item-left">
-        <button class="v2-badge v2-badge--${todo.status}" title="Changer le statut">${info.icon} ${info.label}</button>
-        <div class="v2-item-body" title="Cliquer pour voir le résumé">
+        <button class="v2-badge v2-badge--${todo.status}" title="${t("badge_status_title")}">${info.icon} ${info.label}</button>
+        <div class="v2-item-body" title="${t("task_recap_title")}">
           <span class="v2-item-text ${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</span>
           <div class="v2-item-meta">
             ${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : ""}
@@ -315,7 +353,7 @@ function renderList(items) {
           ${todo.notes && todo.notes.trim() ? `<span class="v2-note-preview">${escHtml(todo.notes.slice(0, 80))}${todo.notes.length > 80 ? "…" : ""}</span>` : ""}
         </div>
       </div>
-      <button class="v2-edit-btn" title="Modifier la tâche">Modifier</button>
+      <button class="v2-edit-btn" title="${t("edit_task_title")}">${t("btn_edit")}</button>
     `;
     li.querySelector(".v2-badge").addEventListener("click", e => {
       e.stopPropagation();
@@ -334,7 +372,7 @@ function renderList(items) {
 function renderKanban(items) {
   const wrap = document.createElement("div");
   wrap.className = "v2-kanban";
-  KANBAN_COLS.forEach(col => {
+  getKanbanCols().forEach(col => {
     const colItems = items.filter(t => t.status === col.id);
     const colEl = document.createElement("div");
     colEl.className = "v2-kanban-col";
@@ -347,7 +385,7 @@ function renderKanban(items) {
     const list = document.createElement("div");
     list.className = "v2-kanban-list";
     if (colItems.length === 0) {
-      list.innerHTML = `<p class="v2-kanban-empty">Vide</p>`;
+      list.innerHTML = `<p class="v2-kanban-empty">${t("kanban_empty")}</p>`;
     } else {
       colItems.forEach(todo => {
         // Failsafe removed
@@ -357,8 +395,8 @@ function renderKanban(items) {
         card.className = "v2-card";
         card.innerHTML = `
           <div class="v2-card-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem;">
-            <p class="v2-card-text ${todo.status === "done" ? "v2-done" : ""}" style="margin-bottom:0;flex:1;cursor:pointer;" title="Cliquer pour voir le résumé">${escHtml(todo.text)}</p>
-            <button class="v2-edit-btn v2-card-edit-btn" title="Modifier la tâche" style="min-height:unset;padding:.2rem .45rem;font-size:.65rem;flex-shrink:0;">Modifier</button>
+            <p class="v2-card-text ${todo.status === "done" ? "v2-done" : ""}" style="margin-bottom:0;flex:1;cursor:pointer;" title="${t("task_recap_title")}">${escHtml(todo.text)}</p>
+            <button class="v2-edit-btn v2-card-edit-btn" title="${t("edit_task_title")}" style="min-height:unset;padding:.2rem .45rem;font-size:.65rem;flex-shrink:0;">${t("btn_edit")}</button>
           </div>
           <div class="v2-card-meta">
             ${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : ""}
@@ -386,7 +424,7 @@ function renderKanban(items) {
 // ── Vue Tableau ──
 function renderTable(items) {
   if (items.length === 0) {
-    boardEl.innerHTML = `<p class="v2-empty">Aucune tâche.</p>`;
+    boardEl.innerHTML = `<p class="v2-empty">${t("empty_tasks")}</p>`;
     return;
   }
   const table = document.createElement("table");
@@ -394,11 +432,11 @@ function renderTable(items) {
   table.innerHTML = `
     <thead>
       <tr>
-        <th>Tâche</th>
-        <th>Statut</th>
-        <th>Priorité</th>
-        <th>Échéance</th>
-        <th>Notes</th>
+        <th>${t("table_col_task")}</th>
+        <th>${t("table_col_status")}</th>
+        <th>${t("table_col_priority")}</th>
+        <th>${t("table_col_due")}</th>
+        <th>${t("table_col_notes")}</th>
         <th></th>
       </tr>
     </thead>
@@ -412,14 +450,14 @@ function renderTable(items) {
     const tr = document.createElement("tr");
     tr.className = "v2-table-row";
     tr.innerHTML = `
-      <td class="v2-table-text" title="Cliquer pour voir le résumé">
+      <td class="v2-table-text" title="${t("task_recap_title")}">
         <span class="${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</span>
       </td>
-      <td><button class="v2-badge v2-badge--${todo.status}" title="Changer le statut" style="background:transparent;cursor:pointer;">${info.icon} ${info.label}</button></td>
+      <td><button class="v2-badge v2-badge--${todo.status}" title="${t("badge_status_title")}" style="background:transparent;cursor:pointer;">${info.icon} ${info.label}</button></td>
       <td>${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : `<span class="v2-muted">—</span>`}</td>
       <td>${dueInfo ? `<span class="v2-due ${dueInfo.cls}">${dueInfo.label}</span>` : `<span class="v2-muted">—</span>`}</td>
       <td>${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon" title="${escHtml(todo.notes)}">📝</span>` : `<span class="v2-muted">—</span>`}</td>
-      <td><button class="v2-edit-btn" title="Modifier la tâche">Modifier</button></td>
+      <td><button class="v2-edit-btn" title="${t("edit_task_title")}">${t("btn_edit")}</button></td>
     `;
     const tbBadge = tr.querySelector(".v2-badge");
     if (tbBadge) {
@@ -446,10 +484,12 @@ function buildFilterPanel() {
 
   // Statuts
   const statusWrap = panel.querySelector("#fp-statuses");
-  Object.entries(STATUS_INFO).forEach(([id, info]) => {
+  statusWrap.innerHTML = "";
+  STATUS_ORDER.forEach(id => {
+    const info = getStatusInfo(id);
     const label = document.createElement("label");
     label.className = "v2-fp-check";
-    label.innerHTML = `<input type="checkbox" value="${id}"> ${info.icon} ${info.label}`;
+    label.innerHTML = `<input type="checkbox" value="${id}" ${filterStatuses.includes(id) ? "checked" : ""}> ${info.icon} ${info.label}`;
     label.querySelector("input").addEventListener("change", e => {
       if (e.target.checked) filterStatuses.push(id);
       else filterStatuses = filterStatuses.filter(s => s !== id);
@@ -460,10 +500,11 @@ function buildFilterPanel() {
 
   // Priorités
   const prioWrap = panel.querySelector("#fp-priorities");
-  [["high","🔴 Haute"],["normal","— Normale"],["low","🔵 Basse"]].forEach(([id,lbl]) => {
+  prioWrap.innerHTML = "";
+  [["high","🔴 " + t("prio_high")],["normal","— " + t("prio_normal")],["low","🔵 " + t("prio_low")]].forEach(([id,lbl]) => {
     const label = document.createElement("label");
     label.className = "v2-fp-check";
-    label.innerHTML = `<input type="checkbox" value="${id}"> ${lbl}`;
+    label.innerHTML = `<input type="checkbox" value="${id}" ${filterPriorities.includes(id) ? "checked" : ""}> ${lbl}`;
     label.querySelector("input").addEventListener("change", e => {
       if (e.target.checked) filterPriorities.push(id);
       else filterPriorities = filterPriorities.filter(p => p !== id);
@@ -473,10 +514,14 @@ function buildFilterPanel() {
   });
 
   // Date avant
-  panel.querySelector("#fp-due-before").addEventListener("change", e => { filterDueBefore = e.target.value; render(); });
-  panel.querySelector("#fp-due-after").addEventListener("change",  e => { filterDueAfter  = e.target.value; render(); });
-  panel.querySelector("#fp-has-notes").addEventListener("change",  e => { filterHasNotes  = e.target.checked; render(); });
-  panel.querySelector("#fp-no-due").addEventListener("change",     e => { filterNoDue     = e.target.checked; render(); });
+  const dueBefore = panel.querySelector("#fp-due-before");
+  if (!dueBefore.dataset.bound) {
+    dueBefore.dataset.bound = "1";
+    dueBefore.addEventListener("change", e => { filterDueBefore = e.target.value; render(); });
+    panel.querySelector("#fp-due-after").addEventListener("change",  e => { filterDueAfter  = e.target.value; render(); });
+    panel.querySelector("#fp-has-notes").addEventListener("change",  e => { filterHasNotes  = e.target.checked; render(); });
+    panel.querySelector("#fp-no-due").addEventListener("change",     e => { filterNoDue     = e.target.checked; render(); });
+  }
 }
 
 function updateFilterBadge() {
@@ -530,8 +575,9 @@ if (modalCancelEditBtn) {
 function openModal(id = null, mode = 'edit') {
   if (id === null) {
     editingId = null;
-    modalHeading.textContent = "Nouvelle tâche";
-    modalSave.textContent = "Créer";
+    modalHeading.textContent = t("modal_new_task");
+    modalSave.textContent = t("btn_create");
+    if (modalCancelEditBtn) modalCancelEditBtn.textContent = t("btn_cancel");
     modalText.value = "";
     modalStatus.value = "todo";
     modalPriority.value = "normal";
@@ -560,7 +606,9 @@ function openModal(id = null, mode = 'edit') {
 
   if (mode === "view") {
     // ── Mode récapitulatif ──
-    modalHeading.textContent = "Récapitulatif";
+    modalHeading.textContent = t("modal_summary");
+    if (modalEditBtn) modalEditBtn.textContent = t("btn_edit");
+    if (modalCloseRecapBtn) modalCloseRecapBtn.textContent = t("btn_close");
 
     if (recapTitle) {
       recapTitle.textContent = todo.text;
@@ -582,7 +630,7 @@ function openModal(id = null, mode = 'edit') {
         recapPriority.className = `v2-prio v2-prio--${prio}`;
         recapPriority.style.display = "";
       } else {
-        recapPriority.textContent = "— Priorité normale";
+        recapPriority.textContent = t("recap_prio_normal");
         recapPriority.className = "v2-prio";
         recapPriority.style.display = "";
       }
@@ -596,7 +644,8 @@ function openModal(id = null, mode = 'edit') {
           const parts = todo.due.split("-");
           if (parts.length === 3) {
             const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-            dateFull = d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+            const locale = getLanguage() === "en" ? "en-US" : "fr-FR";
+            dateFull = d.toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
           }
         } catch(e) {}
         const timeSuffix = todo.dueTime ? ` ⏱ ${todo.dueTime}` : "";
@@ -604,7 +653,7 @@ function openModal(id = null, mode = 'edit') {
         recapDue.className = `v2-due ${dueInfo.cls}`;
         recapDue.style.display = "";
       } else {
-        recapDue.textContent = "📅 Aucune date d'échéance";
+        recapDue.textContent = t("recap_no_due");
         recapDue.className = "v2-due due-ok";
         recapDue.style.display = "";
       }
@@ -615,7 +664,7 @@ function openModal(id = null, mode = 'edit') {
         recapNotes.textContent = todo.notes;
         recapNotes.classList.remove("is-empty");
       } else {
-        recapNotes.textContent = "Aucune note";
+        recapNotes.textContent = t("recap_no_notes");
         recapNotes.classList.add("is-empty");
       }
     }
@@ -623,9 +672,10 @@ function openModal(id = null, mode = 'edit') {
     if (recapMeta) {
       if (todo.created) {
         const d = new Date(todo.created);
-        const dateStr = d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+        const locale = getLanguage() === "en" ? "en-US" : "fr-FR";
+        const dateStr = d.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
         const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-        recapMeta.textContent = `Créée le ${dateStr} à ${timeStr}`;
+        recapMeta.textContent = t("recap_created", { date: dateStr, time: timeStr });
         recapMeta.style.display = "";
       } else {
         recapMeta.style.display = "none";
@@ -642,8 +692,10 @@ function openModal(id = null, mode = 'edit') {
     modalDelete.style.display = "none";
   } else {
     // ── Mode édition ──
-    modalHeading.textContent = "Modifier la tâche";
-    modalSave.textContent = "Enregistrer";
+    modalHeading.textContent = t("modal_edit_task");
+    modalSave.textContent = t("btn_save");
+    if (modalCancelEditBtn) modalCancelEditBtn.textContent = t("btn_cancel");
+    if (modalDelete) modalDelete.textContent = t("btn_delete");
     modalText.value = todo.text;
     modalStatus.value = todo.status;
     modalPriority.value = todo.priority || "normal";
@@ -763,4 +815,7 @@ function escHtml(s) {
 buildFilterPanel();
 init();
 
-// Listeners removed
+window.addEventListener("languageChanged", () => {
+  buildFilterPanel();
+  render();
+});

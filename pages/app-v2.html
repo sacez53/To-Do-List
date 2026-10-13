@@ -10,8 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style2.css?v=11" />
+  <link rel="stylesheet" href="../assets/css/style2.css?v=13" />
   <script src="../assets/js/transitions.js"></script>
+  <script src="../assets/js/i18n.js?v=13"></script>
   <script>if (!sessionStorage.getItem("auth")) window.location.replace("./login.html");</script>
   <style>
     /* ── V2 tokens ── */
@@ -943,19 +944,19 @@
 
   <!-- Header -->
   <header class="v2-header">
-    <h1>To‑Do List</h1>
+    <h1 data-i18n="app_title">To‑Do List</h1>
     <p>
-      Espace de <strong id="v2-user-label" style="color:#fff;font-weight:500;"></strong>
+      <span data-i18n="space_of">Espace de</span> <strong id="v2-user-label" style="color:#fff;font-weight:500;"></strong>
       &nbsp;·&nbsp;
       <span class="v2-sync">
         <span class="v2-sync-dot" id="v2-sync-dot"></span>
-        <span class="v2-sync-label" id="v2-sync-label">Chargement...</span>
+        <span class="v2-sync-label" id="v2-sync-label" data-i18n="loading">Chargement...</span>
       </span>
     </p>
     <div class="v2-header-actions">
-      <a class="v2-back-btn" href="calendar.html">📅 Calendrier</a>
-      <a class="v2-back-btn" href="settings.html">⛯ Paramètres</a>
-      <button id="v2-logout-btn">Déconnexion</button>
+      <a class="v2-back-btn" href="calendar.html" data-i18n="calendar">📅 Calendrier</a>
+      <a class="v2-back-btn" href="settings.html" data-i18n="settings">⛯ Paramètres</a>
+      <button id="v2-logout-btn" data-i18n="logout">Déconnexion</button>
     </div>
   </header>
 
@@ -975,61 +976,61 @@
     <div class="v2-toolbar">
       <div class="v2-search-wrap">
         <span class="v2-search-icon">⌕</span>
-        <input type="search" id="v2-search" class="v2-search" placeholder="Rechercher..." autocomplete="off" />
+        <input type="search" id="v2-search" class="v2-search" placeholder="Rechercher..." data-i18n-placeholder="search_placeholder" autocomplete="off" />
         <button class="v2-search-clear" id="v2-search-clear" style="display:none">✕</button>
       </div>
       <select id="v2-sort" class="v2-sort">
-        <option value="status">Statut</option>
-        <option value="az">A → Z</option>
-        <option value="za">Z → A</option>
-        <option value="created-desc">Récents</option>
-        <option value="created-asc">Anciens</option>
-        <option value="priority">Priorité ↑</option>
-        <option value="due-asc">Échéance ↑</option>
-        <option value="overdue-first">Retards d'abord</option>
-        <option value="notes-first">Notes en premier</option>
+        <option value="status" data-i18n="sort_status">Statut</option>
+        <option value="az" data-i18n="sort_az">A → Z</option>
+        <option value="za" data-i18n="sort_za">Z → A</option>
+        <option value="created-desc" data-i18n="sort_recent">Récents</option>
+        <option value="created-asc" data-i18n="sort_old">Anciens</option>
+        <option value="priority" data-i18n="sort_priority">Priorité ↑</option>
+        <option value="due-asc" data-i18n="sort_due">Échéance ↑</option>
+        <option value="overdue-first" data-i18n="sort_overdue_first">Retards d'abord</option>
+        <option value="notes-first" data-i18n="sort_notes_first">Notes en premier</option>
       </select>
     </div>
 
     <!-- Switcher vue -->
     <div class="v2-view-switcher">
-      <button class="v2-view-btn active" data-view="list">☰ Liste</button>
-      <button class="v2-view-btn" data-view="kanban">⬛ Kanban</button>
-      <button class="v2-view-btn" data-view="table">⊞ Tableau</button>
+      <button class="v2-view-btn active" data-view="list" data-i18n="view_list">☰ Liste</button>
+      <button class="v2-view-btn" data-view="kanban" data-i18n="view_kanban">⬛ Kanban</button>
+      <button class="v2-view-btn" data-view="table" data-i18n="view_table">⊞ Tableau</button>
     </div>
 
     <!-- Filtres avancés -->
     <div class="v2-filter-bar">
       <button id="v2-filter-toggle" class="v2-filter-toggle">
-        ⚙ Filtres avancés
+        <span data-i18n="adv_filters">⚙ Filtres avancés</span>
         <span class="v2-filter-count" id="v2-filter-count"></span>
       </button>
-      <button id="v2-filter-reset" class="v2-filter-reset">Réinitialiser</button>
+      <button id="v2-filter-reset" class="v2-filter-reset" data-i18n="reset_filters">Réinitialiser</button>
     </div>
 
     <div id="v2-filter-panel" class="v2-filter-panel">
       <div class="v2-fp-group">
-        <h4>Statut</h4>
+        <h4 data-i18n="filter_status">Statut</h4>
         <div class="v2-fp-checks" id="fp-statuses"></div>
       </div>
       <div class="v2-fp-group">
-        <h4>Priorité</h4>
+        <h4 data-i18n="filter_priority">Priorité</h4>
         <div class="v2-fp-checks" id="fp-priorities"></div>
       </div>
       <div class="v2-fp-group">
-        <h4>Date d'échéance</h4>
+        <h4 data-i18n="filter_due">Date d'échéance</h4>
         <div class="v2-fp-date">
-          <label>Avant le</label>
+          <label data-i18n="filter_before">Avant le</label>
           <input type="date" id="fp-due-before" />
-          <label>Après le</label>
+          <label data-i18n="filter_after">Après le</label>
           <input type="date" id="fp-due-after" />
         </div>
       </div>
       <div class="v2-fp-group">
-        <h4>Autres</h4>
+        <h4 data-i18n="filter_others">Autres</h4>
         <div class="v2-fp-checks">
-          <label class="v2-fp-check"><input type="checkbox" id="fp-has-notes"> 📝 Avec notes</label>
-          <label class="v2-fp-check"><input type="checkbox" id="fp-no-due"> 📅 Sans date</label>
+          <label class="v2-fp-check"><input type="checkbox" id="fp-has-notes"> <span data-i18n="filter_with_notes">📝 Avec notes</span></label>
+          <label class="v2-fp-check"><input type="checkbox" id="fp-no-due"> <span data-i18n="filter_no_due">📅 Sans date</span></label>
         </div>
       </div>
     </div>
@@ -1041,10 +1042,10 @@
 
   <footer class="v2-footer">
     <div class="v2-footer-links">
-      <a href="./confidentialite.html">Confidentialité</a>
-      <a href="./mentions-legales.html">Mentions Légales</a>
-      <a href="./cgu.html">CGU</a>
-      <a href="./donnees.html">Gestion des données</a>
+      <a href="./confidentialite.html" data-i18n="footer_privacy">Confidentialité</a>
+      <a href="./mentions-legales.html" data-i18n="footer_legal">Mentions Légales</a>
+      <a href="./cgu.html" data-i18n="footer_cgu">CGU</a>
+      <a href="./donnees.html" data-i18n="footer_data">Gestion des données</a>
     </div>
     <p>© 2026 · Sacha G.</p>
   </footer>
@@ -1057,8 +1058,8 @@
   <!-- Modale ajout/édition/récapitulatif (réutilisée de style2.css) -->
   <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
     <div class="modal">
-      <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
-      <h2 class="modal-heading" id="modal-heading">Nouvelle tâche</h2>
+      <button class="modal-close" id="modal-close" data-i18n-aria="btn_close" aria-label="Fermer">✕</button>
+      <h2 class="modal-heading" id="modal-heading" data-i18n="modal_new_task">Nouvelle tâche</h2>
 
       <!-- Vue récapitulative (lecture seule) -->
       <div class="modal-recap" id="modal-recap" style="display:none;">
@@ -1069,7 +1070,7 @@
           <span class="v2-due" id="recap-due"></span>
         </div>
         <div class="modal-recap-section">
-          <div class="modal-recap-label">Notes</div>
+          <div class="modal-recap-label" data-i18n="modal_field_notes">Notes</div>
           <div class="modal-recap-notes" id="recap-notes"></div>
         </div>
         <div class="modal-recap-meta" id="recap-meta"></div>
@@ -1078,53 +1079,53 @@
       <!-- Corps du formulaire (édition / création) -->
       <div class="modal-body" id="modal-body">
       <div class="modal-field">
-        <label for="modal-text">Titre</label>
-        <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tâche..." />
+        <label for="modal-text" data-i18n="modal_field_title">Titre</label>
+        <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tâche..." data-i18n-placeholder="modal_placeholder_title" />
       </div>
       <div class="modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
         <div class="modal-field">
-          <label for="modal-status">Statut</label>
+          <label for="modal-status" data-i18n="modal_field_status">Statut</label>
           <select id="modal-status" class="modal-select">
-            <option value="todo">📋 À faire</option>
-            <option value="inprogress">⚡ En cours</option>
-            <option value="waiting">⏳ En attente</option>
-            <option value="done">✅ Terminé</option>
-            <option value="cancelled">❌ Annulé</option>
+            <option value="todo" data-i18n="status_todo">📋 À faire</option>
+            <option value="inprogress" data-i18n="status_inprogress">⚡ En cours</option>
+            <option value="waiting" data-i18n="status_waiting">⏳ En attente</option>
+            <option value="done" data-i18n="status_done">✅ Terminé</option>
+            <option value="cancelled" data-i18n="status_cancelled">❌ Annulé</option>
           </select>
         </div>
         <div class="modal-field">
-          <label for="modal-priority">Priorité</label>
+          <label for="modal-priority" data-i18n="modal_field_priority">Priorité</label>
           <select id="modal-priority" class="modal-select">
-            <option value="normal">— Normale</option>
-            <option value="high">🔴 Haute</option>
-            <option value="low">🔵 Basse</option>
+            <option value="normal" data-i18n="prio_normal">— Normale</option>
+            <option value="high" data-i18n="prio_high">🔴 Haute</option>
+            <option value="low" data-i18n="prio_low">🔵 Basse</option>
           </select>
         </div>
       </div>
       <div class="modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
         <div class="modal-field">
-          <label for="modal-due">Date d'échéance <span style="opacity:.5;font-size:.65rem;">(optionnel)</span></label>
+          <label for="modal-due"><span data-i18n="modal_field_due">Date d'échéance</span> <span style="opacity:.5;font-size:.65rem;" data-i18n="modal_field_optional">(optionnel)</span></label>
           <input type="date" id="modal-due" class="modal-input" />
         </div>
         <div class="modal-field">
-          <label for="modal-due-time">Heure <span style="opacity:.5;font-size:.65rem;">(optionnel)</span></label>
+          <label for="modal-due-time"><span data-i18n="modal_field_time">Heure</span> <span style="opacity:.5;font-size:.65rem;" data-i18n="modal_field_optional">(optionnel)</span></label>
           <input type="time" id="modal-due-time" class="modal-input" />
         </div>
       </div>
       <div class="modal-field">
-        <label for="modal-notes">Notes</label>
-        <textarea id="modal-notes" class="modal-textarea" placeholder="Ajouter une note..."></textarea>
+        <label for="modal-notes" data-i18n="modal_field_notes">Notes</label>
+        <textarea id="modal-notes" class="modal-textarea" placeholder="Ajouter une note..." data-i18n-placeholder="modal_placeholder_notes"></textarea>
       </div>
       </div>
       <div class="modal-actions">
         <!-- Mode récapitulatif -->
-        <button class="btn-save" id="modal-edit-btn" style="display:none;">Modifier</button>
-        <button class="btn-delete" id="modal-close-recap-btn" style="display:none;">Fermer</button>
+        <button class="btn-save" id="modal-edit-btn" style="display:none;" data-i18n="btn_edit">Modifier</button>
+        <button class="btn-delete" id="modal-close-recap-btn" style="display:none;" data-i18n="btn_close">Fermer</button>
 
         <!-- Mode édition / création -->
-        <button class="btn-save" id="modal-save">Créer</button>
-        <button class="btn-delete" id="modal-cancel-edit-btn" style="display:none;">Annuler</button>
-        <button class="btn-delete" id="modal-delete" style="display:none">Supprimer</button>
+        <button class="btn-save" id="modal-save" data-i18n="btn_create">Créer</button>
+        <button class="btn-delete" id="modal-cancel-edit-btn" style="display:none;" data-i18n="btn_cancel">Annuler</button>
+        <button class="btn-delete" id="modal-delete" style="display:none" data-i18n="btn_delete">Supprimer</button>
       </div>
     </div>
   </div>
@@ -1132,18 +1133,18 @@
   <!-- Modale confirmation -->
   <div id="confirm-overlay" class="modal-overlay" role="alertdialog" aria-modal="true">
     <div class="modal confirm-modal" style="max-width:340px;">
-      <h2 class="modal-heading">Supprimer la tâche ?</h2>
-      <p style="font-size:.78rem;color:var(--text-muted);">Cette action est irréversible.</p>
+      <h2 class="modal-heading" data-i18n="confirm_delete_title">Supprimer la tâche ?</h2>
+      <p style="font-size:.78rem;color:var(--text-muted);" data-i18n="confirm_delete_desc">Cette action est irréversible.</p>
       <div class="modal-actions">
-        <button class="btn-delete" id="confirm-yes">Supprimer</button>
-        <button class="btn-save" id="confirm-no">Annuler</button>
+        <button class="btn-delete" id="confirm-yes" data-i18n="btn_delete">Supprimer</button>
+        <button class="btn-save" id="confirm-no" data-i18n="btn_cancel">Annuler</button>
       </div>
     </div>
   </div>
 
   <script src="../assets/js/crypto.js"></script>
   <script src="../assets/js/timeout.js"></script>
-  <script src="../assets/js/app-v2.js?v=11"></script>
+  <script src="../assets/js/app-v2.js?v=13"></script>
 </body>
 
 </html>

@@ -261,26 +261,38 @@ btnChangePassword.addEventListener("click", async () => {
 });
 
 // ══════════════════════════════════════════════════════
-//  3. PRÉFÉRENCES D'AFFICHAGE
+//  3. PRÉFÉRENCES D'AFFICHAGE & LANGUE
 // ══════════════════════════════════════════════════════
-const btnSaveDisplay   = document.getElementById("btn-save-display");
+const btnSaveDisplay     = document.getElementById("btn-save-display");
 const selectCalendarView = document.getElementById("setting-calendar-view");
+const selectLanguage     = document.getElementById("setting-language");
 
 // Chargement initial
 const currentCalendarPref = localStorage.getItem(`calendarView_${currentUser}`) || "grid";
 if (selectCalendarView) {
   selectCalendarView.value = currentCalendarPref;
 }
+if (selectLanguage) {
+  selectLanguage.value = getLanguage();
+}
 
 if (btnSaveDisplay) {
-  btnSaveDisplay.addEventListener("click", () => {
+  btnSaveDisplay.addEventListener("click", async () => {
     const msgEl = document.getElementById("msg-display");
     clearMsg(msgEl);
     
-    const selectedView = selectCalendarView.value;
-    localStorage.setItem(`calendarView_${currentUser}`, selectedView);
+    if (selectCalendarView) {
+      const selectedView = selectCalendarView.value;
+      localStorage.setItem(`calendarView_${currentUser}`, selectedView);
+    }
+
+    if (selectLanguage) {
+      const newLang = selectLanguage.value;
+      setLanguage(newLang);
+      await syncUserLanguageToFirebase(currentUser, newLang);
+    }
     
-    showMsg(msgEl, "✓ Préférences enregistrées avec succès !");
+    showMsg(msgEl, "✓ " + t("saved_preferences"));
   });
 }
 
@@ -356,8 +368,8 @@ deleteConfirmYes.addEventListener("click", async () => {
     localStorage.removeItem(`calendarView_${currentUser}`);
     sessionStorage.clear();
 
-    // Redirige vers la connexion
-    window.transitionTo("./login.html");
+    // Redirige vers l'accueil
+    window.transitionTo("../index.html");
 
   } catch (err) {
     console.error(err);

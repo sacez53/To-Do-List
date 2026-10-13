@@ -1,0 +1,535 @@
+// ══════════════════════════════════════════════════════
+//  SETTINGS.JS
+//  Dépend de crypto.js (chargé avant dans settings.html)
+// ══════════════════════════════════════════════════════
+
+// ─── Session ───────────────────────────────────────────
+let currentUser = sessionStorage.getItem("username") || "";
+const userLabel  = document.getElementById("user-label");
+if (userLabel) userLabel.textContent = currentUser;
+
+// ─── Clé de chiffrement ────────────────────────────────
+let encKey = null;
+(async () => {
+  const b64 = sessionStorage.getItem("encKey");
+  if (b64) {
+    try { encKey = await importKey(b64); } catch (e) { /* sans clé */ }
+  }
+})();
+
+// ─── Firebase ──────────────────────────────────────────
+let firebaseUrl = null;
+
+async function getFirebaseUrl() {
+  if (firebaseUrl) return firebaseUrl;
+  const res    = await fetch("../assets/json/firebase.json");
+  const config = await res.json();
+  if (!config.url || !config.url.trim()) {
+    throw new Error("Firebase non configuré.");
+  }
+  firebaseUrl = config.url.replace(/\/$/, "");
+  return firebaseUrl;
+}
+
+async function verifyUserPassword(username, password) {
+  await getFirebaseUrl();
+  const res = await fetch(`${userPath(username)}.json`);
+  const userData = await res.json();
+  if (!userData || !userData.password) {
+    return { ok: false, reason: "Identifiant introuvable." };
+  }
+  const oldHash = await hashPassword(password);
+  const isOldHash = (oldHash === userData.password);
+
+  let isStrongHash = false;
+  if (userData.salt) {
+    const strongHash = await hashPasswordPBKDF2(password, userData.salt);
+    isStrongHash = (strongHash === userData.password);
+  }
+
+  if (!isOldHash && !isStrongHash) {
+    return { ok: false, reason: "Mot de passe incorrect." };
+  }
+
+  return { ok: true, userData, isOldHash, isStrongHash };
+}
+
+function userPath(username) {
+  return `${firebaseUrl}/users/${encodeURIComponent(username)}`;
+}
+
+// ─── Déconnexion ───────────────────────────────────────
+document.getElementById("logout-btn").addEventListener("click", () => {
+  sessionStorage.removeItem("auth");
+  sessionStorage.removeItem("username");
+  sessionStorage.removeItem("encKey");
+  sessionStorage.removeItem("encSalt");
+  window.transitionTo("./login.html");
+});
+
+// ─── Utilitaires UI ────────────────────────────────────
+function showMsg(el, msg, isError = false) {
+  el.textContent = msg;
+  el.className   = `settings-msg ${isError ? "settings-msg-error" : "settings-msg-success"} visible`;
+  if (isError) {
+    setTimeout(() => {
+      el.classList.remove("visible");
+      el.className = "settings-msg";
+    }, 5000);
+  }
+}
+
+function clearMsg(el) {
+  el.className   = "settings-msg";
+  el.textContent = "";
+}
+
+function setLoading(btn, loading, originalLabel) {
+  btn.disabled    = loading;
+  btn.textContent = loading ? "..." : originalLabel;
+}
+
+// ══════════════════════════════════════════════════════
+//  1. CHANGER L'IDENTIFIANT
+// ══════════════════════════════════════════════════════
+const btnChangeUsername = document.getElementById("btn-change-username");
+const USERNAME_LABEL    = "Changer l'identifiant";
+
+btnChangeUsername.addEventListener("click", async () => {
+  const msgEl   = document.getElementById("msg-username");
+  const newName = document.getElementById("new-username").value.trim();
+  const password= document.getElementById("confirm-pass-username").value;
+
+  clearMsg(msgEl);
+
+  // Validations côté client
+  if (!newName || !password) {
+    showMsg(msgEl, "Remplissez tous les champs.", true); return;
+  }
+  if (!/^[a-zA-Z0-9_-]{3,20}$/.test(newName)) {
+    showMsg(msgEl, "Identifiant invalide — 3 à 20 car., lettres/chiffres/_/-.", true); return;
+  }
+  if (newName === currentUser) {
+    showMsg(msgEl, "C'est déjà votre identifiant.", true); return;
+  }
+
+  setLoading(btnChangeUsername, true, USERNAME_LABEL);
+
+  try {
+    const fbUrl = await getFirebaseUrl();
+
+    // 1. Vérifie le mot de passe
+    const authCheck = await verifyUserPassword(currentUser, password);
+    if (!authCheck.ok) {
+      showMsg(msgEl, authCheck.reason || "Mot de passe incorrect.", true);
+      setLoading(btnChangeUsername, false, USERNAME_LABEL); return;
+    }
+
+    // 2. Vérifie si le nouvel identifiant est libre
+    const checkRes = await fetch(`${userPath(newName)}/password.json`);
+    const exists   = await checkRes.json();
+    if (exists) {
+      showMsg(msgEl, "Cet identifiant est déjà utilisé.", true);
+      setLoading(btnChangeUsername, false, USERNAME_LABEL); return;
+    }
+
+    // 3. Copie toutes les données vers le nouveau nœud
+    const oldDataRes = await fetch(`${userPath(currentUser)}.json`);
+    const oldData    = await oldDataRes.json();
+
+    await fetch(`${userPath(newName)}.json`, {
+      method:  "PUT",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(oldData)
+    });
+
+    // 4. Supprime l'ancien nœud
+    await fetch(`${userPath(currentUser)}.json`, { method: "DELETE" });
+
+    // 5. Met à jour la session
+    const previous = currentUser;
+    currentUser    = newName;
+    sessionStorage.setItem("username", newName);
+    localStorage.removeItem(`todos_${previous}`);
+
+    showMsg(msgEl, `✓ Identifiant changé en « ${newName} ». Redirection...`);
+    setTimeout(() => { window.transitionTo("./app.html"); }, 1800);
+
+  } catch (err) {
+    console.error(err);
+    showMsg(msgEl, err.message || "Erreur lors du changement.", true);
+    setLoading(btnChangeUsername, false, USERNAME_LABEL);
+  }
+});
+
+// ══════════════════════════════════════════════════════
+//  2. CHANGER LE MOT DE PASSE
+// ══════════════════════════════════════════════════════
+const btnChangePassword = document.getElementById("btn-change-password");
+const PASSWORD_LABEL    = "Changer le mot de passe";
+
+btnChangePassword.addEventListener("click", async () => {
+  const msgEl      = document.getElementById("msg-password");
+  const oldPass    = document.getElementById("old-password").value;
+  const newPass    = document.getElementById("new-password").value;
+  const confirmPass= document.getElementById("confirm-new-password").value;
+
+  clearMsg(msgEl);
+
+  // Validations côté client
+  if (!oldPass || !newPass || !confirmPass) {
+    showMsg(msgEl, "Remplissez tous les champs.", true); return;
+  }
+  if (newPass.length < 5) {
+    showMsg(msgEl, "Nouveau mot de passe trop court (min. 5 car.).", true); return;
+  }
+  if (newPass !== confirmPass) {
+    showMsg(msgEl, "Les nouveaux mots de passe ne correspondent pas.", true); return;
+  }
+  if (newPass === oldPass) {
+    showMsg(msgEl, "Le nouveau mot de passe doit être différent.", true); return;
+  }
+
+  setLoading(btnChangePassword, true, PASSWORD_LABEL);
+
+  try {
+    const fbUrl = await getFirebaseUrl();
+
+    // 1. Vérifie l'ancien mot de passe
+    const authCheck = await verifyUserPassword(currentUser, oldPass);
+    if (!authCheck.ok) {
+      showMsg(msgEl, authCheck.reason || "Mot de passe actuel incorrect.", true);
+      setLoading(btnChangePassword, false, PASSWORD_LABEL); return;
+    }
+
+    // 2. Récupère ou génère le sel du compte
+    let salt = authCheck.userData.salt;
+    if (!salt) {
+      salt = generateSalt();
+    }
+
+    // 3. Récupère les tâches chiffrées
+    const todosRes  = await fetch(`${userPath(currentUser)}/todos.json`);
+    const todosData = await todosRes.json();
+
+    // 4. Déchiffre avec l'ancienne clé
+    let todos = [];
+    if (todosData && isEncrypted(todosData) && encKey) {
+      todos = await decryptData(todosData, encKey);
+    } else if (Array.isArray(todosData)) {
+      todos = todosData;
+    }
+
+    // 5. Hache le nouveau mot de passe avec PBKDF2
+    const newHash = await hashPasswordPBKDF2(newPass, salt);
+
+    // 6. Dérive la nouvelle clé (même sel + nouveau mot de passe)
+    const newKey = await deriveKey(newPass, salt);
+
+    // 7. Re-chiffre les tâches avec la nouvelle clé
+    const updates = { password: newHash, salt: salt };
+    if (todos.length > 0) {
+      updates.todos = await encryptData(todos, newKey);
+    }
+
+    // 8. Met à jour Firebase (PATCH = seulement les champs spécifiés)
+    await fetch(`${userPath(currentUser)}.json`, {
+      method:  "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(updates)
+    });
+
+    // 9. Met à jour la session avec la nouvelle clé
+    const newKeyB64 = await exportKey(newKey);
+    sessionStorage.setItem("encKey", newKeyB64);
+    sessionStorage.setItem("encSalt", salt);
+    encKey = newKey;
+
+    // Vide les champs
+    document.getElementById("old-password").value      = "";
+    document.getElementById("new-password").value      = "";
+    document.getElementById("confirm-new-password").value = "";
+
+    showMsg(msgEl, "✓ Mot de passe changé — tâches re-chiffrées avec succès !");
+    setLoading(btnChangePassword, false, PASSWORD_LABEL);
+
+  } catch (err) {
+    console.error(err);
+    showMsg(msgEl, err.message || "Erreur lors du changement.", true);
+    setLoading(btnChangePassword, false, PASSWORD_LABEL);
+  }
+});
+
+// ══════════════════════════════════════════════════════
+//  3. PRÉFÉRENCES D'AFFICHAGE & LANGUE
+// ══════════════════════════════════════════════════════
+const btnSaveDisplay     = document.getElementById("btn-save-display");
+const selectCalendarView = document.getElementById("setting-calendar-view");
+const selectLanguage     = document.getElementById("setting-language");
+
+// Chargement initial
+const currentCalendarPref = localStorage.getItem(`calendarView_${currentUser}`) || "grid";
+if (selectCalendarView) {
+  selectCalendarView.value = currentCalendarPref;
+}
+if (selectLanguage) {
+  selectLanguage.value = getLanguage();
+}
+
+if (btnSaveDisplay) {
+  btnSaveDisplay.addEventListener("click", async () => {
+    const msgEl = document.getElementById("msg-display");
+    clearMsg(msgEl);
+    
+    if (selectCalendarView) {
+      const selectedView = selectCalendarView.value;
+      localStorage.setItem(`calendarView_${currentUser}`, selectedView);
+    }
+
+    if (selectLanguage) {
+      const newLang = selectLanguage.value;
+      setLanguage(newLang);
+      await syncUserLanguageToFirebase(currentUser, newLang);
+    }
+    
+    showMsg(msgEl, "✓ " + t("saved_preferences"));
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  4. SUPPRIMER LE COMPTE
+// ══════════════════════════════════════════════════════
+const btnDeleteAccount = document.getElementById("btn-delete-account");
+const deleteOverlay    = document.getElementById("delete-overlay");
+const deleteConfirmYes = document.getElementById("delete-confirm-yes");
+const deleteConfirmNo  = document.getElementById("delete-confirm-no");
+const DELETE_LABEL     = "Supprimer mon compte";
+
+// Ouvre la modale de confirmation
+btnDeleteAccount.addEventListener("click", async () => {
+  const msgEl   = document.getElementById("msg-delete");
+  const password= document.getElementById("confirm-pass-delete").value;
+
+  clearMsg(msgEl);
+
+  if (!password) {
+    showMsg(msgEl, "Saisissez votre mot de passe pour confirmer.", true); return;
+  }
+
+  setLoading(btnDeleteAccount, true, DELETE_LABEL);
+
+  try {
+    const fbUrl = await getFirebaseUrl();
+
+    // Vérifie le mot de passe avant d'ouvrir la modale
+    const authCheck = await verifyUserPassword(currentUser, password);
+    if (!authCheck.ok) {
+      showMsg(msgEl, authCheck.reason || "Mot de passe incorrect.", true);
+      setLoading(btnDeleteAccount, false, DELETE_LABEL); return;
+    }
+
+    // Mot de passe OK → ouvre la confirmation
+    setLoading(btnDeleteAccount, false, DELETE_LABEL);
+    deleteOverlay.classList.add("open");
+    document.body.classList.add("modal-open");
+
+  } catch (err) {
+    console.error(err);
+    showMsg(document.getElementById("msg-delete"), err.message || "Erreur.", true);
+    setLoading(btnDeleteAccount, false, DELETE_LABEL);
+  }
+});
+
+// Annulation
+deleteConfirmNo.addEventListener("click", () => {
+  deleteOverlay.classList.remove("open");
+  document.body.classList.remove("modal-open");
+});
+deleteOverlay.addEventListener("click", e => {
+  if (e.target === deleteOverlay) {
+    deleteOverlay.classList.remove("open");
+    document.body.classList.remove("modal-open");
+  }
+});
+
+// Confirmation — suppression réelle
+deleteConfirmYes.addEventListener("click", async () => {
+  deleteConfirmYes.disabled = true;
+  deleteConfirmYes.textContent = "...";
+
+  try {
+    const fbUrl = await getFirebaseUrl();
+
+    // Supprime le nœud entier de l'utilisateur
+    await fetch(`${userPath(currentUser)}.json`, { method: "DELETE" });
+
+    // Nettoie la session et le localStorage
+    localStorage.removeItem(`todos_${currentUser}`);
+    localStorage.removeItem(`calendarView_${currentUser}`);
+    sessionStorage.clear();
+
+    // Redirige vers l'accueil
+    window.transitionTo("../index.html");
+
+  } catch (err) {
+    console.error(err);
+    deleteConfirmYes.disabled    = false;
+    deleteConfirmYes.textContent = "Supprimer";
+    deleteOverlay.classList.remove("open");
+    document.body.classList.remove("modal-open");
+    showMsg(document.getElementById("msg-delete"), err.message || "Erreur lors de la suppression.", true);
+  }
+});
+
+// Fermeture au clavier
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    deleteOverlay.classList.remove("open");
+    document.body.classList.remove("modal-open");
+  }
+});
+
+
+// ══════════════════════════════════════════════════════
+//  5. GESTION DES ARCHIVES
+// ══════════════════════════════════════════════════════
+async function saveTodosToFirebase(todos) {
+    if (!firebaseUrl) await getFirebaseUrl();
+    const body = encKey ? JSON.stringify(await encryptData(todos, encKey)) : JSON.stringify(todos);
+    await fetch(`${userPath(currentUser)}/todos.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body
+    });
+}
+
+function updateArchivedView() {
+    const todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
+    const archivedTasks = todos.filter(t => t.archived);
+    
+    const container = document.getElementById("archived-tasks-container");
+    const msg = document.getElementById("no-archived-msg");
+    
+    if (archivedTasks.length > 0) {
+        container.style.display = "flex";
+        msg.style.display = "none";
+        container.innerHTML = "";
+        
+        archivedTasks.forEach(task => {
+            const row = document.createElement("div");
+            row.style.display = "flex";
+            row.style.justifyContent = "space-between";
+            row.style.alignItems = "center";
+            row.style.padding = "0.5rem";
+            row.style.background = "var(--surface-3)";
+            row.style.borderRadius = "3px";
+            
+            const span = document.createElement("span");
+            span.style.color = "var(--text)";
+            span.style.fontSize = "0.8rem";
+            span.style.overflow = "hidden";
+            span.style.textOverflow = "ellipsis";
+            span.style.whiteSpace = "nowrap";
+            span.textContent = task.text;
+            
+            const btnWrap = document.createElement("div");
+            btnWrap.style.display = "flex";
+            btnWrap.style.gap = "0.5rem";
+            
+            const btnRestore = document.createElement("button");
+            btnRestore.textContent = "Désarchiver";
+            btnRestore.style.background = "transparent";
+            btnRestore.style.border = "1px solid var(--line-strong)";
+            btnRestore.style.color = "var(--text-muted)";
+            btnRestore.style.padding = "0.2rem 0.5rem";
+            btnRestore.style.fontSize = "0.7rem";
+            btnRestore.style.cursor = "pointer";
+            btnRestore.style.borderRadius = "3px";
+            btnRestore.addEventListener("click", async () => {
+                task.archived = false;
+                await saveArchivedChanges(todos);
+            });
+            
+            const btnDelete = document.createElement("button");
+            btnDelete.textContent = "Supprimer";
+            btnDelete.style.background = "transparent";
+            btnDelete.style.border = "1px solid rgba(248, 113, 113, 0.4)";
+            btnDelete.style.color = "#f87171";
+            btnDelete.style.padding = "0.2rem 0.5rem";
+            btnDelete.style.fontSize = "0.7rem";
+            btnDelete.style.cursor = "pointer";
+            btnDelete.style.borderRadius = "3px";
+            btnDelete.addEventListener("click", async () => {
+                if (confirm("Supprimer définitivement cette tâche ?")) {
+                    const newTodos = todos.filter(t => t.id !== task.id);
+                    await saveArchivedChanges(newTodos);
+                }
+            });
+            
+            btnWrap.appendChild(btnRestore);
+            btnWrap.appendChild(btnDelete);
+            row.appendChild(span);
+            row.appendChild(btnWrap);
+            container.appendChild(row);
+        });
+    } else {
+        container.style.display = "none";
+        msg.style.display = "block";
+    }
+}
+
+async function saveArchivedChanges(newTodos) {
+    localStorage.setItem(`todos_${currentUser}`, JSON.stringify(newTodos));
+    updateArchivedView();
+    try {
+        await saveTodosToFirebase(newTodos);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+const btnArchiveDone = document.getElementById("btn-archive-done");
+if (btnArchiveDone) {
+    btnArchiveDone.addEventListener("click", async () => {
+        const todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
+        let changed = false;
+        todos.forEach(t => {
+            if (t.status === "done" && !t.archived) {
+                t.archived = true;
+                changed = true;
+            }
+        });
+        
+        const msgEl = document.getElementById("msg-archive");
+        if (changed) {
+            await saveArchivedChanges(todos);
+            showMsg(msgEl, "✓ Tâches terminées archivées !");
+        } else {
+            showMsg(msgEl, "Aucune tâche terminée à archiver.");
+        }
+    });
+    
+    updateArchivedView();
+}
+
+
+// ══════════════════════════════════════════════════════
+//  6. GESTION DES ONGLETS
+// ══════════════════════════════════════════════════════
+const tabBtns = document.querySelectorAll('.settings-tab-btn');
+const tabContents = document.querySelectorAll('.settings-tab-content');
+
+if (tabBtns.length > 0) {
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Retirer la classe active de tous les boutons et contenus
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+      
+      // Ajouter la classe active au bouton cliqué et à son contenu cible
+      btn.classList.add('active');
+      const targetId = btn.getAttribute('data-tab');
+      document.getElementById(targetId).classList.add('active');
+    });
+  });
+}

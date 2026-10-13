@@ -25,10 +25,11 @@ Le dossier `win_app` est structuré de façon claire et modulaire :
 win_app/
 ├── assets/          # Styles (CSS), scripts (JS), polices et icônes
 ├── build/           # Code source du lanceur (launcher.cs) et scripts de build
+├── dist/            # Fichiers générés par l'installeur (To-Do List Setup.exe)
 ├── node_modules/    # Dépendances Electron
 ├── release/         # Builds autonomes packagés (ToDoList-win32-x64) et releases versionnées
 ├── src/             # Pages HTML de l'application (login.html, app.html, calendar.html, settings.html)
-├── versions/        # Archives des versions précédentes (v5.0/, etc.)
+├── versions/        # Archives des versions précédentes (v5.0/, v5.1/, etc.)
 ├── main.js          # Point d'entrée Electron
 ├── package.json     # Configuration npm et scripts de build
 ├── README.md        # Documentation de l'application Windows
@@ -52,20 +53,33 @@ L'application a été allégée et épurée pour se concentrer uniquement sur l'
   - Recherche, tri, filtres avancés, échéances et notes.
   - Accès direct au **Calendrier** (`src/calendar.html`) et aux **Paramètres** (`src/settings.html`).
   - Bouton **Déconnexion** ramenant immédiatement à l'écran de connexion.
+- **Support bilingue Français / Anglais :**
+  - Choix de la langue lors de l'installation via l'installeur officiel NSIS (Français ou Anglais).
+  - Changement de langue dynamique à l'inscription (`src/login.html`) et dans les paramètres (`src/settings.html`).
+  - Synchronisation de la langue préférée avec le compte utilisateur Firebase RTDB.
 - **Pages exclues :**
   - La page d'accueil marketing (`index.html` vitrine) a été supprimée.
   - Toutes les pages de règles et mentions légales (`cgu.html`, `confidentialite.html`, `mentions-legales.html`, `commentaires.html`, etc.) ainsi que leurs liens ont été retirés.
 
 ---
 
-## 🛠️ Recompilation (Optionnel)
+## 🛠️ Recompilation et Création de l'Installeur
 
 Si vous modifiez le code source de l'application :
 - **Lancer en mode développement :**
   ```powershell
   npm start
   ```
-- **Recompiler le package exécutable :**
+- **Recompiler le package exécutable autonome :**
   ```powershell
   npm run package
+  ```
+- **Générer l'installeur Windows officiel (`Setup.exe`) :**
+  ```powershell
+  npm run installer
+  ```
+  *L'installeur multilingue généré se trouve dans le dossier `win_app/dist/` (ex: `To-Do List Setup 5.2.0.exe`).*
+- **Tout compiler (package portable + installeur) :**
+  ```powershell
+  npm run build:all
   ```

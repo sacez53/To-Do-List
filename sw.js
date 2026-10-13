@@ -1,4 +1,4 @@
-const CACHE_NAME = 'todo-list-cache-v11';
+const CACHE_NAME = 'todo-list-cache-v13';
 const urlsToCache = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const urlsToCache = [
   './pages/mentions-legales.html',
   './pages/cgu.html',
   './assets/css/style2.css',
+  './assets/js/i18n.js',
   './assets/js/app-v2.js',
   './assets/js/calendar.js',
   './assets/js/settings.js',
