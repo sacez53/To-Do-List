@@ -1,4 +1,4 @@
-const CACHE_NAME = 'todo-list-cache-v14';
+const CACHE_NAME = 'todo-list-cache-v15';
 const urlsToCache = [
   './',
   './index.html',
@@ -23,6 +23,7 @@ const urlsToCache = [
   './assets/js/timeout.js',
   './assets/js/donnees.js',
   './assets/logo/list-todo.svg',
+  './assets/logo/logo-t.svg',
   './manifest.json',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png'
