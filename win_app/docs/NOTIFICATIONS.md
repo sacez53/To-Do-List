@@ -176,3 +176,14 @@ Références officielles :
 - https://developers.cloudflare.com/workers/platform/limits/
 - https://developers.cloudflare.com/d1/platform/pricing/
 - https://developers.cloudflare.com/workers/configuration/cron-triggers/
+
+## Correctif v5.4.1 — adresse active
+
+Le sous-domaine précédent `todo-sacez53.workers.dev` ne publiait pas les Workers.
+Le service est maintenant disponible sur :
+
+https://todo-list-push.sacez53-todo.workers.dev
+
+Cette adresse est renseignée dans `assets/json/push.json`. Le point `/config`
+a été vérifié avec une réponse HTTP 200 et l’origine GitHub Pages autorisée.
+Après mise à jour de la PWA, réessayer Paramètres → Notifications → Activer.

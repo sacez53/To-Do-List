@@ -1,7 +1,7 @@
-const CACHE_NAME = 'todo-list-cache-v16';
+const CACHE_NAME = 'todo-list-cache-v17';
 const urlsToCache = [
-  './assets/js/push-model.js?v=16',
-  './assets/js/notifications.js?v=16',
+  './assets/js/push-model.js?v=17',
+  './assets/js/notifications.js?v=17',
   './',
   './index.html',
   './pages/app-v2.html',
