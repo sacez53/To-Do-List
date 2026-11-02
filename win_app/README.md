@@ -83,3 +83,10 @@ Si vous modifiez le code source de l'application :
   ```powershell
   npm run build:all
   ```
+
+## v5.4 — Rappels sur téléphone
+
+Les changements de tâches alimentent le service de notifications des téléphones
+lorsque celui-ci est configuré. Les notifications sont activées depuis la PWA
+sur le téléphone ; Electron n’est pas utilisé comme client push mobile.
+Voir `docs/NOTIFICATIONS.md` dans le paquet pour le service gratuit et sa configuration.

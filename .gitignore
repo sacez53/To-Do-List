@@ -400,3 +400,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+# Configuration privée du service push gratuit
+push-server/.dev.vars*
+push-server/.env*
+push-server/.wrangler/
+push-server/dist/

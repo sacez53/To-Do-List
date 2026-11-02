@@ -144,6 +144,7 @@ async function init() {
     todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
   }
 
+  window.dispatchEvent(new CustomEvent("todoTasksChanged", { detail: todos }));
   render();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -201,6 +202,7 @@ async function saveToFirebase() {
 }
 
 function saveTodos() {
+  window.dispatchEvent(new CustomEvent("todoTasksChanged", { detail: todos }));
   localStorage.setItem(`todos_${currentUser}`, JSON.stringify(todos));
   saveToFirebase();
 }

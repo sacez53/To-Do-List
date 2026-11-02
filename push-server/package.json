@@ -1,0 +1,14 @@
+{
+  "name": "todo-push-service",
+  "version": "5.4.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test ../tests/push*.test.mjs",
+    "dev": "wrangler dev --test-scheduled",
+    "deploy": "wrangler deploy",
+    "keys": "node generate-keys.mjs"
+  },
+  "dependencies": { "@block65/webcrypto-web-push": "^2.0.0" },
+  "devDependencies": { "wrangler": "^4.0.0" }
+}
