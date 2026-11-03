@@ -121,100 +121,73 @@ const PRIORITY_LABEL = new Proxy({}, {
 // ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
+let taskStore = null;
+let savingLocal = Promise.resolve();
+let syncRunning = false;
+let localRevision = 0;
+let localWrites = 0;
+let modalSnapshot = null;
+let confirmCleanup = null;
+function modalValues() { return JSON.stringify([modalText.value, modalStatus.value, modalPriority.value, modalDue.value, modalDueTime?.value, modalNotes.value]); }
 async function init() {
+  fabAdd.disabled = true;
   if (userLabel) userLabel.textContent = currentUser;
-
-  const encKeyB64 = sessionStorage.getItem("encKey");
-  if (encKeyB64) {
-    try { encKey = await importKey(encKeyB64); } catch(e) { console.warn(e); }
-  }
-
   try {
-    const r = await fetch("../assets/json/firebase.json");
-    const cfg = r.ok ? await r.json() : {};
-    if (cfg.url && cfg.url.trim()) {
-      firebaseUrl = cfg.url.replace(/\/$/, "");
-      await loadFromFirebase();
-    } else {
-      setSyncStatus("offline");
-      todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
-    }
-  } catch(e) {
-    setSyncStatus("error");
-    todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
-  }
-
-  render();
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const viewTaskId = urlParams.get("viewTask");
-  const editTaskId = urlParams.get("editTask");
-  if (viewTaskId) {
-    openModal(viewTaskId, "view");
-  } else if (editTaskId) {
-    openModal(editTaskId, "edit");
-  }
+    taskStore = await TodoData.open(currentUser);
+    todos = taskStore.read();
+    fabAdd.disabled = false;
+    render();
+    await refreshTasks();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("viewTask")) openModal(params.get("viewTask"), "view");
+    else if (params.get("editTask")) openModal(params.get("editTask"), "edit");
+  } catch (error) { setSyncStatus("error", error.message); }
 }
-
-// ══════════════════════════════════════════
-//  FIREBASE
-// ══════════════════════════════════════════
-function todosPath() {
-  return `${firebaseUrl}/users/${encodeURIComponent(currentUser)}/todos.json`;
-}
-
-async function loadFromFirebase() {
+async function refreshTasks() {
+  if (!taskStore || syncRunning || !sessionStorage.getItem("auth")) return;
+  syncRunning = true;
+  const revision = localRevision;
   setSyncStatus("syncing");
   try {
-    const res  = await fetch(todosPath());
-    const data = await res.json();
-    if (!data) {
-      todos = [];
-    } else if (isEncrypted(data)) {
-      todos = encKey ? await decryptData(data, encKey) : [];
-    } else if (Array.isArray(data)) {
-      todos = data;
-    } else if (typeof data === "object") {
-      todos = Object.values(data).filter(v => v && typeof v === "object");
-    }
-    localStorage.setItem(`todos_${currentUser}`, JSON.stringify(todos));
-    setSyncStatus("synced");
-  } catch(e) {
-    setSyncStatus("error");
-    todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
-  }
+    await savingLocal;
+    const result = await taskStore.sync();
+    if (revision === localRevision) { todos = result; render(); }
+    setSyncStatus(taskStore.pending() ? "offline" : "synced");
+  } catch (error) { setSyncStatus("error", error.message); }
+  finally { syncRunning = false; }
 }
-
-async function saveToFirebase() {
-  if (!firebaseUrl) return;
-  clearTimeout(syncTimeout);
-  setSyncStatus("syncing");
-  syncTimeout = setTimeout(async () => {
-    try {
-      const body = encKey
-        ? JSON.stringify(await encryptData(todos, encKey))
-        : JSON.stringify(todos);
-      await fetch(todosPath(), { method:"PUT", headers:{"Content-Type":"application/json"}, body });
-      setSyncStatus("synced");
-    } catch(e) { setSyncStatus("error"); }
-  }, 800);
-}
-
 function saveTodos() {
-  localStorage.setItem(`todos_${currentUser}`, JSON.stringify(todos));
-  saveToFirebase();
+  if (!taskStore || !sessionStorage.getItem("auth")) return Promise.resolve(false);
+  localRevision++;
+  localWrites++;
+  const snapshot = JSON.parse(JSON.stringify(todos));
+  setSyncStatus("syncing");
+  savingLocal = savingLocal.catch(() => {}).then(() => taskStore.save(snapshot));
+  return savingLocal.then(() => { refreshTasks(); return true; }).catch(error => {
+    setSyncStatus("error", error.message);
+    alert(TodoRuntime.message("Enregistrement local impossible. Gardez cette page ouverte : ", "Local save failed. Keep this page open: ") + error.message);
+    return false;
+  }).finally(() => { localWrites--; });
 }
+window.addEventListener("online", refreshTasks);
+window.addEventListener("focus", refreshTasks);
 
-function setSyncStatus(s) {
+window.addEventListener("beforeunload", event => {
+  if (localWrites || taskStore?.pending() || (modalSnapshot && modalValues() !== modalSnapshot)) { event.preventDefault(); event.returnValue = ""; }
+});
+// Refresh existing sync status while the page is visible; no new product view.
+setInterval(() => { if (!document.hidden && !modalOverlay.classList.contains("open")) refreshTasks(); }, 30000);
+
+function setSyncStatus(s, detail = "") {
   if (!syncDot || !syncLabel) return;
   syncDot.className = `v2-sync-dot v2-sync-${s}`;
   const labels = {
     syncing: t("syncing"),
     synced:  t("synced"),
-    error:   t("offline"),
+    error:   TodoRuntime.message("Erreur de synchronisation", "Sync failed"),
     offline: t("offline")
   };
-  syncLabel.textContent = labels[s] || "";
+  syncLabel.textContent = detail || labels[s] || "";
 }
 
 // ══════════════════════════════════════════
@@ -227,8 +200,8 @@ function applyFilters(arr) {
     if (filterPriorities.length && !filterPriorities.includes(t.priority || "normal")) return false;
     if (filterHasNotes  && !(t.notes && t.notes.trim())) return false;
     if (filterNoDue     && t.due) return false;
-    if (filterDueBefore && t.due && t.due > filterDueBefore) return false;
-    if (filterDueAfter  && t.due && t.due < filterDueAfter)  return false;
+    if (filterDueBefore && (!t.due || t.due > filterDueBefore)) return false;
+    if (filterDueAfter && (!t.due || t.due < filterDueAfter))  return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       if (!t.text.toLowerCase().includes(q) && !(t.notes||"").toLowerCase().includes(q)) return false;
@@ -244,7 +217,7 @@ function applySort(arr) {
     case "za":           return copy.sort((a,b) => b.text.localeCompare(a.text, getLanguage()));
     case "created-desc": return copy.sort((a,b) => (a.created||0) < (b.created||0) ? 1 : -1);
     case "created-asc":  return copy.sort((a,b) => (a.created||0) > (b.created||0) ? 1 : -1);
-    case "priority":     return copy.sort((a,b) => (PRIORITY_ORDER[a.priority||"normal"]||1) - (PRIORITY_ORDER[b.priority||"normal"]||1));
+    case "priority":     return copy.sort((a,b) => (PRIORITY_ORDER[a.priority||"normal"] ?? 1) - (PRIORITY_ORDER[b.priority||"normal"] ?? 1));
     case "due-asc":      return copy.sort((a,b) => {
       if (!a.due && !b.due) return 0;
       if (!a.due) return 1;
@@ -256,9 +229,8 @@ function applySort(arr) {
       return at > bt ? 1 : at < bt ? -1 : 0;
     });
     case "overdue-first": return copy.sort((a,b) => {
-      const today = new Date().toISOString().slice(0,10);
-      const aOver = a.due && a.due < today ? -1 : 1;
-      const bOver = b.due && b.due < today ? -1 : 1;
+      const aOver = isOverdue(a.due, a.dueTime, a.status) ? -1 : 1;
+      const bOver = isOverdue(b.due, b.dueTime, b.status) ? -1 : 1;
       return aOver - bOver;
     });
     case "notes-first":  return copy.sort((a,b) => {
@@ -274,6 +246,10 @@ function applySort(arr) {
 // ══════════════════════════════════════════
 //  HELPERS DATE
 // ══════════════════════════════════════════
+function isOverdue(due, time, status) {
+  if (!due || ["done", "cancelled"].includes(status)) return false;
+  return new Date(due + "T" + (time || "23:59:59")) < new Date();
+}
 function getDueInfo(due, dueTime, status) {
   if (!due) return null;
   const d = new Date(due + "T00:00:00");
@@ -289,7 +265,7 @@ function getDueInfo(due, dueTime, status) {
   const today = new Date(); today.setHours(0,0,0,0);
   const diff = Math.round((d - today) / 86400000);
   
-  if (diff < 0)  return { label: (isEn ? "Overdue" : "En retard") + timeSuffix,    cls:"due-overdue" };
+  if (isOverdue(due, dueTime, status)) return { label: (isEn ? "Overdue" : "En retard") + timeSuffix,    cls:"due-overdue" };
   if (diff === 0) return { label: (isEn ? "Today" : "Aujourd'hui") + timeSuffix, cls:"due-today" };
   if (diff === 1) return { label: (isEn ? "Tomorrow" : "Demain") + timeSuffix,       cls:"due-soon" };
   if (diff <= 3)  return { label: (isEn ? `In ${diff}d` : `Dans ${diff}j`) + timeSuffix, cls:"due-soon" };
@@ -324,10 +300,16 @@ function updateStats() {
   if (progressBar)  progressBar.style.width  = pct + "%";
 }
 
+function renderEmpty() {
+  const p = document.createElement("p"); p.className = "v2-empty";
+  p.textContent = searchQuery ? t("search_no_results", { query: searchQuery }) :
+    (todos.some(t => !t.archived) ? TodoRuntime.message("Aucun résultat avec ces filtres. Réinitialisez les filtres pour retrouver vos tâches.", "No matches for these filters. Reset filters to see your tasks.") : t("empty_tasks"));
+  boardEl.replaceChildren(p);
+}
 // ── Vue Liste ──
 function renderList(items) {
   if (items.length === 0) {
-    boardEl.innerHTML = `<p class="v2-empty">${searchQuery ? t("search_no_results", { query: searchQuery }) : t("empty_tasks")}</p>`;
+    renderEmpty();
     return;
   }
   const ul = document.createElement("ul");
@@ -339,12 +321,12 @@ function renderList(items) {
     const prio    = todo.priority || "normal";
     const li = document.createElement("li");
     li.className = "v2-item";
-    li.style.animationDelay = `${i*30}ms`;
+    li.style.animationDelay = `${Math.min(i, 10)*20}ms`;
     li.innerHTML = `
       <div class="v2-item-left">
         <button class="v2-badge v2-badge--${todo.status}" title="${t("badge_status_title")}">${info.icon} ${info.label}</button>
         <div class="v2-item-body" title="${t("task_recap_title")}">
-          <span class="v2-item-text ${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</span>
+          <button type="button" class="task-summary v2-item-text ${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</button>
           <div class="v2-item-meta">
             ${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : ""}
             ${dueInfo ? `<span class="v2-due ${dueInfo.cls}">📅 ${dueInfo.label}</span>` : ""}
@@ -395,8 +377,8 @@ function renderKanban(items) {
         card.className = "v2-card";
         card.innerHTML = `
           <div class="v2-card-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem;">
-            <p class="v2-card-text ${todo.status === "done" ? "v2-done" : ""}" style="margin-bottom:0;flex:1;cursor:pointer;" title="${t("task_recap_title")}">${escHtml(todo.text)}</p>
-            <button class="v2-edit-btn v2-card-edit-btn" title="${t("edit_task_title")}" style="min-height:unset;padding:.2rem .45rem;font-size:.65rem;flex-shrink:0;">${t("btn_edit")}</button>
+            <button type="button" class="task-summary v2-card-text ${todo.status === "done" ? "v2-done" : ""}" style="margin-bottom:0;flex:1;cursor:pointer;" title="${t("task_recap_title")}">${escHtml(todo.text)}</button>
+            <button class="v2-edit-btn v2-card-edit-btn" title="${t("edit_task_title")}" style="min-height:44px;padding:.4rem .6rem;font-size:.8rem;flex-shrink:0;">${t("btn_edit")}</button>
           </div>
           <div class="v2-card-meta">
             ${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : ""}
@@ -424,7 +406,7 @@ function renderKanban(items) {
 // ── Vue Tableau ──
 function renderTable(items) {
   if (items.length === 0) {
-    boardEl.innerHTML = `<p class="v2-empty">${t("empty_tasks")}</p>`;
+    renderEmpty();
     return;
   }
   const table = document.createElement("table");
@@ -451,7 +433,7 @@ function renderTable(items) {
     tr.className = "v2-table-row";
     tr.innerHTML = `
       <td class="v2-table-text" title="${t("task_recap_title")}">
-        <span class="${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</span>
+        <button type="button" class="task-summary ${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</button>
       </td>
       <td><button class="v2-badge v2-badge--${todo.status}" title="${t("badge_status_title")}" style="background:transparent;cursor:pointer;">${info.icon} ${info.label}</button></td>
       <td>${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : `<span class="v2-muted">—</span>`}</td>
@@ -517,15 +499,15 @@ function buildFilterPanel() {
   const dueBefore = panel.querySelector("#fp-due-before");
   if (!dueBefore.dataset.bound) {
     dueBefore.dataset.bound = "1";
-    dueBefore.addEventListener("change", e => { filterDueBefore = e.target.value; render(); });
-    panel.querySelector("#fp-due-after").addEventListener("change",  e => { filterDueAfter  = e.target.value; render(); });
+    dueBefore.addEventListener("change", e => { filterDueBefore = e.target.value; validateDates(); render(); });
+    panel.querySelector("#fp-due-after").addEventListener("change",  e => { filterDueAfter  = e.target.value; validateDates(); render(); });
     panel.querySelector("#fp-has-notes").addEventListener("change",  e => { filterHasNotes  = e.target.checked; render(); });
     panel.querySelector("#fp-no-due").addEventListener("change",     e => { filterNoDue     = e.target.checked; render(); });
   }
 }
 
 function updateFilterBadge() {
-  const count = filterStatuses.length + filterPriorities.length
+  const count = Number(filterStatuses.length > 0) + Number(filterPriorities.length > 0)
     + (filterDueBefore ? 1 : 0) + (filterDueAfter ? 1 : 0)
     + (filterHasNotes ? 1 : 0) + (filterNoDue ? 1 : 0);
   const badge = document.getElementById("v2-filter-count");
@@ -535,6 +517,12 @@ function updateFilterBadge() {
   }
 }
 
+function validateDates() {
+  const after = document.getElementById("fp-due-after");
+  const invalid = filterDueBefore && filterDueAfter && filterDueAfter > filterDueBefore;
+  after.setCustomValidity(invalid ? TodoRuntime.message("La date de début doit précéder la date de fin.", "Start date must be before end date.") : "");
+  after.reportValidity();
+}
 function resetFilters() {
   filterStatuses   = [];
   filterPriorities = [];
@@ -544,6 +532,7 @@ function resetFilters() {
   filterNoDue      = false;
   document.querySelectorAll("#v2-filter-panel input[type=checkbox]").forEach(cb => cb.checked = false);
   document.querySelectorAll("#v2-filter-panel input[type=date]").forEach(d => d.value = "");
+  validateDates();
   render();
 }
 
@@ -573,6 +562,8 @@ if (modalCancelEditBtn) {
 }
 
 function openModal(id = null, mode = 'edit') {
+  if (!taskStore || !sessionStorage.getItem("auth")) return;
+  modalSnapshot = null;
   if (id === null) {
     editingId = null;
     modalHeading.textContent = t("modal_new_task");
@@ -596,6 +587,7 @@ function openModal(id = null, mode = 'edit') {
 
     modalOverlay.classList.add("open");
     document.body.classList.add("modal-open");
+    modalSnapshot = modalValues();
     setTimeout(() => modalText.focus(), 60);
     return;
   }
@@ -717,25 +709,32 @@ function openModal(id = null, mode = 'edit') {
 
   modalOverlay.classList.add("open");
   document.body.classList.add("modal-open");
+  if (mode === "edit") modalSnapshot = modalValues();
 }
 
-function closeModal() {
+function closeModal(force = false) {
+  if (force !== true && modalSnapshot && modalValues() !== modalSnapshot && !confirm(TodoRuntime.message("Abandonner les modifications non enregistrées ?", "Discard unsaved changes?"))) return false;
+  modalSnapshot = null;
   modalOverlay.classList.remove("open");
   document.body.classList.remove("modal-open");
   editingId = null;
+  return true;
 }
 
 function openConfirm(onConfirm) {
+  confirmCleanup?.();
   confirmOverlay.classList.add("open");
   document.body.classList.add("modal-open");
   const doConfirm = () => { cleanup(); onConfirm(); };
   const doCancel  = () => cleanup();
   function cleanup() {
+    confirmCleanup = null;
     confirmOverlay.classList.remove("open");
     document.body.classList.remove("modal-open");
     confirmYes.removeEventListener("click", doConfirm);
     confirmNo.removeEventListener("click",  doCancel);
   }
+  confirmCleanup = cleanup;
   confirmYes.addEventListener("click", doConfirm);
   confirmNo.addEventListener("click",  doCancel);
 }
@@ -746,19 +745,22 @@ function openConfirm(onConfirm) {
 viewBtns.forEach(btn => {
   btn.addEventListener("click", () => {
     currentView = btn.dataset.view;
-    viewBtns.forEach(b => b.classList.toggle("active", b === btn));
+    viewBtns.forEach(b => { b.classList.toggle("active", b === btn); b.setAttribute("aria-pressed", String(b === btn)); });
     render();
   });
 });
 
 sortSelect.addEventListener("change", () => { currentSort = sortSelect.value; render(); });
 
+let searchTimer;
 searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimer);
   searchQuery = searchInput.value.trim().toLowerCase();
   searchClear.style.display = searchQuery ? "" : "none";
-  render();
+  searchTimer = setTimeout(render, 100);
 });
 searchClear.addEventListener("click", () => {
+  clearTimeout(searchTimer);
   searchInput.value = ""; searchQuery = "";
   searchClear.style.display = "none";
   searchInput.focus(); render();
@@ -767,6 +769,7 @@ searchClear.addEventListener("click", () => {
 filterToggle.addEventListener("click", () => {
   filterPanel.classList.toggle("open");
   filterToggle.classList.toggle("active");
+  filterToggle.setAttribute("aria-expanded", String(filterPanel.classList.contains("open")));
 });
 
 filterReset.addEventListener("click", resetFilters);
@@ -774,30 +777,36 @@ filterReset.addEventListener("click", resetFilters);
 fabAdd.addEventListener("click", () => openModal(null));
 modalClose.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
-confirmOverlay.addEventListener("click", e => { if (e.target === confirmOverlay) { confirmOverlay.classList.remove("open"); document.body.classList.remove("modal-open"); } });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); confirmOverlay.classList.remove("open"); } });
+confirmOverlay.addEventListener("click", e => { if (e.target === confirmOverlay) { confirmCleanup?.(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { if (confirmCleanup) confirmCleanup(); else closeModal(); } });
 
-modalSave.addEventListener("click", () => {
+modalSave.addEventListener("click", async () => {
+  if (modalSave.disabled) return;
+  modalSave.disabled = true;
+  try {
   const newText = modalText.value.trim();
   if (!newText) { modalText.focus(); return; }
   const dueTimeVal = modalDueTime ? (modalDueTime.value || null) : null;
   if (editingId === null) {
-    todos.push({ id:Date.now(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), created:new Date().toISOString() });
+    todos.push({ id:crypto.randomUUID(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), created:new Date().toISOString() });
   } else {
     const idx = todos.findIndex(t => String(t.id) === String(editingId));
     if (idx !== -1) Object.assign(todos[idx], { text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim() });
   }
-  saveTodos(); render(); closeModal();
+  if (await saveTodos()) { render(); closeModal(true); }
+  } finally { modalSave.disabled = false; }
 });
 
 modalDelete.addEventListener("click", () => {
   if (editingId === null) return;
   const id = editingId;
-  closeModal();
+  if (!closeModal()) return;
   openConfirm(() => { todos = todos.filter(t => String(t.id) !== String(id)); saveTodos(); render(); });
 });
 
-document.getElementById("v2-logout-btn").addEventListener("click", () => {
+document.getElementById("v2-logout-btn").addEventListener("click", async () => {
+  if (!closeModal()) return;
+  try { await savingLocal; } catch (_) { return; }
   sessionStorage.removeItem("auth");
   sessionStorage.removeItem("username");
   sessionStorage.removeItem("encKey");
@@ -811,6 +820,7 @@ function escHtml(s) {
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
+window.addEventListener("sessionExpired", () => { modalSnapshot = null; closeModal(true); confirmCleanup?.(); boardEl.replaceChildren(); todos = []; fabAdd.disabled = true; });
 // ── Lancement ──
 buildFilterPanel();
 init();

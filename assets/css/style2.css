@@ -12,8 +12,8 @@
   --text:         #efefef;
   /* #9a9a9a sur #080808 ≈ 5.6:1 — WCAG AA ✓ */
   --text-muted:   #9a9a9a;
-  /* #6e6e6e sur #080808 ≈ 4.6:1 — WCAG AA ✓ */
-  --text-faint:   #6e6e6e;
+  /* Secondary text must remain legible on every dark surface. */
+  --text-faint:   #a0a0a0;
 
   --white: #ffffff;
   --black: #000000;
@@ -1473,3 +1473,19 @@ select.readonly-mode {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+/* Audit v5.4.3: keyboard access, legibility and reduced movement. */
+.sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+:focus-visible { outline:2px solid #fff !important; outline-offset:3px; }
+.task-summary { display:inline; background:transparent; border:0; color:inherit; text-align:left; cursor:pointer; padding:.25rem 0; font:inherit; min-height:44px; overflow-wrap:anywhere; }
+.v2-edit-btn, .v2-badge { min-height:44px; }
+.v2-board--kanban, .v2-board--table { overflow-x:auto; padding-bottom:.75rem; }
+.v2-sync-label { overflow-wrap:anywhere; }
+@media (max-width:480px) { .modal-row { grid-template-columns:1fr !important; } .v2-toolbar { flex-wrap:wrap; } .v2-search-wrap { min-width:0; width:100%; } }
+@media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+
+body .v2-header p, body .v2-sync-label, body .v2-back-btn, body .v2-header-actions button,
+body .v2-sort, body .v2-view-btn, body .v2-filter-toggle, body .v2-filter-reset,
+body .v2-stats, body .v2-badge, body .v2-edit-btn, body .v2-due, body .v2-prio,
+body .v2-fp-check, body .v2-fp-group label, body .v2-note-preview { font-size:.8rem; }
+body .v2-card-text, body .v2-item-text { font-size:.9rem; }

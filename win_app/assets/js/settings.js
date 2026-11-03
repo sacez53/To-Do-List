@@ -10,7 +10,7 @@ if (userLabel) userLabel.textContent = currentUser;
 
 // ─── Clé de chiffrement ────────────────────────────────
 let encKey = null;
-(async () => {
+const keyReady = (async () => {
   const b64 = sessionStorage.getItem("encKey");
   if (b64) {
     try { encKey = await importKey(b64); } catch (e) { /* sans clé */ }
@@ -22,7 +22,7 @@ let firebaseUrl = null;
 
 async function getFirebaseUrl() {
   if (firebaseUrl) return firebaseUrl;
-  const res    = await fetch("../assets/json/firebase.json");
+  const res    = await TodoRuntime.fetch("../assets/json/firebase.json");
   const config = await res.json();
   if (!config.url || !config.url.trim()) {
     throw new Error("Firebase non configuré.");
@@ -33,10 +33,10 @@ async function getFirebaseUrl() {
 
 async function verifyUserPassword(username, password) {
   await getFirebaseUrl();
-  const res = await fetch(`${userPath(username)}.json`);
+  const res = await TodoRuntime.fetch(`${userPath(username)}.json`);
   const userData = await res.json();
   if (!userData || !userData.password) {
-    return { ok: false, reason: "Identifiant introuvable." };
+    return { ok: false, reason: TodoRuntime.message("Identifiant introuvable.", "Username not found.") };
   }
   const oldHash = await hashPassword(password);
   const isOldHash = (oldHash === userData.password);
@@ -48,7 +48,7 @@ async function verifyUserPassword(username, password) {
   }
 
   if (!isOldHash && !isStrongHash) {
-    return { ok: false, reason: "Mot de passe incorrect." };
+    return { ok: false, reason: TodoRuntime.message("Mot de passe incorrect.", "Incorrect password.") };
   }
 
   return { ok: true, userData, isOldHash, isStrongHash };
@@ -93,7 +93,7 @@ function setLoading(btn, loading, originalLabel) {
 //  1. CHANGER L'IDENTIFIANT
 // ══════════════════════════════════════════════════════
 const btnChangeUsername = document.getElementById("btn-change-username");
-const USERNAME_LABEL    = "Changer l'identifiant";
+const USERNAME_LABEL    = TodoRuntime.message("Changer l'identifiant", "Change username");
 
 btnChangeUsername.addEventListener("click", async () => {
   const msgEl   = document.getElementById("msg-username");
@@ -104,13 +104,13 @@ btnChangeUsername.addEventListener("click", async () => {
 
   // Validations côté client
   if (!newName || !password) {
-    showMsg(msgEl, "Remplissez tous les champs.", true); return;
+    showMsg(msgEl, TodoRuntime.message("Remplissez tous les champs.", "Fill in all fields."), true); return;
   }
   if (!/^[a-zA-Z0-9_-]{3,20}$/.test(newName)) {
-    showMsg(msgEl, "Identifiant invalide — 3 à 20 car., lettres/chiffres/_/-.", true); return;
+    showMsg(msgEl, TodoRuntime.message("Identifiant invalide — 3 à 20 car., lettres/chiffres/_/-.", "Invalid username: 3–20 letters, digits, _ or -."), true); return;
   }
   if (newName === currentUser) {
-    showMsg(msgEl, "C'est déjà votre identifiant.", true); return;
+    showMsg(msgEl, TodoRuntime.message("C'est déjà votre identifiant.", "This is already your username."), true); return;
   }
 
   setLoading(btnChangeUsername, true, USERNAME_LABEL);
@@ -121,36 +121,41 @@ btnChangeUsername.addEventListener("click", async () => {
     // 1. Vérifie le mot de passe
     const authCheck = await verifyUserPassword(currentUser, password);
     if (!authCheck.ok) {
-      showMsg(msgEl, authCheck.reason || "Mot de passe incorrect.", true);
+      showMsg(msgEl, authCheck.reason || TodoRuntime.message("Mot de passe incorrect.", "Incorrect password."), true);
       setLoading(btnChangeUsername, false, USERNAME_LABEL); return;
     }
 
+    const store = await TodoData.open(currentUser);
+    await store.sync();
     // 2. Vérifie si le nouvel identifiant est libre
-    const checkRes = await fetch(`${userPath(newName)}/password.json`);
+    const checkRes = await TodoRuntime.fetch(`${userPath(newName)}/password.json`);
     const exists   = await checkRes.json();
     if (exists) {
-      showMsg(msgEl, "Cet identifiant est déjà utilisé.", true);
+      showMsg(msgEl, TodoRuntime.message("Cet identifiant est déjà utilisé.", "This username is already in use."), true);
       setLoading(btnChangeUsername, false, USERNAME_LABEL); return;
     }
 
     // 3. Copie toutes les données vers le nouveau nœud
-    const oldDataRes = await fetch(`${userPath(currentUser)}.json`);
+    const oldDataRes = await TodoRuntime.fetch(`${userPath(currentUser)}.json`, { headers: { "X-Firebase-ETag": "true" } });
+    const oldEtag = oldDataRes.headers.get("ETag");
+    if (!oldEtag) throw new Error("Missing Firebase ETag");
     const oldData    = await oldDataRes.json();
 
-    await fetch(`${userPath(newName)}.json`, {
+    await TodoRuntime.fetch(`${userPath(newName)}.json`, {
       method:  "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "if-match": "null_etag" },
       body:    JSON.stringify(oldData)
     });
 
     // 4. Supprime l'ancien nœud
-    await fetch(`${userPath(currentUser)}.json`, { method: "DELETE" });
+    await TodoRuntime.fetch(`${userPath(currentUser)}.json`, { method: "DELETE", headers: { "if-match": oldEtag } });
 
     // 5. Met à jour la session
     const previous = currentUser;
     currentUser    = newName;
     sessionStorage.setItem("username", newName);
     localStorage.removeItem(`todos_${previous}`);
+    localStorage.removeItem(`todo_state_${previous}`);
 
     showMsg(msgEl, `✓ Identifiant changé en « ${newName} ». Redirection...`);
     setTimeout(() => { window.transitionTo("./app.html"); }, 1800);
@@ -166,7 +171,7 @@ btnChangeUsername.addEventListener("click", async () => {
 //  2. CHANGER LE MOT DE PASSE
 // ══════════════════════════════════════════════════════
 const btnChangePassword = document.getElementById("btn-change-password");
-const PASSWORD_LABEL    = "Changer le mot de passe";
+const PASSWORD_LABEL    = TodoRuntime.message("Changer le mot de passe", "Change password");
 
 btnChangePassword.addEventListener("click", async () => {
   const msgEl      = document.getElementById("msg-password");
@@ -178,16 +183,16 @@ btnChangePassword.addEventListener("click", async () => {
 
   // Validations côté client
   if (!oldPass || !newPass || !confirmPass) {
-    showMsg(msgEl, "Remplissez tous les champs.", true); return;
+    showMsg(msgEl, TodoRuntime.message("Remplissez tous les champs.", "Fill in all fields."), true); return;
   }
   if (newPass.length < 5) {
-    showMsg(msgEl, "Nouveau mot de passe trop court (min. 5 car.).", true); return;
+    showMsg(msgEl, TodoRuntime.message("Nouveau mot de passe trop court (min. 5 car.).", "New password is too short (minimum 5 characters)."), true); return;
   }
   if (newPass !== confirmPass) {
-    showMsg(msgEl, "Les nouveaux mots de passe ne correspondent pas.", true); return;
+    showMsg(msgEl, TodoRuntime.message("Les nouveaux mots de passe ne correspondent pas.", "The new passwords do not match."), true); return;
   }
   if (newPass === oldPass) {
-    showMsg(msgEl, "Le nouveau mot de passe doit être différent.", true); return;
+    showMsg(msgEl, TodoRuntime.message("Le nouveau mot de passe doit être différent.", "The new password must be different."), true); return;
   }
 
   setLoading(btnChangePassword, true, PASSWORD_LABEL);
@@ -202,23 +207,22 @@ btnChangePassword.addEventListener("click", async () => {
       setLoading(btnChangePassword, false, PASSWORD_LABEL); return;
     }
 
+    await keyReady;
+    if (!encKey) throw new Error(TodoRuntime.message("Clé absente. Reconnectez-vous avant de changer de mot de passe.", "Missing key. Sign in again before changing your password."));
+    const store = await TodoData.open(currentUser);
+    await store.sync();
+    const accountRes = await TodoRuntime.fetch(`${userPath(currentUser)}.json`, { headers: { "X-Firebase-ETag": "true" } });
+    const accountEtag = accountRes.headers.get("ETag");
+    const account = await accountRes.json();
+    if (!accountEtag) throw new Error("Missing Firebase ETag");
     // 2. Récupère ou génère le sel du compte
     let salt = authCheck.userData.salt;
     if (!salt) {
       salt = generateSalt();
     }
 
-    // 3. Récupère les tâches chiffrées
-    const todosRes  = await fetch(`${userPath(currentUser)}/todos.json`);
-    const todosData = await todosRes.json();
-
-    // 4. Déchiffre avec l'ancienne clé
-    let todos = [];
-    if (todosData && isEncrypted(todosData) && encKey) {
-      todos = await decryptData(todosData, encKey);
-    } else if (Array.isArray(todosData)) {
-      todos = todosData;
-    }
+    const todosData = account.todos;
+    const todos = TodoData.normalize(isEncrypted(todosData) ? await decryptData(todosData, encKey) : todosData);
 
     // 5. Hache le nouveau mot de passe avec PBKDF2
     const newHash = await hashPasswordPBKDF2(newPass, salt);
@@ -227,30 +231,33 @@ btnChangePassword.addEventListener("click", async () => {
     const newKey = await deriveKey(newPass, salt);
 
     // 7. Re-chiffre les tâches avec la nouvelle clé
-    const updates = { password: newHash, salt: salt };
-    if (todos.length > 0) {
-      updates.todos = await encryptData(todos, newKey);
-    }
-
-    // 8. Met à jour Firebase (PATCH = seulement les champs spécifiés)
-    await fetch(`${userPath(currentUser)}.json`, {
-      method:  "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify(updates)
+    const updates = { ...account, password: newHash, salt, todos: await encryptData(todos, newKey) };
+    // Compare the whole account: tasks and credentials change together or not at all.
+    await TodoRuntime.fetch(`${userPath(currentUser)}.json`, {
+      method: "PUT", headers: { "Content-Type": "application/json", "if-match": accountEtag },
+      body: JSON.stringify(updates)
     });
-
-    // 9. Met à jour la session avec la nouvelle clé
+    // Update session immediately after the confirmed atomic server write.
     const newKeyB64 = await exportKey(newKey);
     sessionStorage.setItem("encKey", newKeyB64);
     sessionStorage.setItem("encSalt", salt);
     encKey = newKey;
+    try {
+      localStorage.setItem(`todo_state_${currentUser}`, JSON.stringify(await encryptData({ base: todos, local: todos, pending: false }, newKey)));
+    } catch (error) {
+      // The server already owns the confirmed snapshot; discard only the obsolete-key cache.
+      localStorage.removeItem(`todo_state_${currentUser}`);
+      throw error;
+    }
+    archiveStore = await TodoData.open(currentUser);
+    updateArchivedView();
 
     // Vide les champs
     document.getElementById("old-password").value      = "";
     document.getElementById("new-password").value      = "";
     document.getElementById("confirm-new-password").value = "";
 
-    showMsg(msgEl, "✓ Mot de passe changé — tâches re-chiffrées avec succès !");
+    showMsg(msgEl, TodoRuntime.message("✓ Mot de passe changé — tâches re-chiffrées avec succès !", "✓ Password changed — tasks encrypted with the new key."));
     setLoading(btnChangePassword, false, PASSWORD_LABEL);
 
   } catch (err) {
@@ -280,7 +287,8 @@ if (btnSaveDisplay) {
   btnSaveDisplay.addEventListener("click", async () => {
     const msgEl = document.getElementById("msg-display");
     clearMsg(msgEl);
-    
+    btnSaveDisplay.disabled = true;
+    try {
     if (selectCalendarView) {
       const selectedView = selectCalendarView.value;
       localStorage.setItem(`calendarView_${currentUser}`, selectedView);
@@ -293,6 +301,8 @@ if (btnSaveDisplay) {
     }
     
     showMsg(msgEl, "✓ " + t("saved_preferences"));
+    } catch (error) { showMsg(msgEl, error.message, true); }
+    finally { btnSaveDisplay.disabled = false; }
   });
 }
 
@@ -303,7 +313,7 @@ const btnDeleteAccount = document.getElementById("btn-delete-account");
 const deleteOverlay    = document.getElementById("delete-overlay");
 const deleteConfirmYes = document.getElementById("delete-confirm-yes");
 const deleteConfirmNo  = document.getElementById("delete-confirm-no");
-const DELETE_LABEL     = "Supprimer mon compte";
+const DELETE_LABEL     = TodoRuntime.message("Supprimer mon compte", "Delete my account");
 
 // Ouvre la modale de confirmation
 btnDeleteAccount.addEventListener("click", async () => {
@@ -313,7 +323,7 @@ btnDeleteAccount.addEventListener("click", async () => {
   clearMsg(msgEl);
 
   if (!password) {
-    showMsg(msgEl, "Saisissez votre mot de passe pour confirmer.", true); return;
+    showMsg(msgEl, TodoRuntime.message("Saisissez votre mot de passe pour confirmer.", "Enter your password to confirm."), true); return;
   }
 
   setLoading(btnDeleteAccount, true, DELETE_LABEL);
@@ -324,7 +334,7 @@ btnDeleteAccount.addEventListener("click", async () => {
     // Vérifie le mot de passe avant d'ouvrir la modale
     const authCheck = await verifyUserPassword(currentUser, password);
     if (!authCheck.ok) {
-      showMsg(msgEl, authCheck.reason || "Mot de passe incorrect.", true);
+      showMsg(msgEl, authCheck.reason || TodoRuntime.message("Mot de passe incorrect.", "Incorrect password."), true);
       setLoading(btnDeleteAccount, false, DELETE_LABEL); return;
     }
 
@@ -361,10 +371,11 @@ deleteConfirmYes.addEventListener("click", async () => {
     const fbUrl = await getFirebaseUrl();
 
     // Supprime le nœud entier de l'utilisateur
-    await fetch(`${userPath(currentUser)}.json`, { method: "DELETE" });
+    await TodoRuntime.fetch(`${userPath(currentUser)}.json`, { method: "DELETE" });
 
     // Nettoie la session et le localStorage
     localStorage.removeItem(`todos_${currentUser}`);
+    localStorage.removeItem(`todo_state_${currentUser}`);
     localStorage.removeItem(`calendarView_${currentUser}`);
     sessionStorage.clear();
 
@@ -375,7 +386,7 @@ deleteConfirmYes.addEventListener("click", async () => {
   } catch (err) {
     console.error(err);
     deleteConfirmYes.disabled    = false;
-    deleteConfirmYes.textContent = "Supprimer";
+    deleteConfirmYes.textContent = TodoRuntime.message("Supprimer", "Delete");
     deleteOverlay.classList.remove("open");
     document.body.classList.remove("modal-open");
     showMsg(document.getElementById("msg-delete"), err.message || "Erreur lors de la suppression.", true);
@@ -394,18 +405,15 @@ document.addEventListener("keydown", e => {
 // ══════════════════════════════════════════════════════
 //  5. GESTION DES ARCHIVES
 // ══════════════════════════════════════════════════════
-async function saveTodosToFirebase(todos) {
-    if (!firebaseUrl) await getFirebaseUrl();
-    const body = encKey ? JSON.stringify(await encryptData(todos, encKey)) : JSON.stringify(todos);
-    await fetch(`${userPath(currentUser)}/todos.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body
-    });
+let archiveStore = null;
+async function loadArchiveStore() {
+  archiveStore = await TodoData.open(currentUser);
+  try { await archiveStore.sync(); }
+  catch (error) { showMsg(document.getElementById("msg-archive"), error.message, true); }
+  return archiveStore;
 }
-
 function updateArchivedView() {
-    const todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
+    const todos = archiveStore ? archiveStore.read() : [];
     const archivedTasks = todos.filter(t => t.archived);
     
     const container = document.getElementById("archived-tasks-container");
@@ -438,7 +446,7 @@ function updateArchivedView() {
             btnWrap.style.gap = "0.5rem";
             
             const btnRestore = document.createElement("button");
-            btnRestore.textContent = "Désarchiver";
+            btnRestore.textContent = TodoRuntime.message("Désarchiver", "Unarchive");
             btnRestore.style.background = "transparent";
             btnRestore.style.border = "1px solid var(--line-strong)";
             btnRestore.style.color = "var(--text-muted)";
@@ -452,7 +460,7 @@ function updateArchivedView() {
             });
             
             const btnDelete = document.createElement("button");
-            btnDelete.textContent = "Supprimer";
+            btnDelete.textContent = TodoRuntime.message("Supprimer", "Delete");
             btnDelete.style.background = "transparent";
             btnDelete.style.border = "1px solid rgba(248, 113, 113, 0.4)";
             btnDelete.style.color = "#f87171";
@@ -480,19 +488,25 @@ function updateArchivedView() {
 }
 
 async function saveArchivedChanges(newTodos) {
-    localStorage.setItem(`todos_${currentUser}`, JSON.stringify(newTodos));
+  try {
+    if (!archiveStore) await loadArchiveStore();
+    await archiveStore.save(newTodos);
     updateArchivedView();
-    try {
-        await saveTodosToFirebase(newTodos);
-    } catch (e) {
-        console.error(e);
-    }
+    await archiveStore.sync();
+    showMsg(document.getElementById("msg-archive"), TodoRuntime.message("Modifications enregistrées.", "Changes saved."));
+    return true;
+  } catch (error) {
+    showMsg(document.getElementById("msg-archive"), error.message, true);
+    return false;
+  }
 }
 
 const btnArchiveDone = document.getElementById("btn-archive-done");
 if (btnArchiveDone) {
     btnArchiveDone.addEventListener("click", async () => {
-        const todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
+      try {
+        if (!archiveStore) await loadArchiveStore();
+        const todos = archiveStore.read();
         let changed = false;
         todos.forEach(t => {
             if (t.status === "done" && !t.archived) {
@@ -504,13 +518,13 @@ if (btnArchiveDone) {
         const msgEl = document.getElementById("msg-archive");
         if (changed) {
             await saveArchivedChanges(todos);
-            showMsg(msgEl, "✓ Tâches terminées archivées !");
         } else {
-            showMsg(msgEl, "Aucune tâche terminée à archiver.");
+            showMsg(msgEl, TodoRuntime.message("Aucune tâche terminée à archiver.", "No completed tasks to archive."));
         }
+      } catch (error) { showMsg(document.getElementById("msg-archive"), error.message, true); }
     });
     
-    updateArchivedView();
+    loadArchiveStore().then(updateArchivedView).catch(error => showMsg(document.getElementById("msg-archive"), error.message, true));
 }
 
 

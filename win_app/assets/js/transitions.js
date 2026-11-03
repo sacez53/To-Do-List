@@ -20,6 +20,7 @@
       transition: opacity 300ms ease;
       will-change: opacity;
     }
+    @media (prefers-reduced-motion: reduce) { #pt-overlay { transition: none; } }
     #pt-overlay.pt-visible { opacity: 1; pointer-events: all; }
     #pt-overlay.pt-hidden  { opacity: 0; pointer-events: none; }
   `;
@@ -54,7 +55,7 @@
   function navigateTo(url, delay) {
     if (navigating) return;
     navigating = true;
-    delay = delay !== undefined ? delay : 320;
+    delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : (delay !== undefined ? delay : 320);
 
     overlay.classList.remove('pt-hidden');
     overlay.classList.add('pt-visible');

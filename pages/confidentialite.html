@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="../assets/js/transitions.js"></script>
+  <script src="../assets/js/transitions.js?v=19"></script>
   <style>
     :root {
       --bg: #080808;
@@ -20,7 +20,7 @@
       --line-strong: #2e2e2e;
       --text: #efefef;
       --text-muted: #9a9a9a;
-      --text-faint: #6e6e6e;
+      --text-faint: #a0a0a0;
       --white: #fff;
       --black: #000;
     }
@@ -253,6 +253,8 @@
       }
     }
   </style>
+  <script src="../assets/js/runtime.js?v=19"></script>
+  <script src="../assets/js/dialogs.js?v=19"></script>
 </head>
 
 <body>
@@ -320,7 +322,7 @@
         </li>
         <li>
           <span class="row-key">Stockage technique</span>
-          <span class="row-val"><code>sessionStorage</code> (maintien de session éphémère), <code>localStorage</code> (cache hors-ligne PWA) et Cache API du Service Worker. Aucun cookie publicitaire.</span>
+          <span class="row-val"><code>sessionStorage</code> (maintien de session éphémère), <code>localStorage</code> (copie chiffrée des tâches et changements en attente ; déchiffrement pendant la session) et Cache API du Service Worker. Aucun cookie publicitaire. Les polices Google Fonts sont chargées depuis un service externe. La clé de session est accessible au code de l’application pendant la connexion ; le chiffrement ne remplace pas les droits d’accès du serveur.</span>
         </li>
       </ul>
     </section>
@@ -400,7 +402,7 @@
     <p>© 2026 · Sacha G. Photographe</p>
   </footer>
 
-  <script src="../assets/js/burger-menu.js"></script>
+  <script src="../assets/js/burger-menu.js?v=19"></script>
 </body>
 
 </html>

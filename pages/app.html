@@ -14,12 +14,14 @@
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
+  <script src="../assets/js/runtime.js?v=19"></script>
+  <script src="../assets/js/dialogs.js?v=19"></script>
 </head>
 <body></body>
 </html>

@@ -9,7 +9,7 @@ let cachedFirebaseUrl = null;
 
 async function getFirebaseUrl() {
   if (cachedFirebaseUrl) return cachedFirebaseUrl;
-  const res = await fetch("../assets/json/firebase.json");
+  const res = await TodoRuntime.fetch("../assets/json/firebase.json");
   const config = await res.json();
   if (!config.url || !config.url.trim()) {
     throw new Error("Firebase non configuré dans firebase.json");
@@ -19,7 +19,7 @@ async function getFirebaseUrl() {
 }
 
 async function getSecurityConfig() {
-  const res = await fetch("../assets/json/security.json");
+  const res = await TodoRuntime.fetch("../assets/json/security.json");
   return await res.json();
 }
 
@@ -59,7 +59,7 @@ loginForm.addEventListener("submit", async (e) => {
   const username = document.getElementById("login-user").value.trim();
   const password = document.getElementById("login-pass").value;
 
-  if (!username || !password) {
+  if (!isValidUsername(username) || !password) {
     showError(loginError, t("error_fill_fields"));
     return;
   }
@@ -70,7 +70,7 @@ loginForm.addEventListener("submit", async (e) => {
     const fbUrl = await getFirebaseUrl();
 
     // Récupère les données de l'utilisateur
-    const res      = await fetch(`${fbUrl}/users/${encodeURIComponent(username)}.json`);
+    const res      = await TodoRuntime.fetch(`${fbUrl}/users/${encodeURIComponent(username)}.json`, { headers: { "X-Firebase-ETag": "true" } });
     const userData = await res.json();
 
     if (!userData || !userData.password) {
@@ -86,12 +86,7 @@ loginForm.addEventListener("submit", async (e) => {
     let salt = userData.salt;
     if (!salt) {
       salt = generateSalt();
-      // On sauvegarde le sel s'il manquait
-      await fetch(`${fbUrl}/users/${encodeURIComponent(username)}/salt.json`, {
-        method:  "PUT",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(salt)
-      });
+
     }
 
     const strongHash = await hashPasswordPBKDF2(password, salt);
@@ -107,10 +102,9 @@ loginForm.addEventListener("submit", async (e) => {
 
     // Migration automatique vers PBKDF2 si l'utilisateur est encore sous SHA-256
     if (isOldHash && oldHash !== strongHash) {
-      await fetch(`${fbUrl}/users/${encodeURIComponent(username)}/password.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(strongHash)
+      await TodoRuntime.fetch(`${fbUrl}/users/${encodeURIComponent(username)}.json`, {
+        method: "PUT", headers: { "Content-Type": "application/json", "if-match": res.headers.get("ETag") || "invalid" },
+        body: JSON.stringify({ ...userData, password: strongHash, salt })
       });
       console.log("Migration de sécurité du mot de passe réussie !");
     }
@@ -124,7 +118,7 @@ loginForm.addEventListener("submit", async (e) => {
       setLanguage(userData.lang);
     } else {
       // Si la langue n'est pas encore enregistrée en DB, on synchronise la langue actuelle
-      syncUserLanguageToFirebase(username, getLanguage());
+      syncUserLanguageToFirebase(username, getLanguage()).catch(console.warn);
     }
 
     // ── Session ──
@@ -140,8 +134,8 @@ loginForm.addEventListener("submit", async (e) => {
       !window.location.pathname.includes('/pages/') ||
       (navigator.userAgent && navigator.userAgent.toLowerCase().includes('electron'))
     );
-    const defaultApp = isElectron ? './app.html' : './welcome.html';
-    const nextUrl = redirectPage ? `./${redirectPage}` : defaultApp;
+    const defaultApp = isElectron ? './app.html' : './app-v2.html';
+    const nextUrl = TodoRuntime.safePage(redirectPage, defaultApp);
     window.transitionTo(nextUrl);
 
   } catch (err) {
@@ -202,7 +196,7 @@ registerForm.addEventListener("submit", async (e) => {
     const fbUrl = await getFirebaseUrl();
 
     // Vérifie si l'identifiant est déjà pris
-    const check  = await fetch(`${fbUrl}/users/${encodeURIComponent(username)}/password.json`);
+    const check  = await TodoRuntime.fetch(`${fbUrl}/users/${encodeURIComponent(username)}/password.json`);
     const exists = await check.json();
 
     if (exists) {
@@ -216,9 +210,9 @@ registerForm.addEventListener("submit", async (e) => {
     const salt = generateSalt();
     const hash = await hashPasswordPBKDF2(password, salt);
 
-    await fetch(`${fbUrl}/users/${encodeURIComponent(username)}.json`, {
+    await TodoRuntime.fetch(`${fbUrl}/users/${encodeURIComponent(username)}.json`, {
       method:  "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "if-match": "null_etag" },
       body:    JSON.stringify({ password: hash, salt, lang, todos: null })
     });
 
@@ -240,8 +234,8 @@ registerForm.addEventListener("submit", async (e) => {
       !window.location.pathname.includes('/pages/') ||
       (navigator.userAgent && navigator.userAgent.toLowerCase().includes('electron'))
     );
-    const defaultApp = isElectron ? './app.html' : './welcome.html';
-    const nextUrl = redirectPage ? `./${redirectPage}` : defaultApp;
+    const defaultApp = isElectron ? './app.html' : './app-v2.html';
+    const nextUrl = TodoRuntime.safePage(redirectPage, defaultApp);
 
     showSuccess(registerSuccess, t("success_account_created"));
     setTimeout(() => { window.transitionTo(nextUrl); }, 900);

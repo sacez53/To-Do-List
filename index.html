@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="./assets/js/transitions.js"></script>
+  <script src="./assets/js/transitions.js?v=19"></script>
   <script>
     // Déconnexion automatique
     sessionStorage.removeItem("auth");
@@ -45,7 +45,7 @@
       /* #9a9a9a sur #080808 ≈ 5.6:1 WCAG AA ✓ */
       --text-muted: #9a9a9a;
       /* #6e6e6e sur #080808 ≈ 4.6:1 WCAG AA ✓ */
-      --text-faint: #6e6e6e;
+      --text-faint: #a0a0a0;
       --white: #fff;
       --black: #000;
     }
@@ -432,12 +432,14 @@
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
+  <script src="./assets/js/runtime.js?v=19"></script>
+  <script src="./assets/js/dialogs.js?v=19"></script>
 </head>
 
 <body>
@@ -450,10 +452,10 @@
   </nav>
 
   <section class="hero">
-    <span class="hero-tag">Usage personnel · <span id="app-version">v5.4.2</span></span>
+    <span class="hero-tag">Usage personnel · <span id="app-version">v5.4.3</span></span>
     <div class="hero-icon" aria-hidden="true"><img src="./assets/icons/icon-192.png" alt="Logo T" class="hero-logo-icon"></div>
     <h1>Ma To‑Do<br>List</h1>
-    <p class="hero-sub">Application multi-vues (Liste, Kanban, Tableau) avec chiffrement client de bout en bout (AES-256-GCM), support bilingue (FR/EN) et version Windows de bureau native.</p>
+    <p class="hero-sub">Organisez vos tâches, retrouvez vos priorités et planifiez vos échéances. Trois vues, un calendrier et des tâches chiffrées sur le Web et Windows.</p>
     <a class="hero-btn" href="./pages/login.html">
       Accéder à l'app
       <span class="arrow">→</span>
@@ -474,7 +476,7 @@
       </div>
       <div class="feature-item">
         <span class="feature-key">Sécurité E2E</span>
-        <span class="feature-val">Chiffrement AES-256-GCM côté client et dérivation PBKDF2 (zéro donnée en clair)</span>
+        <span class="feature-val">Tâches chiffrées côté client avant sauvegarde (AES-256-GCM)</span>
       </div>
       <div class="feature-item">
         <span class="feature-key">App Windows</span>
@@ -506,7 +508,7 @@
       </div>
       <div class="feature-item">
         <span class="feature-key">Sync Cloud</span>
-        <span class="feature-val">Synchronisation multi-appareils temps réel via Firebase Realtime Database</span>
+        <span class="feature-val">Synchronisation Firebase avec contrôle des écritures concurrentes et reprise des changements locaux</span>
       </div>
       <div class="feature-item">
         <span class="feature-key">Mobile &amp; PWA</span>
@@ -538,7 +540,7 @@
       })
       .catch(e => console.error('Erreur chargement version:', e));
   </script>
-  <script src="./assets/js/burger-menu.js"></script>
+  <script src="./assets/js/burger-menu.js?v=19"></script>
 </body>
 
 </html>

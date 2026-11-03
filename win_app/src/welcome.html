@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+  <script>window.location.replace("./app-v2.html" + window.location.search);</script>
   <meta charset="UTF-8" />
   <title>Chargement — To‑Do List</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -13,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="../assets/js/transitions.js"></script>
+  <script src="../assets/js/transitions.js?v=19"></script>
   <style>
     /* ── Tokens ── */
     :root {
@@ -667,12 +668,14 @@
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
   <script>
-    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
+  <script src="../assets/js/runtime.js?v=19"></script>
+  <script src="../assets/js/dialogs.js?v=19"></script>
 </head>
 
 <body>
@@ -946,7 +949,7 @@
         
         const urlParams = new URLSearchParams(window.location.search);
         const redirectPage = urlParams.get('redirect');
-        const finalUrl = redirectPage ? `./${redirectPage}` : "./app.html";
+        const finalUrl = redirectPage ? `./${redirectPage}` : "./app-v2.html";
         
         setTimeout(() => { window.transitionTo(finalUrl, 420); }, 250);
       }

@@ -1,0 +1,1 @@
+﻿v5.4.3 â€” 2026-11-03. Sources archivÃ©es. Portable correspondant : ../../release/v5.4.3/ToDoList-win32-x64/ToDoList.exe. Aucun installeur NSIS gÃ©nÃ©rÃ©.

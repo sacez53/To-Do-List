@@ -400,3 +400,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+# Local audit browser profiles, logs and verification captures
+/output/

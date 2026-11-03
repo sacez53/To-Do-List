@@ -24,21 +24,19 @@
   }
 
   // Récupération des tâches locales ou déchiffrées
-  function getTodos() {
-    const raw = localStorage.getItem(`todos_${currentUser}`);
-    if (!raw) return [];
-    try {
-      return JSON.parse(raw) || [];
-    } catch (e) {
-      console.error("Erreur lecture tâches locales:", e);
-      return [];
+  async function getTodos() {
+    const store = await TodoData.open(currentUser);
+    try { return await store.sync(); }
+    catch (error) {
+      if (!confirm(TodoRuntime.message("Synchronisation impossible. Exporter la copie locale disponible ?\n", "Sync unavailable. Export the available local copy?\n") + error.message)) throw error;
+      return store.read();
     }
   }
 
   // ── 1. Export JSON (Art. 20 RGPD) ─────────────────────
-  function exportAsJson() {
+  async function exportAsJson() {
     if (!ensureAuth()) return;
-    const todos = getTodos();
+    const todos = await getTodos();
 
     const exportData = {
       application: "Ma To-Do List",
@@ -55,7 +53,7 @@
         echeanceHeure: t.dueTime || "",
         notes: t.notes || "",
         archivee: !!t.archived,
-        creeLe: t.createdAt || ""
+        creeLe: t.created || t.createdAt || ""
       }))
     };
 
@@ -64,9 +62,9 @@
   }
 
   // ── 2. Export CSV (Art. 20 RGPD) ──────────────────────
-  function exportAsCsv() {
+  async function exportAsCsv() {
     if (!ensureAuth()) return;
-    const todos = getTodos();
+    const todos = await getTodos();
 
     const headers = ["ID", "Titre", "Statut", "Priorite", "Date echeance", "Heure echeance", "Notes", "Archivee", "Date creation"];
     const rows = todos.map(t => [
@@ -78,7 +76,7 @@
       escapeCsv(t.dueTime || ""),
       escapeCsv(t.notes || ""),
       escapeCsv(t.archived ? "oui" : "non"),
-      escapeCsv(t.createdAt || "")
+      escapeCsv(t.created || t.createdAt || "")
     ]);
 
     const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(r => r.join(";"))].join("\r\n");
@@ -87,7 +85,8 @@
   }
 
   function escapeCsv(val) {
-    const s = String(val).replace(/"/g, '""');
+    const safe = /^[=+@\-\t\r]/.test(String(val)) ? "'" + val : val;
+    const s = String(safe).replace(/"/g, '""');
     return `"${s}"`;
   }
 
@@ -109,7 +108,7 @@
 
   // ── 3. Suppression du compte (Zone de danger) ─────────
   async function getFirebaseUrl() {
-    const res = await fetch("../assets/json/firebase.json");
+    const res = await TodoRuntime.fetch("../assets/json/firebase.json");
     const config = await res.json();
     return (config.url || "").replace(/\/$/, "");
   }
@@ -134,14 +133,22 @@
 
     try {
       const fbUrl = await getFirebaseUrl();
+      if (!fbUrl) throw new Error("Firebase non configuré");
+      const password = prompt(TodoRuntime.message("Confirmez votre mot de passe pour supprimer le compte :", "Confirm your password to delete the account:"));
+      if (!password) { btnConfirm.disabled = false; return; }
+      const accountRes = await TodoRuntime.fetch(`${fbUrl}/users/${encodeURIComponent(currentUser)}.json`, { headers: { "X-Firebase-ETag": "true" } });
+      const account = await accountRes.json();
+      const etag = accountRes.headers.get("ETag");
+      if (!account || !etag || !account.salt || await hashPasswordPBKDF2(password, account.salt) !== account.password) throw new Error(TodoRuntime.message("Mot de passe incorrect.", "Incorrect password."));
       if (fbUrl) {
-        await fetch(`${fbUrl}/users/${encodeURIComponent(currentUser)}.json`, {
-          method: "DELETE"
+        await TodoRuntime.fetch(`${fbUrl}/users/${encodeURIComponent(currentUser)}.json`, {
+          method: "DELETE", headers: { "if-match": etag }
         });
       }
 
       // Nettoie le cache local
       localStorage.removeItem(`todos_${currentUser}`);
+      localStorage.removeItem(`todo_state_${currentUser}`);
       localStorage.removeItem(`calendarView_${currentUser}`);
       sessionStorage.clear();
 
@@ -157,8 +164,8 @@
   }
 
   // ── Événements ────────────────────────────────────────
-  if (btnExportJson) btnExportJson.addEventListener("click", exportAsJson);
-  if (btnExportCsv)  btnExportCsv.addEventListener("click", exportAsCsv);
+  if (btnExportJson) btnExportJson.addEventListener("click", () => exportAsJson().catch(error => alert(error.message)));
+  if (btnExportCsv)  btnExportCsv.addEventListener("click", () => exportAsCsv().catch(error => alert(error.message)));
   if (btnDelete)     btnDelete.addEventListener("click", openDeleteModal);
   if (btnCancel)     btnCancel.addEventListener("click", closeDeleteModal);
   if (btnConfirm)    btnConfirm.addEventListener("click", confirmDeleteAccount);

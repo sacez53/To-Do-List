@@ -8,7 +8,8 @@ const userLabel = document.getElementById("user-label");
 if (userLabel) userLabel.textContent = currentUser;
 
 // ─── Variables d'état ──────────────────────────────────
-let todos = JSON.parse(localStorage.getItem(`todos_${currentUser}`)) || [];
+let todos = [];
+let calendarStore = null;
 let currentCalendarDate = new Date();
 let selectedCalendarDate = null;
 let calendarViewType = localStorage.getItem(`calendarView_${currentUser}`) || "grid";
@@ -36,8 +37,10 @@ function getFirstDayOfMonth(year, month) {
 function getStatusInfo(status) {
   switch(status) {
     case "done":       return { icon: "✓" };
-    case "in-progress":return { icon: "↻" };
-    default:           return { icon: "○" };
+    case "inprogress":return { icon: "↻" };
+    case "waiting": return { icon: "⏳" };
+    case "cancelled": return { icon: "❌" };
+    default: return { icon: "○" };
   }
 }
 
@@ -61,7 +64,7 @@ function updateCalendarView() {
 function renderPlanning() {
   calendarPlanningList.innerHTML = "";
   
-  const planningTasks = todos.filter(t => t.due && t.status !== "done" && t.status !== "cancelled");
+  const planningTasks = todos.filter(t => !t.archived && t.due && t.status !== "done" && t.status !== "cancelled");
   
   if (planningTasks.length === 0) {
     calendarPlanningList.innerHTML = `<p style='text-align:center; color:var(--text-faint); margin-top:2rem;'>${t("no_planning_tasks")}</p>`;
@@ -87,6 +90,7 @@ function renderPlanning() {
   Object.keys(groupedTasks).forEach(dateStr => {
     const groupDiv = document.createElement("div");
     groupDiv.className = "planning-date-group";
+    groupDiv.id = "planning-" + dateStr;
     
     const header = document.createElement("div");
     header.className = "planning-date-header";
@@ -113,13 +117,15 @@ function renderPlanning() {
       const li = document.createElement("li");
       const info = getStatusInfo(t.status);
       const timeTag = t.dueTime ? ` <span style="opacity:.55;font-size:.75em;">⏱ ${t.dueTime}</span>` : "";
-      li.innerHTML = `<span>${info.icon}</span> <span>${t.text}${timeTag}</span>`;
+      li.innerHTML = `<span>${info.icon}</span> <span>${escapeCalendar(t.text)}${timeTag}</span>`;
       
       li.style.cursor = "pointer";
+      li.tabIndex = 0; li.setAttribute("role", "link");
+      li.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); li.click(); } });
       li.addEventListener("click", () => {
         // Redirige vers la vue des tâches et ouvre le récapitulatif
         const targetApp = window.location.pathname.includes('/pages/') ? 'app-v2.html' : 'app.html';
-        window.location.href = `${targetApp}?viewTask=${t.id}`;
+        window.location.href = `${targetApp}?viewTask=${encodeURIComponent(t.id)}`;
       });
       
       ul.appendChild(li);
@@ -174,7 +180,7 @@ function renderCalendarGrid() {
       cell.classList.add("today");
     }
     
-    const dayTasks = todos.filter(t => t.due === dateStr && t.status !== "done" && t.status !== "cancelled");
+    const dayTasks = todos.filter(t => !t.archived && t.due === dateStr && t.status !== "done" && t.status !== "cancelled");
     if (dayTasks.length > 0) {
       cell.classList.add("has-tasks");
       const dot = document.createElement("div");
@@ -190,6 +196,7 @@ function renderCalendarGrid() {
       cell.appendChild(dot);
     }
     
+    if (dayTasks.length) { cell.tabIndex = 0; cell.setAttribute("role", "button"); cell.setAttribute("aria-label", dateStr + ": " + dayTasks.length); cell.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cell.click(); } }); }
     cell.addEventListener("click", () => {
       // Sur la vue distincte, au lieu d'afficher une petite liste sous le calendrier,
       // on peut rediriger vers le planning pour cette date, ou ouvrir un panel,
@@ -199,7 +206,7 @@ function renderCalendarGrid() {
         calendarViewType = "planning";
         localStorage.setItem(`calendarView_${currentUser}`, "planning");
         updateCalendarView();
-        // Optionnel: scroller jusqu'à la date dans le planning.
+        document.getElementById("planning-" + dateStr)?.scrollIntoView({ block: "start" });
       }
     });
 
@@ -209,12 +216,12 @@ function renderCalendarGrid() {
       let listHtml = `<ul style="list-style: none; padding: 0; margin: 0;">`;
       dayTasks.forEach(t => {
          const info = getStatusInfo(t.status);
-         listHtml += `<li style="margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${info.icon} ${t.text}</li>`;
+         listHtml += `<li style="margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${info.icon} ${escapeCalendar(t.text)}</li>`;
       });
       listHtml += `</ul>`;
       tooltip.innerHTML = listHtml;
     } else {
-      tooltip.innerHTML = `<span style="color: var(--text-faint); font-style: italic;">Aucune tâche</span>`;
+      tooltip.innerHTML = `<span style="color: var(--text-faint); font-style: italic;">${TodoRuntime.message("Aucune tâche", "No tasks")}</span>`;
     }
     cell.appendChild(tooltip);
     
@@ -246,17 +253,38 @@ calendarViewPlanBtn.addEventListener("click", () => {
 });
 
 calendarPrev.addEventListener("click", () => {
+  currentCalendarDate.setDate(1);
   currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
   renderCalendarGrid();
 });
 
 calendarNext.addEventListener("click", () => {
+  currentCalendarDate.setDate(1);
   currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
   renderCalendarGrid();
 });
 
-// Initialisation
+function escapeCalendar(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+let calendarLoading = false;
+async function refreshCalendar() {
+  if (calendarLoading || !sessionStorage.getItem("auth")) return;
+  calendarLoading = true;
+  try {
+    calendarStore = await TodoData.open(currentUser);
+    todos = calendarStore.read(); updateCalendarView();
+    todos = await calendarStore.sync(); updateCalendarView();
+    document.getElementById("calendar-sync-status")?.remove();
+  } catch (error) {
+    let status = document.getElementById("calendar-sync-status");
+    if (!status) { status = document.createElement("p"); status.id = "calendar-sync-status"; status.setAttribute("role", "status"); calendarGridContainer.before(status); }
+    status.textContent = error.message;
+  } finally { calendarLoading = false; }
+}
 updateCalendarView();
+refreshCalendar();
+window.addEventListener("focus", refreshCalendar);
+window.addEventListener("online", refreshCalendar);
+window.addEventListener("storage", e => { if (e.key === `todo_state_${currentUser}`) refreshCalendar(); });
 
 // Listeners removed
 window.addEventListener("languageChanged", () => {

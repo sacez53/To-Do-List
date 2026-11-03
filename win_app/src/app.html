@@ -10,9 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style2.css?v=18" />
-  <script src="../assets/js/transitions.js"></script>
-  <script src="../assets/js/i18n.js?v=18"></script>
+  <link rel="stylesheet" href="../assets/css/style2.css?v=19" />
+  <script src="../assets/js/transitions.js?v=19"></script>
+  <script src="../assets/js/i18n.js?v=19"></script>
   <script>if (!sessionStorage.getItem("auth")) window.location.replace("./login.html");</script>
   <style>
     /* ── V2 tokens ── */
@@ -930,14 +930,15 @@
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
   <script>
-    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('../sw.js')
-          .then(reg => reg.update())
           .catch(err => console.error('Service Worker Error:', err));
       });
     }
   </script>
+  <script src="../assets/js/runtime.js?v=19"></script>
+  <script src="../assets/js/dialogs.js?v=19"></script>
 </head>
 
 <body>
@@ -950,7 +951,7 @@
       &nbsp;·&nbsp;
       <span class="v2-sync">
         <span class="v2-sync-dot" id="v2-sync-dot"></span>
-        <span class="v2-sync-label" id="v2-sync-label" data-i18n="loading">Chargement...</span>
+        <span class="v2-sync-label" id="v2-sync-label" role="status" aria-live="polite" data-i18n="loading">Chargement...</span>
       </span>
     </p>
     <div class="v2-header-actions">
@@ -976,10 +977,10 @@
     <div class="v2-toolbar">
       <div class="v2-search-wrap">
         <span class="v2-search-icon">⌕</span>
-        <input type="search" id="v2-search" class="v2-search" placeholder="Rechercher..." data-i18n-placeholder="search_placeholder" autocomplete="off" />
-        <button class="v2-search-clear" id="v2-search-clear" style="display:none">✕</button>
+        <input type="search" aria-label="Rechercher des tâches" data-i18n-aria="search_placeholder" id="v2-search" class="v2-search" placeholder="Rechercher..." data-i18n-placeholder="search_placeholder" autocomplete="off" />
+        <button class="v2-search-clear" aria-label="Effacer la recherche" data-i18n-aria="clear_search" id="v2-search-clear" style="display:none">✕</button>
       </div>
-      <select id="v2-sort" class="v2-sort">
+      <label class="sr-only" for="v2-sort" data-i18n="sort_label">Trier les tâches</label><select id="v2-sort" class="v2-sort">
         <option value="status" data-i18n="sort_status">Statut</option>
         <option value="az" data-i18n="sort_az">A → Z</option>
         <option value="za" data-i18n="sort_za">Z → A</option>
@@ -994,14 +995,14 @@
 
     <!-- Switcher vue -->
     <div class="v2-view-switcher">
-      <button class="v2-view-btn active" data-view="list" data-i18n="view_list">☰ Liste</button>
-      <button class="v2-view-btn" data-view="kanban" data-i18n="view_kanban">⬛ Kanban</button>
-      <button class="v2-view-btn" data-view="table" data-i18n="view_table">⊞ Tableau</button>
+      <button class="v2-view-btn active" aria-pressed="true" data-view="list" data-i18n="view_list">☰ Liste</button>
+      <button class="v2-view-btn" aria-pressed="false" data-view="kanban" data-i18n="view_kanban">⬛ Kanban</button>
+      <button class="v2-view-btn" aria-pressed="false" data-view="table" data-i18n="view_table">⊞ Tableau</button>
     </div>
 
     <!-- Filtres avancés -->
     <div class="v2-filter-bar">
-      <button id="v2-filter-toggle" class="v2-filter-toggle">
+      <button id="v2-filter-toggle" aria-controls="v2-filter-panel" aria-expanded="false" class="v2-filter-toggle">
         <span data-i18n="adv_filters">⚙ Filtres avancés</span>
         <span class="v2-filter-count" id="v2-filter-count"></span>
       </button>
@@ -1020,9 +1021,9 @@
       <div class="v2-fp-group">
         <h4 data-i18n="filter_due">Date d'échéance</h4>
         <div class="v2-fp-date">
-          <label data-i18n="filter_before">Avant le</label>
+          <label for="fp-due-before" data-i18n="filter_before">Avant le</label>
           <input type="date" id="fp-due-before" />
-          <label data-i18n="filter_after">Après le</label>
+          <label for="fp-due-after" data-i18n="filter_after">Après le</label>
           <input type="date" id="fp-due-after" />
         </div>
       </div>
@@ -1041,11 +1042,17 @@
   </main>
 
   <footer class="v2-footer">
+    <div class="v2-footer-links">
+      <a href="./confidentialite.html" data-i18n="footer_privacy">Confidentialité</a>
+      <a href="./mentions-legales.html" data-i18n="footer_legal">Mentions Légales</a>
+      <a href="./cgu.html" data-i18n="footer_cgu">CGU</a>
+      <a href="./donnees.html" data-i18n="footer_data">Gestion des données</a>
+    </div>
     <p>© 2026 · Sacha G.</p>
   </footer>
 
   <!-- FAB -->
-  <button class="v2-fab" id="v2-fab" aria-label="Ajouter une tâche">
+  <button class="v2-fab" id="v2-fab" aria-label="Ajouter une tâche" data-i18n-aria="modal_new_task">
     <span class="v2-fab-icon">+</span>
   </button>
 
@@ -1136,9 +1143,10 @@
     </div>
   </div>
 
-  <script src="../assets/js/crypto.js"></script>
-  <script src="../assets/js/timeout.js"></script>
-  <script src="../assets/js/app-v2.js?v=18"></script>
+  <script src="../assets/js/crypto.js?v=19"></script>
+  <script src="../assets/js/task-store.js?v=19"></script>
+  <script src="../assets/js/timeout.js?v=19"></script>
+  <script src="../assets/js/app-v2.js?v=19"></script>
 </body>
 
 </html>

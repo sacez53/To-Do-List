@@ -5,7 +5,7 @@
   let timeoutMinutes = 5; // Valeur par défaut
   
   try {
-    const res = await fetch("../assets/json/security.json");
+    const res = await TodoRuntime.fetch("../assets/json/security.json");
     const config = await res.json();
     if (typeof config.timeoutMinutes === 'number') {
       timeoutMinutes = config.timeoutMinutes;
@@ -26,6 +26,7 @@
 
   function handleTimeout() {
     isDisconnected = true;
+    window.dispatchEvent(new Event("sessionExpired"));
     
     // Déconnecter l'utilisateur
     sessionStorage.removeItem("auth");
@@ -85,7 +86,7 @@
     `;
 
     const title = document.createElement("h2");
-    title.textContent = "Session expirée";
+    title.textContent = TodoRuntime.message("Session expirée", "Session expired");
     title.style.cssText = `
       font-size: 1.2rem;
       font-weight: 700;
@@ -97,7 +98,7 @@
     `;
 
     const text = document.createElement("p");
-    text.textContent = `Vous avez été déconnecté suite à ${timeoutMinutes} minute${timeoutMinutes > 1 ? 's' : ''} d'inactivité pour des raisons de sécurité.`;
+    text.textContent = TodoRuntime.message(`Session expirée après ${timeoutMinutes} minutes d’inactivité.`, `Session expired after ${timeoutMinutes} minutes of inactivity.`);
     text.style.cssText = `
       font-size: 0.85rem;
       color: #9a9a9a;
@@ -107,7 +108,7 @@
     `;
 
     const btn = document.createElement("button");
-    btn.textContent = "Se reconnecter";
+    btn.textContent = TodoRuntime.message("Se reconnecter", "Sign in again");
     btn.style.cssText = `
       background: #fff;
       color: #000;

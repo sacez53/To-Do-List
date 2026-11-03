@@ -21,7 +21,7 @@ const MAX_CHARS = 500;
 async function init() {
   updateAuthUI();
   try {
-    const r = await fetch("../assets/json/firebase.json");
+    const r = await TodoRuntime.fetch("../assets/json/firebase.json");
     const cfg = r.ok ? await r.json() : {};
     if (cfg.url && cfg.url.trim()) {
       firebaseUrl = cfg.url.replace(/\/$/, "");
@@ -51,7 +51,7 @@ async function loadComments() {
   loadEl.style.display = "block";
   listEl.innerHTML = "";
   try {
-    const res  = await fetch(`${firebaseUrl}/comments.json`);
+    const res  = await TodoRuntime.fetch(`${firebaseUrl}/comments.json`);
     const data = await res.json();
     loadEl.style.display = "none";
 
@@ -91,11 +91,11 @@ function buildCard(c) {
              + " · " + date.toLocaleTimeString("fr-FR", { hour:"2-digit", minute:"2-digit" });
 
   const isMine = isLoggedIn && currentUser === c.username;
-  const delBtn = isMine ? `<button class="cm-delete" onclick="deleteComment('${c.id}')" title="Supprimer ce commentaire" aria-label="Supprimer">✕</button>` : '';
+  const delBtn = isMine ? `<button class="cm-delete" title="Supprimer ce commentaire" aria-label="Supprimer">✕</button>` : '';
 
   el.innerHTML = `
     <div class="cm-card-header">
-      <div class="cm-avatar">${c.username.charAt(0).toUpperCase()}</div>
+      <div class="cm-avatar">${escHtml(String(c.username).charAt(0).toUpperCase())}</div>
       <div class="cm-card-meta">
         <span class="cm-username">@${escHtml(c.username)}</span>
         <span class="cm-date">${fmt}</span>
@@ -104,6 +104,7 @@ function buildCard(c) {
     </div>
     <p class="cm-text">${escHtml(c.text).replace(/\n/g, "<br>")}</p>
   `;
+  el.querySelector(".cm-delete")?.addEventListener("click", () => deleteComment(c.id));
   return el;
 }
 
@@ -113,7 +114,7 @@ window.deleteComment = async function(id) {
   if (!confirm("Voulez-vous vraiment supprimer ce commentaire ?")) return;
   
   try {
-    const res = await fetch(`${firebaseUrl}/comments/${id}.json`, {
+    const res = await TodoRuntime.fetch(`${firebaseUrl}/comments/${encodeURIComponent(id)}.json`, {
       method: "DELETE"
     });
     if (!res.ok) throw new Error("Erreur");
@@ -146,7 +147,7 @@ async function postComment(text) {
   };
 
   try {
-    const res = await fetch(`${firebaseUrl}/comments.json`, {
+    const res = await TodoRuntime.fetch(`${firebaseUrl}/comments.json`, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify(comment)
@@ -190,7 +191,7 @@ function escHtml(s) {
 
 function showError(msg) {
   loadEl.style.display = "none";
-  listEl.innerHTML = `<p class="cm-error">${msg}</p>`;
+  const p = document.createElement("p"); p.className = "cm-error"; p.textContent = msg; listEl.replaceChildren(p);
 }
 
 function showFormError(msg) {

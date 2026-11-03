@@ -73,6 +73,8 @@ const I18N_DICTIONARY = {
     "table_col_notes": "Notes",
     "table_col_actions": "Actions",
     "kanban_empty": "Vide",
+    "clear_search": "Effacer la recherche",
+    "sort_label": "Trier les tâches",
     "empty_tasks": "Aucune tâche.",
     "empty_tasks_sub": "Créez une tâche avec le bouton + ci-dessous",
     "search_no_results": "Aucun résultat pour « {query} »",
@@ -124,7 +126,7 @@ const I18N_DICTIONARY = {
     "btn_login": "Se connecter",
     "btn_register": "Créer mon compte",
     "rules_username": "3 à 20 caractères · lettres, chiffres, _ et - uniquement",
-    "rules_security": "🔒 <strong>Sécurité & Confidentialité :</strong> Chiffrement AES-256-GCM de bout en bout. Aucun e-mail n'est collecté. En cas d'oubli de mot de passe, vos tâches ne pourront pas être récupérées.",
+    "rules_security": "🔒 Sécurité & Confidentialité : Chiffrement AES-256-GCM de bout en bout. Aucun e-mail n'est collecté. En cas d'oubli de mot de passe, vos tâches ne pourront pas être récupérées.",
     "hint_account": "Chaque compte dispose de ses propres tâches",
     "error_fill_fields": "Remplissez tous les champs.",
     "error_user_not_found": "Identifiant introuvable.",
@@ -166,7 +168,7 @@ const I18N_DICTIONARY = {
     "no_archived_tasks": "Aucune tâche archivée.",
     "sec_danger_title": "Zone de danger",
     "sec_danger_sub": "Actions irréversibles",
-    "danger_text": "La suppression de votre compte effacera définitivement toutes vos tâches et données. Cette action est <strong>irréversible</strong>.",
+    "danger_text": "La suppression de votre compte effacera définitivement toutes vos tâches et données. Cette action est irréversible.",
     "btn_delete_account": "Supprimer mon compte",
 
     // Calendrier
@@ -256,6 +258,8 @@ const I18N_DICTIONARY = {
     "table_col_notes": "Notes",
     "table_col_actions": "Actions",
     "kanban_empty": "Empty",
+    "clear_search": "Clear search",
+    "sort_label": "Sort tasks",
     "empty_tasks": "No tasks.",
     "empty_tasks_sub": "Create a task using the + button below",
     "search_no_results": "No results for \"{query}\"",
@@ -307,7 +311,7 @@ const I18N_DICTIONARY = {
     "btn_login": "Sign in",
     "btn_register": "Create account",
     "rules_username": "3 to 20 characters · letters, numbers, _ and - only",
-    "rules_security": "🔒 <strong>Security & Privacy:</strong> End-to-end AES-256-GCM encryption. No email is collected. If you forget your password, tasks cannot be recovered.",
+    "rules_security": "🔒 Security & Privacy: End-to-end AES-256-GCM encryption. No email is collected. If you forget your password, tasks cannot be recovered.",
     "hint_account": "Each account has its own private tasks",
     "error_fill_fields": "Please fill in all fields.",
     "error_user_not_found": "Username not found.",
@@ -349,7 +353,7 @@ const I18N_DICTIONARY = {
     "no_archived_tasks": "No archived tasks.",
     "sec_danger_title": "Danger zone",
     "sec_danger_sub": "Irreversible actions",
-    "danger_text": "Deleting your account will permanently erase all your tasks and data. This action is <strong>irreversible</strong>.",
+    "danger_text": "Deleting your account will permanently erase all your tasks and data. This action is irreversible.",
     "btn_delete_account": "Delete my account",
 
     // Calendar
@@ -425,11 +429,7 @@ function applyTranslations(root = document) {
     const key = el.getAttribute("data-i18n");
     const val = t(key);
     if (val !== undefined) {
-      if (val.includes("<") && val.includes(">")) {
-        el.innerHTML = val;
-      } else {
-        el.textContent = val;
-      }
+      el.textContent = val;
     }
   });
 
@@ -459,18 +459,18 @@ async function syncUserLanguageToFirebase(username, lang) {
   try {
     if (!username || !lang) return;
     let fbUrl = null;
-    const res = await fetch("../assets/json/firebase.json");
+    const res = await TodoRuntime.fetch("../assets/json/firebase.json");
     const config = await res.json();
     if (config && config.url) fbUrl = config.url.replace(/\/$/, "");
     if (!fbUrl) return;
 
-    await fetch(`${fbUrl}/users/${encodeURIComponent(username)}/lang.json`, {
+    await TodoRuntime.fetch(`${fbUrl}/users/${encodeURIComponent(username)}/lang.json`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(lang)
     });
   } catch (err) {
-    console.warn("Impossible de synchroniser la langue avec Firebase:", err);
+    throw err;
   }
 }
 

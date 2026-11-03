@@ -1,91 +1,34 @@
-const CACHE_NAME = 'todo-list-cache-v18';
+const CACHE_NAME = 'todo-list-cache-v19';
 const urlsToCache = [
-  './',
-  './index.html',
-  './pages/app-v2.html',
-  './pages/calendar.html',
-  './pages/settings.html',
-  './pages/login.html',
-  './pages/donnees.html',
-  './pages/apropos.html',
-  './pages/developpeur.html',
-  './pages/confidentialite.html',
-  './pages/mentions-legales.html',
-  './pages/cgu.html',
-  './assets/css/style2.css',
-  './assets/js/i18n.js',
-  './assets/js/app-v2.js',
-  './assets/js/calendar.js',
-  './assets/js/settings.js',
-  './assets/js/transitions.js',
-  './assets/js/burger-menu.js',
-  './assets/js/crypto.js',
-  './assets/js/timeout.js',
-  './assets/js/donnees.js',
-  './assets/logo/list-todo.svg',
-  './assets/logo/logo-t.svg',
-  './manifest.json',
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png'
+  './', './index.html', './manifest.json',
+  ...['app', 'app-v2', 'calendar', 'settings', 'login', 'welcome', 'donnees', 'apropos', 'developpeur', 'confidentialite', 'mentions-legales', 'cgu', 'commentaires'].map(page => `./pages/${page}.html`),
+  './assets/css/style2.css?v=19',
+  ...['runtime', 'dialogs', 'task-store', 'i18n', 'app-v2', 'calendar', 'settings', 'login', 'transitions', 'burger-menu', 'crypto', 'timeout', 'donnees', 'commentaires'].map(script => `./assets/js/${script}.js?v=19`),
+  ...['firebase', 'security', 'settings', 'ui', 'version'].map(name => `./assets/json/${name}.json`),
+  './assets/logo/list-todo.svg', './assets/logo/logo-t.svg',
+  './assets/icons/icon-192.png', './assets/icons/icon-512.png', './assets/icons/icon-maskable-512.png'
 ];
-
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  );
-  self.skipWaiting();
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+  // Existing sessions keep their worker until they close.
 });
-
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  
-  // Bypass Service Worker cache for Firebase API requests
-  if (event.request.url.includes('firebasedatabase.app')) {
-    return;
-  }
-  
-  // Stratégie Réseau d'abord (Network First) pour le HTML, JS et CSS, Cache d'abord pour le reste
-  const isHtml = event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html');
-  const isCode = event.request.url.includes('.js') || event.request.url.includes('.css');
-
-  if (isHtml || isCode) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          if (response && response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(event.request))
-    );
-  } else {
-    event.respondWith(
-      caches.match(event.request)
-        .then(response => {
-          return response || fetch(event.request).then(fetchRes => {
-            if (fetchRes && fetchRes.status === 200) {
-              return caches.open(CACHE_NAME).then(cache => {
-                cache.put(event.request, fetchRes.clone());
-                return fetchRes;
-              });
-            }
-            return fetchRes;
-          });
-        })
-    );
-  }
+  const url = new URL(event.request.url);
+  if (event.request.method !== 'GET' || url.origin !== self.location.origin || !url.href.startsWith(self.registration.scope)) return;
+  const fresh = event.request.mode === 'navigate' || /\.(html|js|css|json)$/.test(url.pathname);
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(event.request, { ignoreSearch: true });
+    if (!fresh && cached) return cached;
+    try {
+      const response = await fetch(event.request);
+      if (response.ok && response.type !== 'opaque') await cache.put(event.request, response.clone());
+      return response;
+    } catch (_) {
+      return cached || new Response('Hors ligne / Offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    }
+  })());
 });
-
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
-      );
-    })
-  );
-  self.clients.claim();
+  event.waitUntil(caches.keys().then(names => Promise.all(names.filter(name => name.startsWith('todo-list-cache-') && name !== CACHE_NAME).map(name => caches.delete(name)))));
 });
