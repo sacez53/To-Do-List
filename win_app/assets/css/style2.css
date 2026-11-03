@@ -1473,10 +1473,3 @@ select.readonly-mode {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-
-/* Push notification settings */
-.push-actions { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1rem; }
-#push-status { margin-top:1rem; line-height:1.6; overflow-wrap:anywhere; }
-#push-status[data-state="error"] { color:#fca5a5; }
-#tab-notifications p { margin-top:.8rem; line-height:1.6; }
-#tab-notifications button { min-height:44px; }

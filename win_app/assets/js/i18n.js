@@ -4,33 +4,6 @@
 
 const I18N_DICTIONARY = {
   fr: {
-    "push_other_account": "Cet appareil reçoit les rappels d’un autre compte. Désactivez-les ou activez ce compte sur cet appareil.",
-    "push_disabled_cleanup": "Notifications désactivées sur cet appareil. Le retrait de l’abonnement côté serveur reste à confirmer lorsque la connexion sera rétablie.",
-
-    "push_tab": "🔔 Notifications",
-    "push_title": "Notifications push",
-    "push_help": "Android : installez l’application depuis Chrome. iPhone : iOS 16.4 minimum, ajoutez le site à l’écran d’accueil puis ouvrez son icône.",
-    "push_timing": "Un rappel à l’échéance, ou à 9 h si la tâche n’a pas d’heure. Les rappels fonctionnent aussi quand l’application est fermée, avec une connexion Internet.",
-    "push_privacy": "Le service reçoit uniquement les dates et les identifiants techniques. Les notifications ne montrent ni le titre ni les notes.",
-    "push_enable": "Activer sur cet appareil",
-    "push_disable": "Désactiver sur cet appareil",
-    "push_test": "Envoyer un test",
-    "push_enabled": "Notifications activées. Les rappels continuent après la fermeture ou la déconnexion.",
-    "push_disabled": "Notifications désactivées sur cet appareil.",
-    "push_https": "Les notifications nécessitent une connexion HTTPS.",
-    "push_ios_install": "Sur iPhone ou iPad : utilisez iOS 16.4 ou plus récent, ajoutez le site à l’écran d’accueil, puis ouvrez cette icône pour activer les notifications. Un onglet Chrome ne suffit pas.",
-    "push_unsupported": "Les notifications push ne sont pas disponibles dans cet environnement. Sur iPhone, iOS 16.4 minimum est nécessaire.",
-    "push_config": "Le service gratuit de notifications reste à configurer. Consultez le guide docs/NOTIFICATIONS.md du projet. La gestion des tâches reste disponible.",
-    "push_denied": "Autorisation refusée. Vous pouvez autoriser les notifications dans les réglages de cette application ou du navigateur.",
-    "push_error": "Impossible de confirmer l’opération. Vérifiez la connexion et réessayez.",
-    "push_sync_error": "Rappels non synchronisés : ouvrez l’application en ligne et réessayez.",
-    "push_test_sent": "Notification de test acceptée par le service d’envoi. Vérifiez les notifications de votre téléphone.",
-    "push_enable_first": "Activez d’abord les notifications sur cet appareil.",
-    "push_expired": "L’abonnement a expiré. Réactivez les notifications sur cet appareil.",
-    "push_rate": "Trop de demandes. Réessayez dans une minute.",
-    "push_signin": "Connectez-vous pour gérer vos rappels.",
-    "push_limit": "La version gratuite est prévue pour 200 échéances actives au maximum.",
-
     // Navigation & Header
     "app_title": "To‑Do List",
     "space_of": "Espace de",
@@ -214,33 +187,6 @@ const I18N_DICTIONARY = {
     "footer_data": "Gestion des données"
   },
   en: {
-    "push_other_account": "This device receives reminders for another account. Disable them or enable this account on the device.",
-    "push_disabled_cleanup": "Notifications disabled on this device. Server-side subscription removal still needs confirmation when connectivity returns.",
-
-    "push_tab": "🔔 Notifications",
-    "push_title": "Push notifications",
-    "push_help": "Android: install the app from Chrome. iPhone: requires iOS 16.4 or later; add the site to your Home Screen, then open its icon.",
-    "push_timing": "A reminder at the due time, or at 9 am for tasks without a time. Reminders can arrive while the app is closed, with an Internet connection.",
-    "push_privacy": "The service receives only dates and technical identifiers. Notifications reveal neither task titles nor notes.",
-    "push_enable": "Enable on this device",
-    "push_disable": "Disable on this device",
-    "push_test": "Send a test",
-    "push_enabled": "Notifications enabled. Reminders continue after closing the app or signing out.",
-    "push_disabled": "Notifications disabled on this device.",
-    "push_https": "Notifications require HTTPS.",
-    "push_ios_install": "On iPhone or iPad: use iOS 16.4 or later, add the site to the Home Screen and open that icon to enable notifications. A Chrome tab is not enough.",
-    "push_unsupported": "Push notifications are unavailable in this environment. iPhone requires iOS 16.4 or later.",
-    "push_config": "The free notification service still needs configuration. See the project guide docs/NOTIFICATIONS.md. Task management remains available.",
-    "push_denied": "Permission denied. Allow notifications in the app or browser settings.",
-    "push_error": "The operation could not be confirmed. Check the connection and try again.",
-    "push_sync_error": "Reminders are not synchronized: open the app online and try again.",
-    "push_test_sent": "Test notification accepted by the push service. Check your phone notifications.",
-    "push_enable_first": "Enable notifications on this device first.",
-    "push_expired": "The subscription expired. Enable notifications again on this device.",
-    "push_rate": "Too many requests. Try again in a minute.",
-    "push_signin": "Sign in to manage reminders.",
-    "push_limit": "The free configuration supports up to 200 active due dates.",
-
     // Navigation & Header
     "app_title": "To‑Do List",
     "space_of": "Workspace of",

@@ -1,0 +1,3 @@
+v5.4.2
+2026-11-03T20:19:07.7393692+01:00
+Retrait des notifications push.

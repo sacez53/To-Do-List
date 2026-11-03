@@ -150,7 +150,6 @@ btnChangeUsername.addEventListener("click", async () => {
     const previous = currentUser;
     currentUser    = newName;
     sessionStorage.setItem("username", newName);
-    if (window.TodoPush) TodoPush.renameLocalUser(previous,newName);
     localStorage.removeItem(`todos_${previous}`);
 
     showMsg(msgEl, `✓ Identifiant changé en « ${newName} ». Redirection...`);
@@ -239,10 +238,6 @@ btnChangePassword.addEventListener("click", async () => {
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify(updates)
     });
-
-    // Push channels are derived from the old encryption key: clear their
-    // schedules before switching keys, then let the user enable devices again.
-    if (window.TodoPush) await TodoPush.clearAccount().catch(() => {});
 
     // 9. Met à jour la session avec la nouvelle clé
     const newKeyB64 = await exportKey(newKey);
@@ -368,7 +363,6 @@ deleteConfirmYes.addEventListener("click", async () => {
     // Supprime le nœud entier de l'utilisateur
     await fetch(`${userPath(currentUser)}.json`, { method: "DELETE" });
 
-    if (window.TodoPush) await TodoPush.clearAccount().catch(() => {});
     // Nettoie la session et le localStorage
     localStorage.removeItem(`todos_${currentUser}`);
     localStorage.removeItem(`calendarView_${currentUser}`);
@@ -486,7 +480,6 @@ function updateArchivedView() {
 }
 
 async function saveArchivedChanges(newTodos) {
-    window.dispatchEvent(new CustomEvent("todoTasksChanged", { detail: newTodos }));
     localStorage.setItem(`todos_${currentUser}`, JSON.stringify(newTodos));
     updateArchivedView();
     try {

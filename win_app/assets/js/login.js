@@ -141,9 +141,7 @@ loginForm.addEventListener("submit", async (e) => {
       (navigator.userAgent && navigator.userAgent.toLowerCase().includes('electron'))
     );
     const defaultApp = isElectron ? './app.html' : './welcome.html';
-    let nextUrl = redirectPage ? `./${redirectPage}` : defaultApp;
-    const task = urlParams.get("viewTask");
-    if (task && ["app-v2.html", "app.html"].includes(redirectPage)) nextUrl += "?viewTask=" + encodeURIComponent(task);
+    const nextUrl = redirectPage ? `./${redirectPage}` : defaultApp;
     window.transitionTo(nextUrl);
 
   } catch (err) {
@@ -243,9 +241,7 @@ registerForm.addEventListener("submit", async (e) => {
       (navigator.userAgent && navigator.userAgent.toLowerCase().includes('electron'))
     );
     const defaultApp = isElectron ? './app.html' : './welcome.html';
-    let nextUrl = redirectPage ? `./${redirectPage}` : defaultApp;
-    const task = urlParams.get("viewTask");
-    if (task && ["app-v2.html", "app.html"].includes(redirectPage)) nextUrl += "?viewTask=" + encodeURIComponent(task);
+    const nextUrl = redirectPage ? `./${redirectPage}` : defaultApp;
 
     showSuccess(registerSuccess, t("success_account_created"));
     setTimeout(() => { window.transitionTo(nextUrl); }, 900);

@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style2.css?v=17" />
-  <script src="../assets/js/transitions.js?v=17"></script>
+  <link rel="stylesheet" href="../assets/css/style2.css" />
+  <script src="../assets/js/transitions.js"></script>
   <script>
     // Garde d'authentification
     if (!sessionStorage.getItem("auth")) {
@@ -25,7 +25,7 @@
   <link rel="manifest" href="../manifest.json">
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
-  <script src="../assets/js/i18n.js?v=17"></script>
+  <script src="../assets/js/i18n.js?v=18"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -55,7 +55,6 @@
       <nav class="settings-tabs">
         <button class="settings-tab-btn active" data-tab="tab-account" data-i18n="tab_account">👤 Compte</button>
         <button class="settings-tab-btn" data-tab="tab-display" data-i18n="tab_display">👁️ Affichage</button>
-        <button class="settings-tab-btn" data-tab="tab-notifications" data-i18n="push_tab">🔔 Notifications</button>
         <button class="settings-tab-btn" data-tab="tab-archive" data-i18n="tab_archive">📦 Archives</button>
         <button class="settings-tab-btn" data-tab="tab-danger" data-i18n="tab_danger">⚠️ Danger</button>
       </nav>
@@ -214,21 +213,6 @@
 
       </div>
 
-      <div id="tab-notifications" class="settings-tab-content">
-        <section class="settings-section" aria-labelledby="push-title">
-          <h2 class="settings-section-title" id="push-title" data-i18n="push_title">Notifications push</h2>
-          <p class="settings-section-sub" data-i18n="push_help">Android : installez l’application depuis Chrome. iPhone : iOS 16.4 minimum, ajoutez le site à l’écran d’accueil puis ouvrez son icône.</p>
-          <p data-i18n="push_timing">Un rappel à l’échéance, ou à 9 h si la tâche n’a pas d’heure. Les rappels fonctionnent aussi quand l’application est fermée, avec une connexion Internet.</p>
-          <p data-i18n="push_privacy">Le service reçoit uniquement les dates et les identifiants techniques. Les notifications ne montrent ni le titre ni les notes.</p>
-          <div class="push-actions">
-            <button class="btn-save settings-btn" id="push-enable" type="button" data-i18n="push_enable">Activer sur cet appareil</button>
-            <button class="btn-save settings-btn" id="push-test" type="button" data-i18n="push_test">Envoyer un test</button>
-            <button class="btn-delete settings-btn" id="push-disable" type="button" data-i18n="push_disable">Désactiver sur cet appareil</button>
-          </div>
-          <p id="push-status" role="status" aria-live="polite"></p>
-        </section>
-      </div>
-
       <div id="tab-danger" class="settings-tab-content">
       <!-- ══ Section : Zone de danger ══ -->
       <section class="settings-section settings-section-danger" aria-labelledby="section-danger-title">
@@ -290,10 +274,8 @@
       </div>
     </div>
 
-      <script src="../assets/js/push-model.js?v=17"></script>
-  <script src="../assets/js/notifications.js?v=17"></script>
-    <script src="../assets/js/crypto.js?v=17"></script>
-    <script src="../assets/js/timeout.js?v=17"></script>
-    <script src="../assets/js/settings.js?v=17"></script>
+    <script src="../assets/js/crypto.js"></script>
+    <script src="../assets/js/timeout.js"></script>
+    <script src="../assets/js/settings.js"></script>
   </body>
 </html>

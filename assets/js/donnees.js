@@ -140,7 +140,6 @@
         });
       }
 
-      if (window.TodoPush) await TodoPush.clearAccount().catch(() => {});
       // Nettoie le cache local
       localStorage.removeItem(`todos_${currentUser}`);
       localStorage.removeItem(`calendarView_${currentUser}`);

@@ -1,7 +1,7 @@
 <div align="center">
   <img src="assets/logo/list-todo.svg" alt="Ma To-Do List Logo" width="120">
 
-  <h1>✨ Ma To-Do List — v5.4.1 ✨</h1>
+  <h1>✨ Ma To-Do List — v5.2 ✨</h1>
   
   <!-- ANIMATION TYPING TEXT (Plugin Externe) -->
   <a href="https://git.io/typing-svg">
@@ -10,7 +10,7 @@
 
   <p>
     <a href="https://sacez53.github.io/To-Do-List/"><img src="https://img.shields.io/badge/Status-En_Ligne-2ea44f?style=for-the-badge&logo=vercel" alt="Status" /></a>
-    <img src="https://img.shields.io/badge/Version-v5.4.1-blue?style=for-the-badge" alt="Version v5.4.1" />
+    <img src="https://img.shields.io/badge/Version-v5.2-blue?style=for-the-badge" alt="Version v5.2" />
     <img src="https://img.shields.io/badge/Platform-Web%20%7C%20Windows-informational?style=for-the-badge&logo=windows" alt="Platform" />
     <img src="https://img.shields.io/badge/Langues-FR%20%7C%20EN-green?style=for-the-badge" alt="Langues FR / EN" />
     <a href="https://developer.mozilla.org/fr/docs/Web/JavaScript"><img src="https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="Vanilla JS" /></a>
@@ -190,19 +190,3 @@ Conçu et développé par **Sacha G.**
   <small>Distribué sous licence MIT. ©️ 2026 Sacha G.</small><br>
   <b>Si ce projet vous plaît, n'hésitez pas à laisser une ⭐ sur le dépôt GitHub !</b>
 </div>
-
-## Notifications push — v5.4
-
-Rappels d’échéance pour Chrome Android et les web-apps installées sur iOS 16.4+.
-Activation par appareil, notification de test et désactivation dans Paramètres.
-Le service d’envoi proposé utilise Cloudflare Workers et D1 en offre Free,
-sans Firebase Blaze. Il reste à déployer et à relier via `assets/json/push.json`.
-La gestion des tâches fonctionne aussi sans cette configuration.
-
-Voir [le guide de mise en service gratuit](docs/NOTIFICATIONS.md).
-Tests : `cd push-server` puis `npm test`. Test d’interface isolé :
-`node tests/run-push-ui.cjs` depuis la racine.
-
-### Correctif v5.4.1
-
-Accès au service push rétabli sur `todo-list-push.sacez53-todo.workers.dev` et cache PWA actualisé.
