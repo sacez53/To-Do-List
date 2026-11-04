@@ -1524,3 +1524,24 @@ body .v2-card-text, body .v2-item-text { font-size:.9rem; }
 
 .v2-schedule-error { color:#fca5a5; font-size:.85rem; margin-bottom:.75rem; }
 .v2-schedule-error:empty { display:none; }
+
+/* N02: quick entry remains usable with a keyboard and on narrow screens. */
+.v2-capture { margin:1rem 0; padding:1rem; border:1px solid var(--line-strong); border-radius:var(--radius-sm); background:var(--surface); }
+.v2-capture label { display:block; font-size:.9rem; margin-bottom:.6rem; }
+.v2-capture-row { display:flex; align-items:stretch; gap:.6rem; }
+.v2-capture-row input { flex:1; min-width:0; width:100%; }
+.v2-capture-row .btn-save { flex:0 0 auto; min-height:44px; }
+.v2-capture-hint { font-size:.8rem; color:var(--text-muted); margin:.5rem 0; }
+.v2-capture-tools { display:flex; flex-wrap:wrap; gap:.5rem; }
+.v2-capture-link { padding:.4rem .55rem; min-height:44px; border:1px solid var(--line-strong); border-radius:var(--radius-sm); background:transparent; color:var(--text); cursor:pointer; font-size:.8rem; }
+.v2-capture-error { color:#fca5a5; font-size:.85rem; margin:.5rem 0; }
+.v2-capture-status { color:var(--v2-accent,#4ade80); font-size:.85rem; margin:.6rem 0; overflow-wrap:anywhere; }
+.v2-capture-error:empty, .v2-capture-status:empty { display:none; }
+.v2-capture [hidden] { display:none; }
+.v2-capture input[aria-invalid="true"] { border-color:#fca5a5; }
+.v2-capture button:disabled { opacity:.6; cursor:wait; }
+.v2-shortcut-list { margin:1rem 0; }
+.v2-shortcut-list > div { display:grid; grid-template-columns:6rem 1fr; align-items:center; gap:.6rem; margin:.8rem 0; font-size:.85rem; }
+.v2-shortcut-list kbd { display:inline-block; padding:.15rem .35rem; border:1px solid var(--line-strong); border-radius:3px; background:var(--surface-3); }
+.v2-shortcuts-toggle { display:flex; align-items:center; gap:.65rem; min-height:44px; margin:.75rem 0; font-size:.85rem; cursor:pointer; }
+@media (max-width:360px) { .v2-capture { padding:.75rem; } .v2-capture-row { flex-wrap:wrap; } .v2-capture-row .btn-save { width:100%; } }

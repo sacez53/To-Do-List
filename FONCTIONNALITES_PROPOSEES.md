@@ -4,7 +4,7 @@ Date : 3 novembre 2026 — référence : dépôt Web v5.4.2.
 
 ## 1. Orientation
 
-Le produit gagnerait à aider l'utilisateur à décider quoi faire aujourd'hui, à capturer ses tâches rapidement et à retrouver ses données sans inquiétude. N01 est livrée en v5.5.0 ; les autres ajouts ci-dessous restent des propositions. Ils complètent l'audit dans `AUDIT_SITE_WEB.md`.
+Le produit gagnerait à aider l'utilisateur à décider quoi faire aujourd'hui, à capturer ses tâches rapidement et à retrouver ses données sans inquiétude. N01 est livrée en v5.5.0 et N02 en v5.6.0 ; les autres ajouts ci-dessous restent des propositions. Ils complètent l'audit dans `AUDIT_SITE_WEB.md`.
 
 La recherche, les trois vues, les priorités, les notes, les échéances avec heure, le calendrier et les exports JSON/CSV existent déjà : ils ne sont pas comptés comme nouveautés.
 
@@ -49,6 +49,8 @@ Les tailles sont relatives : **S** = modification ciblée ; **M** = plusieurs co
 **Dépendances :** harmonisation des dates de l'audit F06. Distinguer à terme « prévu pour aujourd'hui » et « doit être terminé aujourd'hui » si les utilisateurs le demandent.
 
 ### N02 — Saisie rapide et raccourcis
+
+**Livré le 4 novembre 2026 en v5.6.0.** Entrée crée une tâche sans échéance avec protection contre les doublons et maintien du focus. N rejoint le champ, Maj+N ouvre le formulaire complet, ? ouvre l’aide ; les raccourcis sont désactivables et ignorés dans les champs et dialogues. Aucun texte de date n’est interprété.
 
 **Usage :** ajouter une tâche avec un seul champ puis compléter les détails plus tard.
 

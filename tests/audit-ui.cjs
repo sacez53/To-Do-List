@@ -77,6 +77,97 @@ app.whenReady().then(async()=>{
   win.setContentSize(375,812);await new Promise(r=>setTimeout(r,120));
   assert.equal(await run('document.documentElement.scrollWidth<=window.innerWidth'),true);
   await fs.promises.writeFile(path.join(out,'audit-mobile.png'),(await win.webContents.capturePage()).toPNG());
+  // N02: use actual Enter events for the quick-entry form.
+  win.setContentSize(1040,900);
+  await run('window.__captureStart=todos.length;quickTitle.focus();quickTitle.value="   ";quickForm.requestSubmit()');
+  assert.equal(await run('todos.length===__captureStart'),true);
+  assert.equal(await run('quickTitle.getAttribute("aria-invalid")'),'true');
+  await run('quickTitle.value="Appeler demain à 14 h <b>littéral</b>";quickTitle.dispatchEvent(new Event("input"));quickTitle.focus()');
+  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter'});
+  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});
+  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter',isAutoRepeat:true});
+  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});
+  win.webContents.sendInputEvent({type:'keyUp',keyCode:'Enter'});
+  await until('!quickBusy && todos.length===__captureStart+1 && !syncRunning');
+  assert.equal(await run('todos.filter(t=>t.text==="Appeler demain à 14 h <b>littéral</b>").length'),1);
+  assert.equal(await run('todos.find(t=>t.id===quickCreatedId).due'),null);
+  assert.equal(await run('quickTitle.value'), '');
+  assert.equal(await run('document.activeElement===quickTitle'),true);
+  assert.equal(await run('quickStatus.textContent.includes("Toutes les tâches")'),true);
+  assert.equal(await run('quickStatus.querySelector("b")===null'),true);
+  await win.webContents.insertText('Deuxième capture');
+  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter'});
+  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});
+  win.webContents.sendInputEvent({type:'keyUp',keyCode:'Enter'});
+  await until('!quickBusy && todos.length===__captureStart+2 && !syncRunning');
+  await run('quickDetails.click()');
+  assert.equal(await run('modalBody.style.display'),'flex');
+  assert.equal(await run('modalText.value'),'Deuxième capture');
+  await run('closeModal(true);quickTitle.value="Brouillon à compléter";quickFull.click()');
+  assert.equal(await run('modalText.value'),'Brouillon à compléter');
+  await run('closeModal(true)');
+  assert.equal(await run('quickTitle.value'),'Brouillon à compléter');
+  await run('quickFull.click();modalSave.click()');
+  await until('!modalOverlay.classList.contains("open") && !syncRunning && !localWrites');
+  assert.equal(await run('quickTitle.value'),'');
+  assert.equal(await run('todos.filter(t=>t.text==="Brouillon à compléter").length'),1);
+  // An unavailable local save keeps the draft, without an unsaved duplicate.
+  await run('window.__realTaskSave=taskStore.save;taskStore.save=async()=>{throw new Error("fixture local failure")};quickTitle.value="À réessayer";quickForm.requestSubmit()');
+  await until('!quickBusy');
+  assert.equal(await run('quickTitle.value'),'À réessayer');
+  assert.equal(await run('todos.some(t=>t.text==="À réessayer")'),false);
+  assert.equal(await run('quickError.textContent.length>0'),true);
+  await run('taskStore.save=__realTaskSave;quickForm.requestSubmit();quickForm.requestSubmit()');
+  await until('!quickBusy && !syncRunning && todos.some(t=>t.text==="À réessayer")');
+  assert.equal(await run('todos.filter(t=>t.text==="À réessayer").length'),1);
+  // Composition Enter and shortcut keys must not interrupt text editing.
+  await run('quickTitle.value="Composition";quickTitle.dispatchEvent(new CompositionEvent("compositionstart"));quickForm.requestSubmit()');
+  assert.equal(await run('todos.some(t=>t.text==="Composition")'),false);
+  await run('quickTitle.dispatchEvent(new CompositionEvent("compositionend"));quickTitle.value="";searchInput.focus();searchInput.dispatchEvent(new KeyboardEvent("keydown",{key:"N",shiftKey:true,bubbles:true,cancelable:true}))');
+  assert.equal(await run('document.activeElement===searchInput && !modalOverlay.classList.contains("open")'),true);
+  await run('openModal(null)');
+  await new Promise(r=>setTimeout(r,80));
+  await run('modalNotes.focus();modalNotes.dispatchEvent(new KeyboardEvent("keydown",{key:"n",bubbles:true,cancelable:true}))');
+  assert.equal(await run('document.activeElement===modalNotes'),true);
+  await run('closeModal(true)');
+  await new Promise(r=>setTimeout(r,80));
+  await run('document.body.tabIndex=-1;document.body.focus();document.dispatchEvent(new KeyboardEvent("keydown",{key:"n",bubbles:true,cancelable:true}))');
+  assert.equal(await run('document.activeElement===quickTitle'),true);
+  await run('document.body.focus();document.dispatchEvent(new KeyboardEvent("keydown",{key:"N",shiftKey:true,bubbles:true,cancelable:true}))');
+  assert.equal(await run('modalOverlay.classList.contains("open")'),true);
+  await run('closeModal(true)');
+  await new Promise(r=>setTimeout(r,80));
+  await run('document.body.focus();document.dispatchEvent(new KeyboardEvent("keydown",{key:"?",bubbles:true,cancelable:true}))');
+  assert.equal(await run('shortcutsOverlay.classList.contains("open")'),true);
+  await new Promise(r=>setTimeout(r,250));
+  await fs.promises.writeFile(path.join(out,'n02-shortcuts.png'),(await win.webContents.capturePage()).toPNG());
+  await run('shortcutsEnabled.checked=false;shortcutsEnabled.dispatchEvent(new Event("change"));closeShortcutHelp()');
+  await new Promise(r=>setTimeout(r,80));
+  await run('document.body.focus();document.dispatchEvent(new KeyboardEvent("keydown",{key:"n",bubbles:true,cancelable:true}))');
+  assert.equal(await run('document.activeElement===quickTitle'),false);
+  assert.equal(await run('localStorage.getItem(shortcutsKey)'),'false');
+  await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
+  await until('!!taskStore && !syncRunning && todos.length===2');
+  assert.equal(await run('shortcutsEnabled.checked'),false);
+  // Help remains keyboard-accessible when its shortcut is disabled.
+  await run('document.getElementById("shortcuts-open").focus()');
+  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter'});
+  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Enter'});
+  await until('shortcutsOverlay.classList.contains("open")');
+  await run('shortcutsEnabled.focus()');
+  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space'});
+  await until('shortcutsEnabled.checked');
+  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Escape'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Escape'});
+  await until('!shortcutsOverlay.classList.contains("open")');
+  await run('setLanguage("en")');assert.equal(await run('document.getElementById("quick-add-label").textContent'),'Add a task');
+  await run('setLanguage("fr");document.body.focus()');
+  await new Promise(r=>setTimeout(r,350));
+  await fs.promises.writeFile(path.join(out,'n02-desktop.png'),(await win.webContents.capturePage()).toPNG());
+  win.setContentSize(375,900);await new Promise(r=>setTimeout(r,100));
+  assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
+  assert.equal(await run('quickTitle.getBoundingClientRect().width>150'),true);
+  await fs.promises.writeFile(path.join(out,'n02-mobile.png'),(await win.webContents.capturePage()).toPNG());
+  console.log('N02 PASS: native Enter, duplicate protection, required title, literal text, focus, full-form draft, local-save retry, composition, contextual shortcuts, persistent opt-out, keyboard help and FR/EN.');
   // N01: use local calendar dates, independent of the day this suite is run.
   win.setContentSize(1040,900);
   await run(`(async()=>{
@@ -163,6 +254,6 @@ app.whenReady().then(async()=>{
   console.log('UI PASS: three views, summary/edit, deletion cancellation, safe text, creation, dirty form, focus, HTTP 403, mobile fit, calendar month/status, password rotation and JSON export.');
   console.log('Console errors:',JSON.stringify(errors));
   win.destroy();server.close();app.exit(errors.length?1:0);
- }catch(error){console.error(error);win?.destroy();server.close();app.exit(1);}
+ }catch(error){console.error(error);try{console.error('Capture debug:',await run('JSON.stringify({count:todos.length,busy:quickBusy,value:quickTitle.value,error:quickError.textContent,active:document.activeElement.id,alerts:window.__alerts,sync:syncLabel.textContent})'));}catch(_){}win?.destroy();server.close();app.exit(1);}
 });
 

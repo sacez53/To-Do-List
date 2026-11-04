@@ -134,3 +134,27 @@ test('N01: timed tasks expire at their local deadline and inactive tasks never s
   const tasks=[{due:'2026-11-05',dueTime:null},{due:'2026-11-05',dueTime:'09:00'},{due:'2026-11-04',dueTime:null}];
   assert.equal(tasks.sort(d.compare)[0].due,'2026-11-04');assert.equal(tasks[1].dueTime,'09:00');
 });
+
+function captureKeys() {
+  const ctx={window:{}};vm.createContext(ctx);vm.runInContext(source('quick-capture'),ctx);return ctx.window.QuickCaptureKeys;
+}
+test('N02: documented keys route to quick entry, full form and help',()=>{
+  const keys=captureKeys();
+  assert.equal(keys.action({key:'n'},true,null,false),'quick');
+  assert.equal(keys.action({key:'N',shiftKey:true},true,null,false),'full');
+  assert.equal(keys.action({key:'?',shiftKey:true},true,null,false),'help');
+  assert.equal(keys.action({key:'x'},true,null,false),null);
+});
+test('N02: shortcuts respect preferences, dialogs, composition and browser modifiers',()=>{
+  const keys=captureKeys();
+  assert.equal(keys.action({key:'n'},false,null,false),null);
+  assert.equal(keys.action({key:'n'},true,null,true),null);
+  for(const flag of ['ctrlKey','altKey','metaKey','repeat','isComposing','defaultPrevented'])assert.equal(keys.action({key:'n',[flag]:true},true,null,false),null,flag);
+  assert.equal(keys.action({key:'n',keyCode:229},true,null,false),null);
+});
+test('N02: editable fields keep their keystrokes',()=>{
+  const keys=captureKeys();
+  assert.equal(keys.action({key:'N',shiftKey:true},true,{isContentEditable:true},false),null);
+  assert.equal(keys.action({key:'?'},true,{closest:()=>({})},false),null);
+  assert.equal(keys.action({key:'n'},true,{closest:()=>null},false),'quick');
+});

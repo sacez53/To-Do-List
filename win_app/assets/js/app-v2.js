@@ -22,6 +22,15 @@ const statTotal    = document.getElementById("v2-stat-total");
 const statDone     = document.getElementById("v2-stat-done");
 const statProgress = document.getElementById("v2-stat-progress");
 const progressBar  = document.getElementById("v2-progress-bar");
+const quickForm = document.getElementById("quick-add-form");
+const quickTitle = document.getElementById("quick-add-title");
+const quickSubmit = document.getElementById("quick-add-submit");
+const quickFull = document.getElementById("quick-add-full");
+const quickError = document.getElementById("quick-add-error");
+const quickStatus = document.getElementById("quick-add-status");
+const quickDetails = document.getElementById("quick-add-details");
+const shortcutsOverlay = document.getElementById("shortcuts-overlay");
+const shortcutsEnabled = document.getElementById("shortcuts-enabled");
 
 // Modales
 const modalOverlay  = document.getElementById("modal-overlay");
@@ -66,6 +75,13 @@ let reschedulingId = null;
 let rescheduleBusy = false;
 let lastSyncStatus = "syncing";
 let lastSyncDetail = "";
+let quickBusy = false;
+let quickComposing = false;
+let quickEnterHeld = false;
+let quickCreatedId = null;
+let quickModalDraft = null;
+const shortcutsKey = `todo_shortcuts_${currentUser}`;
+try { shortcutsEnabled.checked = localStorage.getItem(shortcutsKey) !== "false"; } catch (_) { /* Usable without preference storage. */ }
 
 // Filtres avancés
 let filterStatuses   = [];  // [] = tous
@@ -143,6 +159,7 @@ async function init() {
     taskStore = await TodoData.open(currentUser);
     todos = taskStore.read();
     fabAdd.disabled = false;
+    quickTitle.disabled = false; quickSubmit.disabled = false; quickFull.disabled = false;
     refreshTaskClock();
     await refreshTasks();
     const params = new URLSearchParams(window.location.search);
@@ -180,7 +197,7 @@ window.addEventListener("online", refreshTasks);
 window.addEventListener("focus", refreshTasks);
 
 window.addEventListener("beforeunload", event => {
-  if (rescheduleBusy || localWrites || taskStore?.pending() || (modalSnapshot && modalValues() !== modalSnapshot)) { event.preventDefault(); event.returnValue = ""; }
+  if (quickBusy || quickTitle.value.trim() || rescheduleBusy || localWrites || taskStore?.pending() || (modalSnapshot && modalValues() !== modalSnapshot)) { event.preventDefault(); event.returnValue = ""; }
 });
 // Refresh existing sync status while the page is visible; no new product view.
 setInterval(() => { if (!document.hidden && !modalOverlay.classList.contains("open")) refreshTasks(); }, 30000);
@@ -715,6 +732,7 @@ if (modalCancelEditBtn) {
 }
 
 function openModal(id = null, mode = 'edit') {
+  quickModalDraft = null;
   if (!taskStore || !sessionStorage.getItem("auth")) return;
   modalSnapshot = null;
   if (id === null) {
@@ -868,6 +886,7 @@ function openModal(id = null, mode = 'edit') {
 function closeModal(force = false) {
   if (force !== true && modalSnapshot && modalValues() !== modalSnapshot && !confirm(TodoRuntime.message("Abandonner les modifications non enregistrées ?", "Discard unsaved changes?"))) return false;
   modalSnapshot = null;
+  quickModalDraft = null;
   modalOverlay.classList.remove("open");
   document.body.classList.remove("modal-open");
   editingId = null;
@@ -895,6 +914,107 @@ function openConfirm(onConfirm) {
 // ══════════════════════════════════════════
 //  EVENTS
 // ══════════════════════════════════════════
+function showQuickSuccess(task) {
+  quickCreatedId = task.id;
+  quickStatus.textContent = t("quick_created", { title: task.text });
+  quickDetails.hidden = false;
+}
+
+quickTitle.addEventListener("input", () => {
+  quickError.textContent = "";
+  quickTitle.removeAttribute("aria-invalid");
+});
+quickTitle.addEventListener("compositionstart", () => { quickComposing = true; });
+quickTitle.addEventListener("compositionend", () => { quickComposing = false; });
+quickTitle.addEventListener("keydown", event => {
+  if (event.key !== "Enter") return;
+  if (event.isComposing || quickComposing || event.keyCode === 229 || event.repeat || quickEnterHeld) event.preventDefault();
+  else quickEnterHeld = true;
+});
+quickTitle.addEventListener("keyup", event => { if (event.key === "Enter") quickEnterHeld = false; });
+quickTitle.addEventListener("blur", () => { quickEnterHeld = false; });
+quickForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (quickBusy || quickComposing || !taskStore || !sessionStorage.getItem("auth")) return;
+  const title = quickTitle.value.trim();
+  if (!title) {
+    quickError.textContent = t("quick_required");
+    quickTitle.setAttribute("aria-invalid", "true");
+    quickTitle.focus();
+    return;
+  }
+  // Set the guard synchronously, before encryption or storage yields control.
+  quickBusy = true;
+  const restoreFocus = [quickTitle, quickSubmit].includes(document.activeElement);
+  quickTitle.readOnly = true;
+  quickSubmit.disabled = true;
+  quickFull.disabled = true;
+  quickForm.setAttribute("aria-busy", "true");
+  quickError.textContent = "";
+  const task = { id: crypto.randomUUID(), text: title, status: "todo", priority: "normal", due: null, dueTime: null, notes: "", created: new Date().toISOString() };
+  todos.push(task);
+  try {
+    const saved = await saveTodos();
+    if (!sessionStorage.getItem("auth")) return;
+    if (saved) {
+      quickTitle.value = "";
+      quickTitle.removeAttribute("aria-invalid");
+      showQuickSuccess(task);
+    } else {
+      todos = todos.filter(item => item.id !== task.id);
+      quickError.textContent = t("quick_failed");
+    }
+    render();
+  } finally {
+    quickBusy = false;
+    quickTitle.readOnly = false;
+    const ready = !!taskStore && !!sessionStorage.getItem("auth");
+    quickTitle.disabled = !ready;
+    quickSubmit.disabled = !ready;
+    quickFull.disabled = !ready;
+    quickForm.setAttribute("aria-busy", "false");
+    if (restoreFocus && ready && !document.querySelector(".modal-overlay.open") && [quickTitle, quickSubmit, document.body].includes(document.activeElement)) quickTitle.focus();
+  }
+});
+
+function openFullQuickCreation() {
+  if (quickBusy || !taskStore || !sessionStorage.getItem("auth")) return;
+  const draft = quickTitle.value;
+  openModal(null);
+  modalText.value = draft;
+  quickModalDraft = draft;
+  modalSnapshot = modalValues();
+}
+quickFull.addEventListener("click", openFullQuickCreation);
+quickDetails.addEventListener("click", () => {
+  if (quickCreatedId !== null) openModal(quickCreatedId, "edit");
+});
+
+function openShortcutHelp() { shortcutsOverlay.classList.add("open"); }
+function closeShortcutHelp() { shortcutsOverlay.classList.remove("open"); }
+document.getElementById("shortcuts-open").addEventListener("click", openShortcutHelp);
+document.getElementById("shortcuts-close").addEventListener("click", closeShortcutHelp);
+shortcutsOverlay.addEventListener("click", event => { if (event.target === shortcutsOverlay) closeShortcutHelp(); });
+shortcutsEnabled.addEventListener("change", () => {
+  try {
+    localStorage.setItem(shortcutsKey, String(shortcutsEnabled.checked));
+    document.getElementById("shortcuts-error").textContent = "";
+  } catch (_) {
+    document.getElementById("shortcuts-error").textContent = t("shortcuts_not_saved");
+  }
+});
+document.addEventListener("keydown", event => {
+  if (quickBusy || !sessionStorage.getItem("auth")) return;
+  const target = event.composedPath()[0] || document.activeElement;
+  const action = QuickCaptureKeys.action(event, shortcutsEnabled.checked, target,
+    !!document.querySelector(".modal-overlay.open,.modal-overlay.active,#timeout-overlay"));
+  if (!action || (action !== "help" && !taskStore)) return;
+  event.preventDefault();
+  if (action === "help") openShortcutHelp();
+  else if (action === "full") openFullQuickCreation();
+  else quickTitle.focus();
+});
+
 viewBtns.forEach(btn => {
   btn.addEventListener("click", () => {
     currentView = btn.dataset.view;
@@ -927,11 +1047,11 @@ filterToggle.addEventListener("click", () => {
 
 filterReset.addEventListener("click", resetFilters);
 
-fabAdd.addEventListener("click", () => openModal(null));
+fabAdd.addEventListener("click", openFullQuickCreation);
 modalClose.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
 confirmOverlay.addEventListener("click", e => { if (e.target === confirmOverlay) { confirmCleanup?.(); } });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { if (reschedulingId !== null) { closeScheduleDialog(); return; } if (confirmCleanup) confirmCleanup(); else closeModal(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { if (shortcutsOverlay.classList.contains("open")) { closeShortcutHelp(); return; } if (reschedulingId !== null) { closeScheduleDialog(); return; } if (confirmCleanup) confirmCleanup(); else closeModal(); } });
 
 modalSave.addEventListener("click", async () => {
   if (modalSave.disabled) return;
@@ -946,7 +1066,10 @@ modalSave.addEventListener("click", async () => {
     const idx = todos.findIndex(t => String(t.id) === String(editingId));
     if (idx !== -1) Object.assign(todos[idx], { text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim() });
   }
-  if (await saveTodos()) { render(); closeModal(true); }
+  if (await saveTodos()) {
+    if (editingId === null && quickModalDraft !== null && quickTitle.value === quickModalDraft) quickTitle.value = "";
+    render(); closeModal(true);
+  }
   } finally { modalSave.disabled = false; }
 });
 
@@ -959,6 +1082,8 @@ modalDelete.addEventListener("click", () => {
 
 document.getElementById("v2-logout-btn").addEventListener("click", async () => {
   if (!closeModal()) return;
+  if (quickTitle.value.trim() && !confirm(t("quick_discard"))) return;
+  quickTitle.value = "";
   try { await savingLocal; } catch (_) { return; }
   sessionStorage.removeItem("auth");
   sessionStorage.removeItem("username");
@@ -973,7 +1098,10 @@ function escHtml(s) {
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-window.addEventListener("sessionExpired", () => { clearTimeout(clockTimer); closeScheduleDialog(); modalSnapshot = null; closeModal(true); confirmCleanup?.(); boardEl.replaceChildren(); todos = []; fabAdd.disabled = true; });
+window.addEventListener("sessionExpired", () => {
+  quickTitle.value = ""; quickTitle.disabled = true; quickSubmit.disabled = true; quickFull.disabled = true;
+  quickStatus.textContent = ""; quickError.textContent = ""; quickDetails.hidden = true; closeShortcutHelp();
+  clearTimeout(clockTimer); closeScheduleDialog(); modalSnapshot = null; closeModal(true); confirmCleanup?.(); boardEl.replaceChildren(); todos = []; fabAdd.disabled = true; });
 document.querySelectorAll("[data-scope]").forEach(button => button.addEventListener("click", () => setTaskScope(button.dataset.scope)));
 sortSelect.value = currentSort;
 // ── Lancement ──
@@ -982,6 +1110,8 @@ init();
 
 window.addEventListener("languageChanged", () => {
   setSyncStatus(lastSyncStatus, lastSyncDetail);
+  const captured = todos.find(task => task.id === quickCreatedId);
+  if (captured && !quickDetails.hidden) showQuickSuccess(captured);
   buildFilterPanel();
   render();
 });
