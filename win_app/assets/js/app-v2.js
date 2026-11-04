@@ -80,6 +80,8 @@ let quickComposing = false;
 let quickEnterHeld = false;
 let quickCreatedId = null;
 let quickModalDraft = null;
+let trashBusy = false;
+let lastTrashed = null;
 const shortcutsKey = `todo_shortcuts_${currentUser}`;
 try { shortcutsEnabled.checked = localStorage.getItem(shortcutsKey) !== "false"; } catch (_) { /* Usable without preference storage. */ }
 
@@ -197,7 +199,7 @@ window.addEventListener("online", refreshTasks);
 window.addEventListener("focus", refreshTasks);
 
 window.addEventListener("beforeunload", event => {
-  if (quickBusy || quickTitle.value.trim() || rescheduleBusy || localWrites || taskStore?.pending() || (modalSnapshot && modalValues() !== modalSnapshot)) { event.preventDefault(); event.returnValue = ""; }
+  if (trashBusy || quickBusy || quickTitle.value.trim() || rescheduleBusy || localWrites || taskStore?.pending() || (modalSnapshot && modalValues() !== modalSnapshot)) { event.preventDefault(); event.returnValue = ""; }
 });
 // Refresh existing sync status while the page is visible; no new product view.
 setInterval(() => { if (!document.hidden && !modalOverlay.classList.contains("open")) refreshTasks(); }, 30000);
@@ -220,7 +222,7 @@ function setSyncStatus(s, detail = "") {
 // ══════════════════════════════════════════
 function applyFilters(arr) {
   return arr.filter(t => {
-    if (t.archived) return false;
+    if (t.archived || t.deletedAt || t.purgedAt) return false;
     if (filterStatuses.length   && !filterStatuses.includes(t.status)) return false;
     if (filterPriorities.length && !filterPriorities.includes(t.priority || "normal")) return false;
     if (filterHasNotes  && !(t.notes && t.notes.trim())) return false;
@@ -379,8 +381,84 @@ document.getElementById("schedule-form").addEventListener("submit", async event 
 // ══════════════════════════════════════════
 //  RENDU PRINCIPAL
 // ══════════════════════════════════════════
+function trashDate(value) {
+  return new Date(value).toLocaleString(getLanguage() === "en" ? "en-US" : "fr-FR", { day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" });
+}
+function renderTrash(items) {
+  if (!items.length) {
+    const empty = document.createElement("p"); empty.className = "v2-empty"; empty.textContent = t("trash_empty");
+    boardEl.appendChild(empty); return;
+  }
+  const list = document.createElement("ul"); list.className = "v2-trash-list";
+  [...items].sort((a,b) => b.deletedAt.localeCompare(a.deletedAt)).forEach(task => {
+    const item = document.createElement("li"); item.className = "v2-trash-card"; item.dataset.taskId = String(task.id);
+    const title = document.createElement("button"); title.type = "button"; title.className = "task-summary";
+    title.dataset.taskId = String(task.id); title.dataset.taskAction = "summary"; title.textContent = task.text;
+    title.addEventListener("click", () => openModal(task.id, "view"));
+    const meta = document.createElement("p"); meta.className = "v2-trash-meta";
+    meta.textContent = t("trash_dates", { deleted: trashDate(task.deletedAt), expires: trashDate(Date.parse(task.deletedAt) + TodoData.RETENTION_MS) });
+    const actions = document.createElement("div"); actions.className = "v2-trash-actions";
+    for (const [action, label] of [["restore", "trash_restore"], ["purge", "trash_permanent"]]) {
+      const button = document.createElement("button"); button.type = "button";
+      button.className = "v2-capture-link"; button.dataset.taskId = String(task.id); button.dataset.taskAction = action;
+      button.textContent = t(label); button.setAttribute("aria-label", `${t(label)} : ${task.text}`); button.disabled = trashBusy;
+      button.addEventListener("click", () => {
+        if (action === "restore") mutateTrash(task.id, "restore", task.deletionId);
+        else openConfirm(() => mutateTrash(task.id, "purge"), { title: t("trash_permanent_title"), description: t("trash_permanent_description"), label: t("trash_permanent") });
+      });
+      actions.appendChild(button);
+    }
+    item.append(title, meta, actions); list.appendChild(item);
+  });
+  boardEl.appendChild(list);
+}
+async function mutateTrash(id, action, deletionId = null) {
+  if (trashBusy || !taskStore || !sessionStorage.getItem("auth")) return false;
+  const before = todos.find(task => String(task.id) === String(id));
+  if (!before) return false;
+  trashBusy = true;
+  document.getElementById("trash-undo").disabled = true;
+  try {
+    if (action === "purge" && !TodoData.inTrash(before)) throw new Error(t("trash_unavailable"));
+    const changed = action === "trash" ? TodoData.trash(before) : action === "restore" ? TodoData.restore(before, new Date(), deletionId) : TodoData.purge(before);
+    todos = todos.map(task => String(task.id) === String(id) ? changed : task);
+    const revision = localRevision;
+    if (!await saveTodos()) {
+      todos = todos.map(task => String(task.id) === String(id) ? before : task);
+      render(); return false;
+    }
+    if (localRevision === revision + 1) todos = taskStore.read();
+    const stored = todos.find(task => String(task.id) === String(id));
+    if (action === "restore" && (!stored || TodoData.removed(stored))) {
+      document.getElementById("trash-feedback").textContent = t("trash_unavailable"); render(); return false;
+    }
+    if (action === "trash" && stored?.deletedAt && !stored.purgedAt) {
+      document.getElementById("trash-feedback").textContent = "";
+      lastTrashed = { id: stored.id, deletionId: stored.deletionId };
+      document.getElementById("trash-notice-text").textContent = t("trash_moved", { title: before.text });
+      document.getElementById("trash-notice").hidden = false;
+    } else {
+      if (lastTrashed && String(lastTrashed.id) === String(id)) document.getElementById("trash-notice").hidden = true;
+      document.getElementById("trash-feedback").textContent = t(action === "restore" ? "trash_restored" : "trash_purged", { title: before.text });
+    }
+    render(); return true;
+  } catch (error) {
+    document.getElementById("trash-feedback").textContent = error.message;
+    document.getElementById("trash-notice-text").textContent = error.message;
+    return false;
+  } finally {
+    trashBusy = false;
+    document.querySelectorAll(".v2-trash-actions button,#trash-undo").forEach(button => button.disabled = false);
+  }
+}
+function moveTaskToTrash(id) { return mutateTrash(id, "trash"); }
+document.getElementById("trash-undo").addEventListener("click", () => {
+  if (lastTrashed) mutateTrash(lastTrashed.id, "restore", lastTrashed.deletionId);
+});
+document.getElementById("trash-notice-close").addEventListener("click", () => { document.getElementById("trash-notice").hidden = true; });
+
 function setTaskScope(scope) {
-  if (!["today", "upcoming", "all"].includes(scope)) return;
+  if (!["today", "upcoming", "all", "trash"].includes(scope)) return;
   currentScope = scope;
   currentSort = scope === "all" ? "status" : "due-asc";
   sortSelect.value = currentSort;
@@ -391,8 +469,11 @@ function render() {
   const focused = document.activeElement;
   const focusId = focused?.dataset.taskId;
   const focusAction = focused?.dataset.taskAction;
+  const showingTrash = currentScope === "trash";
+  document.body.classList.toggle("trash-view", showingTrash);
   updateStats();
-  const scoped = todos.filter(task => TaskDates.matches(task, currentScope, scopeNow));
+  if (editingId !== null && todos.some(task => String(task.id) === String(editingId) && task.purgedAt)) closeModal(true);
+  const scoped = todos.filter(task => currentScope === "trash" ? TodoData.inTrash(task, scopeNow) : TaskDates.matches(task, currentScope, scopeNow));
   const visible = applySort(applyFilters(scoped));
   // Keep the urgent group first even when a secondary sort is chosen.
   if (currentScope === "today") visible.sort((a, b) =>
@@ -401,18 +482,20 @@ function render() {
     const selected = button.dataset.scope === currentScope;
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
-    button.querySelector(".v2-scope-count").textContent = todos.filter(task => TaskDates.matches(task, button.dataset.scope, scopeNow)).length;
+    button.querySelector(".v2-scope-count").textContent = todos.filter(task => button.dataset.scope === "trash" ? TodoData.inTrash(task, scopeNow) : TaskDates.matches(task, button.dataset.scope, scopeNow)).length;
   });
   document.getElementById("v2-scope-heading").textContent = t("scope_" + currentScope);
   document.getElementById("v2-scope-description").textContent = t("scope_" + currentScope + "_description");
-  document.getElementById("v2-scope-results").textContent = t(visible.length === 1 ? "scope_result_one" : "scope_results", { count: visible.length });
-  document.getElementById("v2-board-scroll-hint").hidden = currentView !== "kanban";
-  boardEl.tabIndex = currentView === "kanban" ? 0 : -1;
+  const resultCount = showingTrash ? scoped.length : visible.length;
+  document.getElementById("v2-scope-results").textContent = t(resultCount === 1 ? "scope_result_one" : "scope_results", { count: resultCount });
+  document.getElementById("v2-board-scroll-hint").hidden = showingTrash || currentView !== "kanban";
+  boardEl.tabIndex = !showingTrash && currentView === "kanban" ? 0 : -1;
   boardEl.setAttribute("role", "region");
-  boardEl.setAttribute("aria-label", t("view_" + currentView));
-  boardEl.className = `v2-board v2-board--${currentView}`;
+  boardEl.setAttribute("aria-label", t(showingTrash ? "scope_trash" : "view_" + currentView));
+  boardEl.className = showingTrash ? "v2-board v2-board--trash" : `v2-board v2-board--${currentView}`;
   boardEl.innerHTML = "";
-  if (!visible.length) renderEmpty();
+  if (showingTrash) renderTrash(scoped);
+  else if (!visible.length) renderEmpty();
   else if (currentView === "kanban") renderKanban(visible);
   else if (currentView === "table") renderTable(visible);
   else if (currentScope === "today") {
@@ -441,7 +524,14 @@ function render() {
 }
 function refreshTaskClock() {
   clearTimeout(clockTimer);
-  if (taskStore && sessionStorage.getItem("auth")) render();
+  if (taskStore && sessionStorage.getItem("auth")) {
+    if (todos.some(task => TodoData.expired(task))) {
+      todos = TodoData.expire(todos);
+      const revision = localRevision;
+      saveTodos().then(saved => { if (saved && localRevision === revision + 1) todos = taskStore.read(); render(); });
+    }
+    render();
+  }
   clockTimer = setTimeout(refreshTaskClock, TaskDates.nextTick());
 }
 window.addEventListener("focus", refreshTaskClock);
@@ -449,7 +539,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) refr
 
 
 function updateStats() {
-  const activeTodos = todos.filter(t => !t.archived);
+  const activeTodos = todos.filter(t => !t.archived && !t.deletedAt && !t.purgedAt);
   const total = activeTodos.length;
   const done  = activeTodos.filter(t => t.status === "done").length;
   const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -468,7 +558,7 @@ function renderEmpty() {
     return;
   }
   p.textContent = searchQuery ? t("search_no_results", { query: searchQuery }) :
-    (todos.some(t => !t.archived) ? TodoRuntime.message("Aucun résultat avec ces filtres. Réinitialisez les filtres pour retrouver vos tâches.", "No matches for these filters. Reset filters to see your tasks.") : t("empty_tasks"));
+    (todos.some(t => !t.archived && !t.deletedAt && !t.purgedAt) ? TodoRuntime.message("Aucun résultat avec ces filtres. Réinitialisez les filtres pour retrouver vos tâches.", "No matches for these filters. Reset filters to see your tasks.") : t("empty_tasks"));
   boardEl.replaceChildren(p);
 }
 // ── Vue Liste ──
@@ -774,7 +864,7 @@ function openModal(id = null, mode = 'edit') {
   }
 
   const todo = todos.find(t => String(t.id) === String(id));
-  if (!todo) return;
+  if (!todo || todo.purgedAt || (mode !== "view" && todo.deletedAt)) return;
   editingId = todo.id;
 
   if (mode === "view") {
@@ -858,7 +948,7 @@ function openModal(id = null, mode = 'edit') {
     if (modalRecap) modalRecap.style.display = "flex";
     if (modalBody) modalBody.style.display = "none";
 
-    if (modalEditBtn) modalEditBtn.style.display = "";
+    if (modalEditBtn) modalEditBtn.style.display = todo.deletedAt ? "none" : "";
     if (modalCloseRecapBtn) modalCloseRecapBtn.style.display = "";
     modalSave.style.display = "none";
     if (modalCancelEditBtn) modalCancelEditBtn.style.display = "none";
@@ -903,7 +993,10 @@ function closeModal(force = false) {
   return true;
 }
 
-function openConfirm(onConfirm) {
+function openConfirm(onConfirm, options = {}) {
+  confirmOverlay.querySelector("h2").textContent = options.title || t("confirm_delete_title");
+  confirmOverlay.querySelector("p").textContent = options.description || t("confirm_delete_desc");
+  confirmYes.textContent = options.label || t("trash_move");
   confirmCleanup?.();
   confirmOverlay.classList.add("open");
   document.body.classList.add("modal-open");
@@ -1087,7 +1180,7 @@ modalDelete.addEventListener("click", () => {
   if (editingId === null) return;
   const id = editingId;
   if (!closeModal()) return;
-  openConfirm(() => { todos = todos.filter(t => String(t.id) !== String(id)); saveTodos(); render(); });
+  openConfirm(() => moveTaskToTrash(id));
 });
 
 document.getElementById("v2-logout-btn").addEventListener("click", async () => {
@@ -1110,7 +1203,7 @@ function escHtml(s) {
 
 window.addEventListener("sessionExpired", () => {
   quickTitle.value = ""; quickTitle.disabled = true; quickSubmit.disabled = true; quickFull.disabled = true;
-  quickStatus.textContent = ""; quickError.textContent = ""; quickDetails.hidden = true; closeShortcutHelp();
+  quickStatus.textContent = ""; quickError.textContent = ""; quickDetails.hidden = true; document.getElementById("trash-notice").hidden = true; closeShortcutHelp();
   clearTimeout(clockTimer); closeScheduleDialog(); modalSnapshot = null; closeModal(true); confirmCleanup?.(); boardEl.replaceChildren(); todos = []; fabAdd.disabled = true; });
 document.querySelectorAll("[data-scope]").forEach(button => button.addEventListener("click", () => setTaskScope(button.dataset.scope)));
 sortSelect.value = currentSort;

@@ -4,6 +4,22 @@
 
 const I18N_DICTIONARY = {
   fr: {
+    "scope_trash": "Corbeille",
+    "scope_trash_description": "Restaurables pendant 30 jours. Au-delà, suppression définitive au prochain accès ou à la prochaine synchronisation.",
+    "trash_empty": "La corbeille est vide.",
+    "trash_move": "Mettre à la corbeille",
+    "trash_restore": "Restaurer",
+    "trash_permanent": "Supprimer définitivement",
+    "trash_permanent_title": "Supprimer définitivement cette tâche ?",
+    "trash_permanent_description": "Le titre, les notes et les dates seront effacés. Cette action ne peut pas être annulée.",
+    "trash_dates": "Supprimée le {deleted} · Fin de conservation : {expires}",
+    "trash_notice": "Annulation de suppression",
+    "trash_undo": "Annuler",
+    "trash_moved": "Tâche placée dans la corbeille pour 30 jours.",
+    "trash_restored": "« {title} » a été restaurée avec ses informations d’origine.",
+    "trash_purged": "« {title} » a été supprimée définitivement.",
+    "trash_unavailable": "Cette tâche a expiré ou a été supprimée définitivement. Elle ne peut plus être restaurée.",
+
     "board_scroll_hint": "Faites glisser pour voir les autres colonnes.",
     "quick_label": "Ajouter une tâche",
     "quick_placeholder": "Que devez-vous faire ?",
@@ -149,8 +165,8 @@ const I18N_DICTIONARY = {
     "btn_delete": "Supprimer",
 
     // Modale confirmation suppression
-    "confirm_delete_title": "Supprimer la tâche ?",
-    "confirm_delete_desc": "Cette action est irréversible.",
+    "confirm_delete_title": "Mettre cette tâche à la corbeille ?",
+    "confirm_delete_desc": "Vous pourrez la restaurer pendant 30 jours.",
 
     // Connexion & Inscription
     "tab_login": "Connexion",
@@ -230,6 +246,22 @@ const I18N_DICTIONARY = {
     "footer_data": "Gestion des données"
   },
   en: {
+    "scope_trash": "Trash",
+    "scope_trash_description": "Restorable for 30 days. After that, permanently removed on the next access or sync.",
+    "trash_empty": "The trash is empty.",
+    "trash_move": "Move to trash",
+    "trash_restore": "Restore",
+    "trash_permanent": "Delete permanently",
+    "trash_permanent_title": "Permanently delete this task?",
+    "trash_permanent_description": "The title, notes and dates will be erased. This cannot be undone.",
+    "trash_dates": "Deleted {deleted} · Retention ends: {expires}",
+    "trash_notice": "Undo deletion",
+    "trash_undo": "Undo",
+    "trash_moved": "Task moved to the trash for 30 days.",
+    "trash_restored": "“{title}” was restored with its original information.",
+    "trash_purged": "“{title}” was permanently deleted.",
+    "trash_unavailable": "This task expired or was permanently deleted. It can no longer be restored.",
+
     "board_scroll_hint": "Swipe to see the other columns.",
     "quick_label": "Add a task",
     "quick_placeholder": "What do you need to do?",
@@ -375,8 +407,8 @@ const I18N_DICTIONARY = {
     "btn_delete": "Delete",
 
     // Delete confirmation modal
-    "confirm_delete_title": "Delete task?",
-    "confirm_delete_desc": "This action cannot be undone.",
+    "confirm_delete_title": "Move this task to the trash?",
+    "confirm_delete_desc": "You can restore it for 30 days.",
 
     // Login & Register
     "tab_login": "Sign in",

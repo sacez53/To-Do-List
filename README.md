@@ -1,6 +1,20 @@
-# Ma To-Do List — v5.6.1
+# Ma To-Do List — v5.7.0
 
 Gestionnaire de tâches personnel en HTML, CSS et JavaScript, disponible sur le Web et sous Windows avec Electron.
+
+## Corbeille et annulation — v5.7.0
+
+Supprimer une tâche la place dans la Corbeille avec un horodatage `deletedAt`. Une notification Annuler permet de la récupérer immédiatement. L’onglet Corbeille affiche la date de suppression et la fin de conservation, avec Restaurer et Supprimer définitivement. Le titre y ouvre un résumé en lecture seule.
+
+Les tâches restent restaurables **30 jours**. La restauration restitue le titre, les notes, le statut, les priorités, les dates, l’heure et l’état archivé. Pendant leur séjour dans la corbeille, elles sont exclues des listes actives, des statistiques, du calendrier et des archives. Les exports incluent les tâches encore en corbeille avec leur date de suppression.
+
+À 30 jours, la restauration est refusée ; le contenu est purgé au prochain accès ou à la prochaine synchronisation. Il n’y a pas de tâche serveur planifiée : aucun effacement physique à une heure précise n’est promis quand aucun client ne fonctionne. Une suppression définitive manuelle demande une confirmation séparée. La suppression du compte conserve son propre parcours.
+
+Le schéma de tâches 2 conserve des marqueurs chiffrés `{ id, purgedAt }` sans titre, notes ou dates d’échéance. Ces marqueurs sont conservés sans limite de durée pour couvrir des appareils restés hors ligne longtemps. Une suppression définitive l’emporte sur une ancienne édition ou restauration ; le cache local et sa base de fusion sont nettoyés des champs supprimés. Une restauration faite hors ligne reste provisoire jusqu’à la synchronisation et peut être refusée si la tâche a été supprimée définitivement ailleurs.
+
+Fermer les anciens onglets et mettre à jour tous les appareils Windows avant d’utiliser la corbeille : les anciennes versions ne connaissent pas ce schéma. Le chiffrement et les écritures conditionnelles ne remplacent pas les droits d’accès Firebase décrits plus bas.
+
+La recette comprend 24 tests de logique et les parcours Chromium : annulation, restauration exacte, limite des 30 jours, conflit entre appareils, conservation des marqueurs, calendrier, archives et affichage mobile. Sur téléphone, les quatre onglets se répartissent sur deux rangées.
 
 ## Adaptation téléphone — v5.6.1
 
@@ -57,7 +71,7 @@ Servir le dossier avec un serveur HTTP local ou un hébergement statique HTTPS. 
 
 ## Windows
 
-Le portable courant est `win_app/release/ToDoList-win32-x64/ToDoList.exe`. Le portable de cette livraison est conservé dans `win_app/release/v5.6.1/ToDoList-win32-x64/`. Les sources sont archivées dans `win_app/versions/v5.6.1/`. Les anciennes versions ne sont pas supprimées.
+Le portable courant est `win_app/release/ToDoList-win32-x64/ToDoList.exe`. Le portable de cette livraison est conservé dans `win_app/release/v5.7.0/ToDoList-win32-x64/`. Les sources sont archivées dans `win_app/versions/v5.7.0/`. Les anciennes versions ne sont pas supprimées.
 
 Cette livraison actualise les ressources du portable avec le moteur Electron existant. Elle ne génère pas de nouvel installeur NSIS. Les scripts historiques de construction restent dans `win_app/package.json` ; leur exécution nécessite les dépendances et outils de construction appropriés.
 
@@ -68,7 +82,7 @@ node --test tests/audit-regressions.cjs
 .\win_app\node_modules\electron\dist\electron.exe tests/audit-ui.cjs
 ```
 
-La recette UI utilise les pages locales et un serveur Firebase fictif ; elle ne modifie aucune donnée distante. Elle vérifie la saisie rapide, les raccourcis, les modales, les trois vues, les vues par date, les reports, le calendrier, le changement de mot de passe et l’export. Les captures de contrôle se trouvent dans `output/playwright/`. Aucun score Lighthouse ni certification d'accessibilité n'est annoncé.
+La recette UI utilise les pages locales et un serveur Firebase fictif ; elle ne modifie aucune donnée distante. Elle vérifie la corbeille, la saisie rapide, les raccourcis, les modales, les trois vues, les vues par date, les reports, le calendrier, le changement de mot de passe et l’export. Les captures de contrôle se trouvent dans `output/playwright/`. Aucun score Lighthouse ni certification d'accessibilité n'est annoncé.
 
 ## Documents du projet
 

@@ -1,9 +1,9 @@
-const CACHE_NAME = 'todo-list-cache-v22';
+const CACHE_NAME = 'todo-list-cache-v23';
 const urlsToCache = [
   './', './index.html', './manifest.json',
   ...['app', 'app-v2', 'calendar', 'settings', 'login', 'welcome', 'donnees', 'apropos', 'developpeur', 'confidentialite', 'mentions-legales', 'cgu', 'commentaires'].map(page => `./pages/${page}.html`),
-  './assets/css/style2.css?v=22',
-  ...['runtime', 'dialogs', 'quick-capture', 'task-dates', 'task-store', 'i18n', 'app-v2', 'calendar', 'settings', 'login', 'transitions', 'burger-menu', 'crypto', 'timeout', 'donnees', 'commentaires'].map(script => `./assets/js/${script}.js?v=22`),
+  './assets/css/style2.css?v=23',
+  ...['runtime', 'dialogs', 'quick-capture', 'task-dates', 'task-store', 'i18n', 'app-v2', 'calendar', 'settings', 'login', 'transitions', 'burger-menu', 'crypto', 'timeout', 'donnees', 'commentaires'].map(script => `./assets/js/${script}.js?v=23`),
   ...['firebase', 'security', 'settings', 'ui', 'version'].map(name => `./assets/json/${name}.json`),
   './assets/logo/list-todo.svg', './assets/logo/logo-t.svg',
   './assets/icons/icon-192.png', './assets/icons/icon-512.png', './assets/icons/icon-maskable-512.png'

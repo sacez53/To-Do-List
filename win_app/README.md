@@ -1,9 +1,11 @@
-# To-Do List Windows — v5.6.1
+# To-Do List Windows — v5.7.0
 
 Lancer le portable : `release/ToDoList-win32-x64/ToDoList.exe`.
-La copie versionnée se trouve dans `release/v5.6.1/ToDoList-win32-x64/` et les sources dans `versions/v5.6.1/`.
+La copie versionnée se trouve dans `release/v5.7.0/ToDoList-win32-x64/` et les sources dans `versions/v5.7.0/`.
 
-Cette version adapte l’interface aux petites fenêtres : saisie compacte, périodes sur une rangée, tableau en cartes, dialogues défilants et commandes tactiles. La présentation de bureau est conservée.
+Cette version ajoute N03 : corbeille avec conservation de 30 jours, notification Annuler, restauration complète et suppression définitive confirmée. Les tâches supprimées disparaissent des listes, du calendrier et des archives. Des marqueurs chiffrés empêchent une ancienne restauration hors ligne de rétablir une tâche supprimée définitivement. La purge automatique s’effectue au prochain accès ou à la prochaine synchronisation.
+
+Mettre à jour tous les appareils et fermer les anciens onglets : les anciennes versions ignorent le schéma de corbeille. Les quatre onglets restent accessibles sur deux rangées dans les petites fenêtres ; la présentation de bureau est conservée.
 
 N02 reste disponible : saisie rapide avec Entrée, protection contre le double appui, reprise du brouillon dans le formulaire complet et aide des raccourcis. N rejoint la saisie rapide, Maj+N ouvre le formulaire complet, ? ouvre l’aide. Les raccourcis sont ignorés dans les champs et les dialogues, et désactivables depuis l’aide. Le choix est mémorisé pour ce compte sur cet appareil. Aucune interprétation de dates en langage naturel.
 

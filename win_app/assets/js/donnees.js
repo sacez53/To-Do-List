@@ -36,11 +36,11 @@
   // ── 1. Export JSON (Art. 20 RGPD) ─────────────────────
   async function exportAsJson() {
     if (!ensureAuth()) return;
-    const todos = await getTodos();
+    const todos = (await getTodos()).filter(task => !task.purgedAt);
 
     const exportData = {
       application: "Ma To-Do List",
-      versionFormat: "1.0",
+      versionFormat: "1.1",
       exportDate: new Date().toISOString(),
       utilisateur: currentUser,
       totalTaches: todos.length,
@@ -53,7 +53,8 @@
         echeanceHeure: t.dueTime || "",
         notes: t.notes || "",
         archivee: !!t.archived,
-        creeLe: t.created || t.createdAt || ""
+        creeLe: t.created || t.createdAt || "",
+        supprimeLe: t.deletedAt || ""
       }))
     };
 
@@ -64,9 +65,9 @@
   // ── 2. Export CSV (Art. 20 RGPD) ──────────────────────
   async function exportAsCsv() {
     if (!ensureAuth()) return;
-    const todos = await getTodos();
+    const todos = (await getTodos()).filter(task => !task.purgedAt);
 
-    const headers = ["ID", "Titre", "Statut", "Priorite", "Date echeance", "Heure echeance", "Notes", "Archivee", "Date creation"];
+    const headers = ["ID", "Titre", "Statut", "Priorite", "Date echeance", "Heure echeance", "Notes", "Archivee", "Date creation", "Date suppression"];
     const rows = todos.map(t => [
       escapeCsv(t.id || ""),
       escapeCsv(t.text || ""),
@@ -76,7 +77,8 @@
       escapeCsv(t.dueTime || ""),
       escapeCsv(t.notes || ""),
       escapeCsv(t.archived ? "oui" : "non"),
-      escapeCsv(t.created || t.createdAt || "")
+      escapeCsv(t.created || t.createdAt || ""),
+      escapeCsv(t.deletedAt || "")
     ]);
 
     const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(r => r.join(";"))].join("\r\n");

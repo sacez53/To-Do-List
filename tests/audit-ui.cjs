@@ -14,13 +14,14 @@ fs.mkdirSync(out,{recursive:true});
 const bootstrap = `<script>
 sessionStorage.setItem('auth','true');sessionStorage.setItem('username','audit');if(!sessionStorage.getItem('encKey'))sessionStorage.setItem('encKey',btoa(String.fromCharCode(...new Uint8Array(32).fill(7))));sessionStorage.setItem('lang','fr');
 window.__fixture={account:{password:'hash',todos:[{id:'a',text:'Task A',status:'todo',priority:'normal',notes:'Notes',created:'2026-01-01T12:00:00Z'},{id:'b',text:'<b>Literal task</b>',status:'inprogress',priority:'high',notes:'',due:'2026-11-03'}]},version:0};
+if(sessionStorage.getItem("__keepFixture"))window.__fixture=JSON.parse(sessionStorage.getItem("__keepFixture"));
 window.__alerts=[];window.alert=msg=>__alerts.push(msg);window.confirm=()=>true;
 const originalFetch=window.fetch.bind(window);
 window.fetch=async(url,options={})=>{
  if(String(url).includes('firebase.json'))return Response.json({url:'https://fixture.invalid'});
  if(String(url).includes('fixture.invalid')){
   if(__fixture.failure)return new Response('{}',{status:__fixture.failure});
-  if(options.method==='PUT'){if(options.headers['if-match']!==String(__fixture.version))return new Response('{}',{status:412});__fixture.account=JSON.parse(options.body);__fixture.version++;}
+  if(options.method==='PUT'){if(options.headers['if-match']!==String(__fixture.version))return new Response('{}',{status:412});__fixture.account=JSON.parse(options.body);__fixture.version++;if(sessionStorage.getItem("__keepFixture"))sessionStorage.setItem("__keepFixture",JSON.stringify(__fixture));}
   return Response.json(__fixture.account,{headers:{ETag:String(__fixture.version)}});
  }
  return originalFetch(url,options);
@@ -101,7 +102,7 @@ app.whenReady().then(async()=>{
   win=new BrowserWindow({show:false,width:1040,height:800,webPreferences:{partition,contextIsolation:true,nodeIntegration:false,backgroundThrottling:false,offscreen:true}});
   win.webContents.on('console-message',(_event,level,message)=>{if(level===3)errors.push(message);});
   await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
-  await until('!!taskStore && todos.length===2 && !syncRunning');
+  await until('!!taskStore && todos.filter(t=>!TodoData.removed(t)).length===2 && !syncRunning');
   assert.equal(await run('currentScope'),'today');
   assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=a]")===null'),true);
   await run('setTaskScope("all")');
@@ -113,11 +114,11 @@ app.whenReady().then(async()=>{
    await run('modalEditBtn.click()');assert.equal(await run('modalBody.style.display'),'flex');await run('closeModal(true)');
   }
   await run('openModal("a","edit");modalDelete.click();document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape"}));openModal("b","edit");modalDelete.click();confirmYes.click()');
-  await until('todos.length===1 && !syncRunning');assert.equal(await run('todos[0].id'),'a');
+  await until('todos.filter(t=>!TodoData.removed(t)).length===1 && !syncRunning');assert.equal(await run('todos.find(t=>!TodoData.removed(t)).id'),'a');
   await run('currentView="list";searchQuery="<img src=x onerror=alert(1)>";render()');
   assert.equal(await run('boardEl.querySelector("img")===null'),true);
   await run('searchQuery="";render();fabAdd.click();modalText.value="Created via form";modalSave.click()');
-  await until('todos.length===2 && !modalOverlay.classList.contains("open") && !syncRunning');
+  await until('todos.filter(t=>!TodoData.removed(t)).length===2 && !modalOverlay.classList.contains("open") && !syncRunning');
   await run('openModal("a","edit");modalText.value="Unsaved";window.confirm=()=>false;modalClose.click()');assert.equal(await run('modalOverlay.classList.contains("open")'),true);
   await run('window.confirm=()=>true;closeModal(true);openModal("a","view")');
   await new Promise(r=>setTimeout(r,80));
@@ -132,6 +133,7 @@ app.whenReady().then(async()=>{
   win.setContentSize(375,812);await new Promise(r=>setTimeout(r,120));
   assert.equal(await run('document.documentElement.scrollWidth<=window.innerWidth'),true);
   await fs.promises.writeFile(path.join(out,'audit-mobile.png'),(await win.webContents.capturePage()).toPNG());
+  await run('mutateTrash("b","restore")');await until('!syncRunning && !trashBusy');
   // N02: use actual Enter events for the quick-entry form.
   win.setContentSize(1040,900);
   await run('window.__captureStart=todos.length;quickTitle.focus();quickTitle.value="   ";quickForm.requestSubmit()');
@@ -202,7 +204,7 @@ app.whenReady().then(async()=>{
   assert.equal(await run('document.activeElement===quickTitle'),false);
   assert.equal(await run('localStorage.getItem(shortcutsKey)'),'false');
   await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
-  await until('!!taskStore && !syncRunning && todos.length===2');
+  await until('!!taskStore && !syncRunning && todos.filter(t=>!TodoData.removed(t)).length===2');
   assert.equal(await run('shortcutsEnabled.checked'),false);
   // Help remains keyboard-accessible when its shortcut is disabled.
   await run('document.getElementById("shortcuts-open").focus()');
@@ -223,6 +225,57 @@ app.whenReady().then(async()=>{
   assert.equal(await run('quickTitle.getBoundingClientRect().width>150'),true);
   await fs.promises.writeFile(path.join(out,'n02-mobile.png'),(await win.webContents.capturePage()).toPNG());
   console.log('N02 PASS: native Enter, duplicate protection, required title, literal text, focus, full-form draft, local-save retry, composition, contextual shortcuts, persistent opt-out, keyboard help and FR/EN.');
+  // N03: exercise deletion, undo, calendar exclusion, restore and final removal.
+  win.setContentSize(1040,900);
+  await run(`(async()=>{
+    const task={id:'trash-ui',text:'Tâche récupérable <b>littérale</b>',status:'waiting',priority:'high',due:TaskDates.day(),dueTime:'09:15',notes:'Notes à conserver',created:'2026-01-01T12:00:00.000Z',archived:false};
+    window.__trashOriginal=JSON.parse(JSON.stringify(task));todos.push(task);await saveTodos();setTaskScope('all');
+    openModal(task.id,'edit');modalDelete.click();confirmYes.click();
+  })()`);
+  await until('!trashBusy && !syncRunning && !!todos.find(t=>t.id==="trash-ui").deletedAt');
+  assert.equal(await run('boardEl.querySelector("[data-task-id=trash-ui]")===null'),true);
+  assert.equal(await run('document.getElementById("trash-notice").hidden'),false);
+  await run('document.getElementById("trash-undo").click()');
+  await until('!trashBusy && !syncRunning && !todos.find(t=>t.id==="trash-ui").deletedAt');
+  assert.deepEqual(await run('JSON.parse(JSON.stringify(todos.find(t=>t.id==="trash-ui")))'),await run('__trashOriginal'));
+  await run('openModal("trash-ui","edit");modalDelete.click();confirmYes.click()');
+  await until('!trashBusy && !syncRunning && !!todos.find(t=>t.id==="trash-ui").deletedAt');
+  await run('sessionStorage.setItem("__keepFixture",JSON.stringify(__fixture))');
+  await win.loadURL(`http://127.0.0.1:${port}/pages/calendar.html`);
+  await until('calendarStore && !calendarLoading');
+  await run('calendarViewType="planning";updateCalendarView()');
+  assert.equal(await run('calendarPlanningList.textContent.includes("Tâche récupérable")'),false);
+  await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
+  await until('taskStore && !syncRunning');
+  await run('setTaskScope("trash")');
+  assert.equal(await run('boardEl.querySelector("[data-task-id=trash-ui]")!==null'),true);
+  assert.equal(await run('document.getElementById("v2-scope-description").textContent.includes("30 jours")'),true);
+  await run('boardEl.querySelector("[data-task-id=trash-ui] .task-summary").click()');
+  assert.equal(await run('modalEditBtn.style.display'),'none');
+  assert.equal(await run('modalBody.style.display'),'none');
+  assert.equal(await run('recapNotes.textContent'),'Notes à conserver');
+  await run('closeModal(true);boardEl.querySelector("[data-task-id=trash-ui] [data-task-action=restore]").click()');
+  await until('!trashBusy && !syncRunning && !todos.find(t=>t.id==="trash-ui").deletedAt');
+  assert.equal(await run('todos.find(t=>t.id==="trash-ui").dueTime'),'09:15');
+  await run('openModal("trash-ui","edit");modalDelete.click();confirmYes.click()');
+  await until('!trashBusy && !syncRunning && !!todos.find(t=>t.id==="trash-ui").deletedAt');
+  await new Promise(r=>setTimeout(r,350));
+  await fs.promises.writeFile(path.join(out,'trash-desktop.png'),(await win.webContents.capturePage()).toPNG());
+  win.setContentSize(320,740);await new Promise(r=>setTimeout(r,100));
+  await run('document.body.focus();window.scrollTo(0,0)');
+  assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
+  assert.equal(await run('[...boardEl.querySelectorAll(".v2-trash-actions button")].every(b=>b.getBoundingClientRect().height>=44)'),true);
+  assert.equal(await run('getComputedStyle(document.querySelector(".v2-toolbar")).display'),'none');
+  await fs.promises.writeFile(path.join(out,'trash-phone.png'),(await win.webContents.capturePage()).toPNG());
+  await run('boardEl.querySelector("[data-task-id=trash-ui] [data-task-action=purge]").click();confirmNo.click()');
+  assert.equal(await run('!!todos.find(t=>t.id==="trash-ui").deletedAt'),true);
+  await run('boardEl.querySelector("[data-task-id=trash-ui] [data-task-action=purge]").click();confirmYes.click()');
+  await until('!trashBusy && !syncRunning && !!todos.find(t=>t.id==="trash-ui").purgedAt');
+  assert.deepEqual(await run('Object.keys(todos.find(t=>t.id==="trash-ui")).sort()'),['id','purgedAt']);
+  assert.equal(await run('mutateTrash("trash-ui","restore")'),false);
+  assert.equal(await run('todos.find(t=>t.id==="trash-ui").text'),undefined);
+  await run('sessionStorage.removeItem("__keepFixture");document.getElementById("trash-notice").hidden=true;setTaskScope("today");document.getElementById("trash-feedback").textContent=""');
+  console.log('N03 PASS: soft deletion, Undo, exact restoration, calendar exclusion, read-only trash summary, 30-day notice, mobile actions, permanent-delete confirmation and non-restorable marker.');
   // N01: use local calendar dates, independent of the day this suite is run.
   win.setContentSize(1040,900);
   await run(`(async()=>{
@@ -300,16 +353,22 @@ app.whenReady().then(async()=>{
   await new Promise(r=>setTimeout(r,450));
   await fs.promises.writeFile(path.join(out,'phone-settings.png'),(await win.webContents.capturePage()).toPNG());
   assert.equal(await run('typeof saveArchivedChanges'), 'function');
+  await run(`(async()=>{await archiveStore.sync();const current=archiveStore.read();current.push({id:'archive-ui',text:'Archive récupérable',notes:'Archive notes',status:'done',archived:true});await archiveStore.save(current);await archiveStore.sync();updateArchivedView();document.querySelector('[data-tab="tab-archive"]').click();document.querySelectorAll('#archived-tasks-container button')[1].click();})()`);
+  await until('!!archiveStore.read().find(t=>t.id==="archive-ui").deletedAt && !!document.getElementById("archive-trash-undo")');
+  await run('document.getElementById("archive-trash-undo").click()');
+  await until('!document.getElementById("archive-trash-undo") && !archiveStore.read().find(t=>t.id==="archive-ui").deletedAt');
+  assert.equal(await run('archiveStore.read().find(t=>t.id==="archive-ui").archived'),true);
+  await run(`(async()=>{await archiveStore.save(archiveStore.read().filter(t=>t.id!=="archive-ui"));await archiveStore.sync();updateArchivedView();document.querySelector('[data-tab="tab-account"]').click();})()`);
   await run(`(async()=>{const salt=generateSalt();__fixture.account.salt=salt;__fixture.account.password=await hashPasswordPBKDF2('old-password',salt);document.getElementById('old-password').value='old-password';document.getElementById('new-password').value='new-password';document.getElementById('confirm-new-password').value='new-password';btnChangePassword.click();})()`);
   await until('!btnChangePassword.disabled && document.getElementById("msg-password").textContent.includes("✓")');
-  assert.equal(await run('(async()=>{const key=await importKey(sessionStorage.getItem("encKey"));return (await decryptData(__fixture.account.todos,key)).length})()'),2);
+  assert.equal(await run('(async()=>{const key=await importKey(sessionStorage.getItem("encKey"));return (await decryptData(__fixture.account.todos,key)).filter(t=>!TodoData.removed(t)).length})()'),2);
   assert.equal(await run('localStorage.getItem("todo_state_audit").includes("Task A")'),false);
   await win.loadURL(`http://127.0.0.1:${port}/pages/donnees.html`);
   await run('window.__export=null;URL.createObjectURL=blob=>{window.__export=blob;return "blob:audit"};HTMLAnchorElement.prototype.click=function(){};document.getElementById("export-json").click()');
   await until('!!window.__export');
   assert.equal(await run('(async()=>JSON.parse(await __export.text()).donnees.find(t=>t.id==="a").creeLe)()'),'2026-01-01T12:00:00Z');
   await win.loadURL(`http://127.0.0.1:${port}/win_app/src/app.html`);
-  await until('!!taskStore && todos.length===2 && !syncRunning');
+  await until('!!taskStore && todos.filter(t=>!TodoData.removed(t)).length===2 && !syncRunning');
   await run('setTaskScope("all");document.querySelector(".task-summary").click()');
   assert.equal(await run('modalBody.style.display'),'none');
   await run('modalEditBtn.click()');assert.equal(await run('modalBody.style.display'),'flex');

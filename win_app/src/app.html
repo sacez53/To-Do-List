@@ -10,9 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style2.css?v=22" />
-  <script src="../assets/js/transitions.js?v=22"></script>
-  <script src="../assets/js/i18n.js?v=22"></script>
+  <link rel="stylesheet" href="../assets/css/style2.css?v=23" />
+  <script src="../assets/js/transitions.js?v=23"></script>
+  <script src="../assets/js/i18n.js?v=23"></script>
   <script>if (!sessionStorage.getItem("auth")) window.location.replace("./login.html");</script>
   <style>
     /* ── V2 tokens ── */
@@ -937,8 +937,8 @@
       });
     }
   </script>
-  <script src="../assets/js/runtime.js?v=22"></script>
-  <script src="../assets/js/dialogs.js?v=22"></script>
+  <script src="../assets/js/runtime.js?v=23"></script>
+  <script src="../assets/js/dialogs.js?v=23"></script>
 </head>
 
 <body class="task-app">
@@ -985,6 +985,7 @@
       <button type="button" class="v2-scope active" data-scope="today" aria-pressed="true"><span data-i18n="scope_today">Aujourd’hui</span><span class="v2-scope-count">0</span></button>
       <button type="button" class="v2-scope" data-scope="upcoming" aria-pressed="false"><span data-i18n="scope_upcoming">À venir</span><span class="v2-scope-count">0</span></button>
       <button type="button" class="v2-scope" data-scope="all" aria-pressed="false"><span data-i18n="scope_all">Toutes les tâches</span><span class="v2-scope-count">0</span></button>
+      <button type="button" class="v2-scope" data-scope="trash" aria-pressed="false"><span data-i18n="scope_trash">Corbeille</span><span class="v2-scope-count">0</span></button>
     </nav>
     <div class="v2-scope-intro">
       <h2 id="v2-scope-heading" data-i18n="scope_today">Aujourd’hui</h2>
@@ -1071,6 +1072,7 @@
     <p id="v2-scope-results" class="v2-scope-results" role="status" aria-live="polite"></p>
     <p id="v2-schedule-feedback" class="v2-schedule-feedback" role="status" aria-live="polite"></p>
     <p id="v2-board-scroll-hint" class="v2-mobile-scroll-hint" data-i18n="board_scroll_hint" hidden>Faites glisser pour voir les autres colonnes.</p>
+    <p id="trash-feedback" class="v2-schedule-feedback" role="status" aria-live="polite"></p>
     <!-- Board -->
     <div id="v2-board" class="v2-board"></div>
 
@@ -1085,6 +1087,12 @@
     </div>
     <p>© 2026 · Sacha G.</p>
   </footer>
+
+  <aside id="trash-notice" class="v2-trash-notice" hidden aria-label="Annulation de suppression" data-i18n-aria="trash_notice">
+    <span id="trash-notice-text" role="status" aria-live="polite"></span>
+    <button type="button" id="trash-undo" class="v2-capture-link" data-i18n="trash_undo">Annuler</button>
+    <button type="button" id="trash-notice-close" class="v2-capture-link" aria-label="Fermer" data-i18n-aria="btn_close">✕</button>
+  </aside>
 
   <!-- FAB -->
   <div class="v2-add-dock">
@@ -1214,12 +1222,12 @@
     </div>
   </div>
 
-  <script src="../assets/js/crypto.js?v=22"></script>
-  <script src="../assets/js/task-store.js?v=22"></script>
-  <script src="../assets/js/timeout.js?v=22"></script>
-  <script src="../assets/js/task-dates.js?v=22"></script>
-  <script src="../assets/js/quick-capture.js?v=22"></script>
-  <script src="../assets/js/app-v2.js?v=22"></script>
+  <script src="../assets/js/crypto.js?v=23"></script>
+  <script src="../assets/js/task-store.js?v=23"></script>
+  <script src="../assets/js/timeout.js?v=23"></script>
+  <script src="../assets/js/task-dates.js?v=23"></script>
+  <script src="../assets/js/quick-capture.js?v=23"></script>
+  <script src="../assets/js/app-v2.js?v=23"></script>
 </body>
 
 </html>

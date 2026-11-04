@@ -414,7 +414,7 @@ async function loadArchiveStore() {
 }
 function updateArchivedView() {
     const todos = archiveStore ? archiveStore.read() : [];
-    const archivedTasks = todos.filter(t => t.archived);
+    const archivedTasks = todos.filter(t => t.archived && !TodoData.removed(t));
     
     const container = document.getElementById("archived-tasks-container");
     const msg = document.getElementById("no-archived-msg");
@@ -469,9 +469,10 @@ function updateArchivedView() {
             btnDelete.style.cursor = "pointer";
             btnDelete.style.borderRadius = "3px";
             btnDelete.addEventListener("click", async () => {
-                if (confirm("Supprimer définitivement cette tâche ?")) {
-                    const newTodos = todos.filter(t => t.id !== task.id);
-                    await saveArchivedChanges(newTodos);
+                if (confirm(TodoRuntime.message("Placer cette tâche dans la corbeille pendant 30 jours ?", "Move this task to the trash for 30 days?"))) {
+                    const deleted = TodoData.trash(task);
+                    const newTodos = todos.map(t => t.id === task.id ? deleted : t);
+                    if (await saveArchivedChanges(newTodos)) offerArchiveUndo(deleted);
                 }
             });
             
@@ -487,12 +488,35 @@ function updateArchivedView() {
     }
 }
 
+function offerArchiveUndo(deleted) {
+  document.getElementById("archive-trash-undo")?.remove();
+  const button = document.createElement("button"); button.type = "button"; button.id = "archive-trash-undo"; button.className = "btn-save";
+  button.textContent = TodoRuntime.message("Annuler la suppression", "Undo deletion");
+  document.getElementById("msg-archive").textContent = TodoRuntime.message("Tâche placée dans la corbeille, accessible depuis l’application. Conservation : 30 jours.", "Task moved to the trash in the app. Retention: 30 days.");
+  document.getElementById("msg-archive").after(button);
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    try {
+      const current = archiveStore.read();
+      const task = current.find(t => String(t.id) === String(deleted.id));
+      if (!task) throw new Error(TodoRuntime.message("Tâche indisponible.", "Task unavailable."));
+      const restored = TodoData.restore(task, new Date(), deleted.deletionId);
+      if (await saveArchivedChanges(current.map(t => t.id === task.id ? restored : t))) {
+        const result = archiveStore.read().find(t => t.id === task.id);
+        if (!result || TodoData.removed(result)) throw new Error(TodoRuntime.message("Cette tâche a été supprimée définitivement.", "This task was permanently deleted."));
+        button.remove();
+      }
+    } catch (error) { showMsg(document.getElementById("msg-archive"), error.message, true); }
+    finally { button.disabled = false; }
+  });
+}
 async function saveArchivedChanges(newTodos) {
   try {
     if (!archiveStore) await loadArchiveStore();
     await archiveStore.save(newTodos);
     updateArchivedView();
     await archiveStore.sync();
+    updateArchivedView();
     showMsg(document.getElementById("msg-archive"), TodoRuntime.message("Modifications enregistrées.", "Changes saved."));
     return true;
   } catch (error) {
@@ -509,7 +533,7 @@ if (btnArchiveDone) {
         const todos = archiveStore.read();
         let changed = false;
         todos.forEach(t => {
-            if (t.status === "done" && !t.archived) {
+            if (t.status === "done" && !t.archived && !TodoData.removed(t)) {
                 t.archived = true;
                 changed = true;
             }

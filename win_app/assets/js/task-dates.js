@@ -10,7 +10,7 @@ window.TaskDates = (() => {
     return day(date);
   }
   function active(task) {
-    return !task.archived && !["done", "cancelled"].includes(task.status);
+    return !task.archived && !task.deletedAt && !task.purgedAt && !["done", "cancelled"].includes(task.status);
   }
   function overdue(due, time, status, now = new Date()) {
     if (!due || ["done", "cancelled"].includes(status)) return false;
@@ -19,7 +19,7 @@ window.TaskDates = (() => {
     return !!time && new Date(`${due}T${time}:00`).getTime() <= now.getTime();
   }
   function matches(task, scope, now = new Date()) {
-    if (task.archived) return false;
+    if (task.archived || task.deletedAt || task.purgedAt) return false;
     if (scope === "all") return true;
     if (!active(task) || !task.due) return false;
     return scope === "today" ? task.due <= day(now) : scope === "upcoming" && task.due > day(now);

@@ -1644,3 +1644,27 @@ body .v2-card-text, body .v2-item-text { font-size:.9rem; }
   .calendar-page-content { width:100%; min-width:0; }
   .calendar-tooltip { display:none; } /* Tapping a date opens its planning on phones. */
 }
+
+/* N03: recoverable deletion and a distinct trash screen. */
+.task-app.trash-view .v2-toolbar, .task-app.trash-view .v2-view-switcher, .task-app.trash-view .v2-filter-bar, .task-app.trash-view #v2-filter-panel, .task-app.trash-view .v2-overall-progress { display:none; }
+.v2-trash-list { list-style:none; display:grid; gap:.8rem; }
+.v2-trash-card { padding:1rem; border:1px solid var(--line-strong); border-radius:4px; background:var(--surface); }
+.v2-trash-card .task-summary { font-size:1rem; }
+.v2-trash-meta { color:var(--text-muted); font-size:.8rem; margin:.45rem 0 .75rem; overflow-wrap:anywhere; }
+.v2-trash-actions { display:flex; flex-wrap:wrap; gap:.5rem; }
+.v2-trash-actions [data-task-action="purge"] { color:#fca5a5; }
+.v2-trash-notice { position:fixed; left:50%; transform:translateX(-50%); bottom:1.25rem; z-index:60; width:min(90%,720px); display:flex; align-items:center; gap:.5rem; padding:.75rem; background:var(--surface-3); border:1px solid var(--line-strong); border-radius:6px; box-shadow:0 4px 20px #0008; }
+.v2-trash-notice[hidden] { display:none; }
+.v2-trash-notice > span { flex:1; overflow-wrap:anywhere; font-size:.85rem; }
+@media(max-width:600px) {
+  body.task-app .v2-scopes { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  body.task-app .v2-scope { flex-direction:row; min-height:48px; gap:.5rem; }
+  .v2-trash-card { padding:.8rem; }
+  .v2-trash-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .v2-trash-actions button { min-height:48px; white-space:normal; }
+  .v2-trash-notice { bottom:calc(76px + env(safe-area-inset-bottom)); width:calc(100% - 1.5rem); flex-wrap:wrap; }
+  .v2-trash-notice > span { flex-basis:100%; }
+  .task-input-focused .v2-trash-notice, .task-app.modal-open .v2-trash-notice { display:none; }
+}
+
+.trash-view .v2-trash-notice { display:none; }

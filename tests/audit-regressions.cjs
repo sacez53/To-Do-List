@@ -158,3 +158,63 @@ test('N02: editable fields keep their keystrokes',()=>{
   assert.equal(keys.action({key:'?'},true,{closest:()=>({})},false),null);
   assert.equal(keys.action({key:'n'},true,{closest:()=>null},false),'quick');
 });
+
+test('N03: trash and restore preserve every task field; obsolete undo generations are refused',()=>{
+  const d=context().TodoData, now=new Date();
+  const original={id:'x',text:'Title',status:'waiting',priority:'high',due:'2026-12-15',dueTime:'09:45',notes:'Private notes',created:'2026-01-01T12:00:00.000Z',archived:true};
+  const deleted=d.trash(original,now);
+  assert.equal(original.deletedAt,undefined);assert.equal(deleted.deletedAt,now.toISOString());
+  assert.deepEqual(plain(d.restore(deleted,now,deleted.deletionId)),original);
+  assert.throws(()=>d.restore(deleted,now,'stale-undo'));
+  assert.throws(()=>d.restore(d.purge(deleted),now));
+});
+test('N03: retention closes exactly at 30 days, converting content into a minimal marker',()=>{
+  const d=context().TodoData, start=new Date('2026-10-01T12:00:00.000Z'), deleted=d.trash({id:'x',text:'Secret',notes:'Private'},start);
+  const end=new Date(start.getTime()+d.RETENTION_MS);
+  assert(d.inTrash(deleted,new Date(end.getTime()-1)));assert(!d.inTrash(deleted,end));
+  assert.throws(()=>d.restore(deleted,end));
+  assert.deepEqual(Object.keys(d.expire([deleted],end)[0]).sort(),['id','purgedAt']);
+});
+test('N03: concurrent delete/edit stays in trash; permanent markers dominate every merge',()=>{
+  const d=context().TodoData, original={id:'x',text:'Original'}, deleted=d.trash(original), edited={...original,text:'Edited offline'}, marker=d.purge(deleted);
+  assert(d.merge([original],[edited],[deleted])[0].deletedAt);
+  assert(d.merge([original],[deleted],[edited])[0].deletedAt);
+  for(const args of [[[deleted],[original],[marker]],[[deleted],[marker],[original]],[[marker],[],[original]]])assert.deepEqual(plain(d.merge(...args)),[plain(marker)]);
+});
+test('N03: an offline restore cannot resurrect a task purged by another device',async()=>{
+  const server={account:{password:'hash',todos:[{id:'x',text:'Secret',notes:'Private',status:'waiting',due:'2026-12-01',dueTime:'10:00'}]},version:0};
+  const ca=context(storage(),server),cb=context(storage(),server),a=await ca.TodoData.open('alice'),b=await cb.TodoData.open('alice');
+  await a.sync();await a.save([ca.TodoData.trash(a.read()[0])]);await a.sync();await b.sync();
+  const offlineRestore=cb.TodoData.restore(b.read()[0]);
+  await a.save([ca.TodoData.purge(a.read()[0])]);await a.sync();
+  await b.save([offlineRestore]);await b.sync();
+  assert(b.read()[0].purgedAt);assert.equal(b.read()[0].text,undefined);
+  await a.sync();assert(a.read()[0].purgedAt);
+});
+test('N03: an ordinary restore syncs with its original dates, notes and status',async()=>{
+  const server={account:{password:'hash',todos:[{id:'x',text:'Keep',status:'inprogress',notes:'Notes',due:'2026-12-01',dueTime:'10:00'}]},version:0};
+  const ca=context(storage(),server),cb=context(storage(),server),a=await ca.TodoData.open('alice'),b=await cb.TodoData.open('alice');
+  await a.sync();const original=plain(a.read()[0]);await a.save([ca.TodoData.trash(original)]);await a.sync();await b.sync();
+  await b.save([cb.TodoData.restore(b.read()[0])]);await b.sync();
+  assert.deepEqual(plain(await a.sync()),[original]);
+});
+test('N03: marker omission is repaired and no deleted content remains in either cache snapshot',async()=>{
+  const local=storage(),server={account:{password:'hash',todos:[{id:'x',text:'Secret',notes:'Private'}]},version:0},ctx=context(local,server),store=await ctx.TodoData.open('alice');
+  await store.sync();await store.save([ctx.TodoData.trash(store.read()[0])]);await store.sync();await store.save([ctx.TodoData.purge(store.read()[0])]);await store.sync();
+  const key=await ctx.importKey(ctx.sessionStorage.getItem('encKey'));
+  const state=await ctx.decryptData(JSON.parse(local.getItem('todo_state_alice')),key);
+  assert(!JSON.stringify(state).includes('Secret'));assert(!JSON.stringify(state).includes('Private'));
+  server.account.todos=[];server.version++;
+  await store.sync();assert(store.read()[0].purgedAt);
+  const remote=await ctx.decryptData(server.account.todos,key);assert(remote[0].purgedAt);
+});
+test('N03: expiration persists offline and is synchronized when the network returns',async()=>{
+  const old=new Date(Date.now()-31*86400000),ctx=context(),store=await ctx.TodoData.open('alice');
+  await store.save([ctx.TodoData.trash({id:'old',text:'Expired'},old)]);
+  assert(store.read()[0].purgedAt);assert(store.pending());
+  await store.sync();assert(!store.pending());assert.equal(store.read()[0].text,undefined);
+});
+test('N03: date scopes hide both trash and permanent deletion markers',()=>{
+  const d=dates(),now=new Date(),base={id:'x',status:'todo',due:d.day(now)};
+  for(const task of [{...base,deletedAt:now.toISOString()},{id:'x',purgedAt:now.toISOString()}])for(const scope of ['all','today','upcoming'])assert(!d.matches(task,scope,now));
+});

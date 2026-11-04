@@ -64,7 +64,7 @@ function updateCalendarView() {
 function renderPlanning() {
   calendarPlanningList.innerHTML = "";
   
-  const planningTasks = todos.filter(t => !t.archived && t.due && t.status !== "done" && t.status !== "cancelled");
+  const planningTasks = todos.filter(t => !t.archived && !t.deletedAt && !t.purgedAt && t.due && t.status !== "done" && t.status !== "cancelled");
   
   if (planningTasks.length === 0) {
     calendarPlanningList.innerHTML = `<p style='text-align:center; color:var(--text-faint); margin-top:2rem;'>${t("no_planning_tasks")}</p>`;
@@ -180,7 +180,7 @@ function renderCalendarGrid() {
       cell.classList.add("today");
     }
     
-    const dayTasks = todos.filter(t => !t.archived && t.due === dateStr && t.status !== "done" && t.status !== "cancelled");
+    const dayTasks = todos.filter(t => !t.archived && !t.deletedAt && !t.purgedAt && t.due === dateStr && t.status !== "done" && t.status !== "cancelled");
     if (dayTasks.length > 0) {
       cell.classList.add("has-tasks");
       const dot = document.createElement("div");

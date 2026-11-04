@@ -4,7 +4,7 @@ Date : 3 novembre 2026 — référence : dépôt Web v5.4.2.
 
 ## 1. Orientation
 
-Le produit gagnerait à aider l'utilisateur à décider quoi faire aujourd'hui, à capturer ses tâches rapidement et à retrouver ses données sans inquiétude. N01 est livrée en v5.5.0 et N02 en v5.6.0 ; les autres ajouts ci-dessous restent des propositions. Ils complètent l'audit dans `AUDIT_SITE_WEB.md`.
+Le produit gagnerait à aider l'utilisateur à décider quoi faire aujourd'hui, à capturer ses tâches rapidement et à retrouver ses données sans inquiétude. N01 est livrée en v5.5.0, N02 en v5.6.0 et N03 en v5.7.0 ; les autres ajouts ci-dessous restent des propositions. Ils complètent l'audit dans `AUDIT_SITE_WEB.md`.
 
 La recherche, les trois vues, les priorités, les notes, les échéances avec heure, le calendrier et les exports JSON/CSV existent déjà : ils ne sont pas comptés comme nouveautés.
 
@@ -61,6 +61,8 @@ Les tailles sont relatives : **S** = modification ciblée ; **M** = plusieurs co
 **À différer :** compréhension de phrases telles que « demain à 14 h » ; une mauvaise interprétation peut créer une échéance inattendue.
 
 ### N03 — Corbeille et annulation
+
+**Livré le 4 novembre 2026 en v5.7.0.** Conservation fixée à 30 jours, annulation immédiate, restauration et suppression définitive confirmée. Les marqueurs minimaux chiffrés empêchent la réapparition d’une tâche définitivement supprimée lors des synchronisations entre clients à jour. La purge automatique intervient au prochain accès/synchronisation.
 
 **Usage :** récupérer une tâche supprimée par erreur.
 
