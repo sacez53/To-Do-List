@@ -4,7 +4,7 @@ Date : 3 novembre 2026 — référence : dépôt Web v5.4.2.
 
 ## 1. Orientation
 
-Le produit gagnerait à aider l'utilisateur à décider quoi faire aujourd'hui, à capturer ses tâches rapidement et à retrouver ses données sans inquiétude. Les ajouts ci-dessous sont des propositions, non des fonctions livrées. Ils complètent l'audit dans `AUDIT_SITE_WEB.md`.
+Le produit gagnerait à aider l'utilisateur à décider quoi faire aujourd'hui, à capturer ses tâches rapidement et à retrouver ses données sans inquiétude. N01 est livrée en v5.5.0 ; les autres ajouts ci-dessous restent des propositions. Ils complètent l'audit dans `AUDIT_SITE_WEB.md`.
 
 La recherche, les trois vues, les priorités, les notes, les échéances avec heure, le calendrier et les exports JSON/CSV existent déjà : ils ne sont pas comptés comme nouveautés.
 
@@ -37,6 +37,8 @@ Les tailles sont relatives : **S** = modification ciblée ; **M** = plusieurs co
 ## 3. Spécifications des ajouts prioritaires
 
 ### N01 — Aujourd'hui et À venir
+
+**Livré le 4 novembre 2026 en v5.5.0.** Aujourd’hui inclut les retards et le jour local ; À venir commence demain. Les commandes de report conservent l’heure et les autres champs.
 
 **Usage :** ouvrir l'application et voir les retards, les tâches du jour puis les prochaines échéances.
 

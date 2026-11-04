@@ -1,6 +1,14 @@
-# Ma To-Do List — v5.4.3
+# Ma To-Do List — v5.5.0
 
 Gestionnaire de tâches personnel en HTML, CSS et JavaScript, disponible sur le Web et sous Windows avec Electron.
+
+## Aujourd’hui et À venir — v5.5.0
+
+L’application ouvre Aujourd’hui : tâches actives en retard, puis échéances du jour. À venir affiche les tâches actives dont la date est après aujourd’hui, avec un tri chronologique initial. Toutes les tâches conserve aussi les tâches sans échéance, terminées et annulées. Les tâches archivées restent dans les paramètres.
+
+Les trois raccourcis se combinent avec les vues Liste/Kanban/Tableau, la recherche et les filtres existants. Reporter à demain enregistre directement la nouvelle date ; Choisir une date demande une confirmation dans un dialogue dédié. L’heure, les notes, la priorité et le statut sont conservés. Le résumé reste en lecture seule.
+
+Les jours sont calculés dans le fuseau local. Une tâche sans heure devient en retard au lendemain ; une tâche avec heure devient en retard lorsque cette heure est atteinte. L’écran se recalcule chaque minute et au retour sur la fenêtre, y compris autour de minuit. Une tâche terminée ou annulée disparaît des deux vues actives.
 
 ## Fonctions existantes
 
@@ -27,7 +35,7 @@ Servir le dossier avec un serveur HTTP local ou un hébergement statique HTTPS. 
 
 ## Windows
 
-Le portable courant est `win_app/release/ToDoList-win32-x64/ToDoList.exe`. Le portable de cette livraison est conservé dans `win_app/release/v5.4.3/ToDoList-win32-x64/`. Les sources sont archivées dans `win_app/versions/v5.4.3/`. Les anciennes versions ne sont pas supprimées.
+Le portable courant est `win_app/release/ToDoList-win32-x64/ToDoList.exe`. Le portable de cette livraison est conservé dans `win_app/release/v5.5.0/ToDoList-win32-x64/`. Les sources sont archivées dans `win_app/versions/v5.5.0/`. Les anciennes versions ne sont pas supprimées.
 
 Cette livraison actualise les ressources du portable avec le moteur Electron existant. Elle ne génère pas de nouvel installeur NSIS. Les scripts historiques de construction restent dans `win_app/package.json` ; leur exécution nécessite les dépendances et outils de construction appropriés.
 
@@ -38,13 +46,13 @@ node --test tests/audit-regressions.cjs
 .\win_app\node_modules\electron\dist\electron.exe tests/audit-ui.cjs
 ```
 
-La recette UI utilise les pages locales et un serveur Firebase fictif ; elle ne modifie aucune donnée distante. Elle vérifie les modales, les trois vues, le calendrier, le changement de mot de passe et l'export. Les captures de contrôle se trouvent dans `output/playwright/`. Aucun score Lighthouse ni certification d'accessibilité n'est annoncé.
+La recette UI utilise les pages locales et un serveur Firebase fictif ; elle ne modifie aucune donnée distante. Elle vérifie les modales, les trois vues, les vues par date, les reports, le calendrier, le changement de mot de passe et l’export. Les captures de contrôle se trouvent dans `output/playwright/`. Aucun score Lighthouse ni certification d'accessibilité n'est annoncé.
 
 ## Documents du projet
 
 - [Audit initial v5.4.2](AUDIT_SITE_WEB.md)
 - [Corrections v5.4.3 et points restant ouverts](CORRECTIFS_AUDIT.md)
-- [Propositions de fonctionnalités, non implémentées](FONCTIONNALITES_PROPOSEES.md)
+- [Catalogue des fonctionnalités et statut de livraison](FONCTIONNALITES_PROPOSEES.md)
 - [Règles du projet](AGENTS.md)
 
 Créé par Sacha G. — 2026.

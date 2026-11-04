@@ -70,7 +70,7 @@ test('rapid successive local edits remain ordered without a false conflict',asyn
 });
 function fn(name) { const s=source('app-v2'),start=s.indexOf(`function ${name}(`);return s.slice(start,s.indexOf('\n}',start)+2); }
 test('real priority sort, date filters, and overdue helper',()=>{
-  const ctx={PRIORITY_ORDER:{high:0,normal:1,low:2},currentSort:'priority',getLanguage:()=> 'fr',Date,
+  const ctx={TaskDates:dates(),scopeNow:new Date(),PRIORITY_ORDER:{high:0,normal:1,low:2},currentSort:'priority',getLanguage:()=> 'fr',Date,
     filterStatuses:[],filterPriorities:[],filterHasNotes:false,filterNoDue:false,filterDueBefore:'2026-11-03',filterDueAfter:'',searchQuery:''};
   vm.createContext(ctx);for(const name of ['applySort','applyFilters','isOverdue'])vm.runInContext(fn(name),ctx);
   assert.deepEqual(plain(ctx.applySort([{text:'N',priority:'normal'},{text:'H',priority:'high'},{text:'L',priority:'low'}]).map(t=>t.priority)),['high','normal','low']);
@@ -81,4 +81,56 @@ test('all shipped JS parses and service worker precache paths exist',()=>{
   for(const file of fs.readdirSync('assets/js').filter(f=>f.endsWith('.js')))new vm.Script(source(file.slice(0,-3)),{filename:file});
   const ctx={self:{addEventListener(){}}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('sw.js','utf8')+'\nglobalThis.paths=urlsToCache;',ctx);
   for(const path of ctx.paths)assert(fs.existsSync(path.split('?')[0]),path);
+});
+
+function dates() {
+  const ctx={window:{},Date};vm.createContext(ctx);vm.runInContext(source('task-dates'),ctx);return ctx.window.TaskDates;
+}
+test('N01: today includes overdue and current tasks; upcoming excludes today and inactive tasks',()=>{
+  const d=dates(), now=new Date(2026,10,4,12);
+  const tasks=[
+    {id:'past',due:'2026-11-03',status:'todo'},
+    {id:'today',due:'2026-11-04',status:'inprogress'},
+    {id:'future',due:'2026-11-05',status:'waiting'},
+    {id:'undated',status:'todo'},
+    {id:'done',due:'2026-11-04',status:'done'},
+    {id:'cancelled',due:'2026-11-05',status:'cancelled'},
+    {id:'archived',due:'2026-11-04',status:'todo',archived:true}
+  ];
+  assert.deepEqual(tasks.filter(t=>d.matches(t,'today',now)).map(t=>t.id),['past','today']);
+  assert.deepEqual(tasks.filter(t=>d.matches(t,'upcoming',now)).map(t=>t.id),['future']);
+  assert.deepEqual(tasks.filter(t=>d.matches(t,'all',now)).map(t=>t.id),['past','today','future','undated','done','cancelled']);
+});
+test('N01: local midnight moves tasks from upcoming to today, then to overdue',()=>{
+  const previous=process.env.TZ;process.env.TZ='Europe/Paris';
+  try {
+    const d=dates(), task={due:'2026-11-04',status:'todo'};
+    const before=new Date(2026,10,3,23,59,59,999),after=new Date(2026,10,4,0,0);
+    assert(d.matches(task,'upcoming',before));assert(!d.matches(task,'today',before));
+    assert(d.matches(task,'today',after));assert(!d.matches(task,'upcoming',after));
+    assert(!d.overdue(task.due,null,task.status,new Date(2026,10,4,23,59,59,999)));
+    assert(d.overdue(task.due,null,task.status,new Date(2026,10,5,0,0)));
+    assert.equal(d.nextTick(before),21);
+  } finally { if(previous===undefined)delete process.env.TZ;else process.env.TZ=previous; }
+});
+test('N01: local dates and tomorrow remain correct across DST, month and year changes',()=>{
+  const previous=process.env.TZ;
+  try {
+    process.env.TZ='Europe/Paris';const d=dates();
+    assert.equal(d.tomorrow(new Date(2026,2,28,23,30)),'2026-03-29');
+    assert.equal(d.tomorrow(new Date(2026,9,24,23,30)),'2026-10-25');
+    assert.equal(d.tomorrow(new Date(2026,0,31,23,30)),'2026-02-01');
+    assert.equal(d.tomorrow(new Date(2026,11,31,23,30)),'2027-01-01');
+    process.env.TZ='America/New_York';
+    assert.equal(d.day(new Date('2026-11-04T02:30:00Z')),'2026-11-03');
+    assert.equal(d.tomorrow(new Date('2026-11-04T02:30:00Z')),'2026-11-04');
+  } finally { if(previous===undefined)delete process.env.TZ;else process.env.TZ=previous; }
+});
+test('N01: timed tasks expire at their local deadline and inactive tasks never show overdue',()=>{
+  const d=dates();
+  assert(!d.overdue('2026-11-04','12:00','todo',new Date(2026,10,4,11,59,59)));
+  assert(d.overdue('2026-11-04','12:00','todo',new Date(2026,10,4,12,0)));
+  for(const status of ['done','cancelled'])assert(!d.overdue('2026-11-03','12:00',status,new Date(2026,10,4,12)));
+  const tasks=[{due:'2026-11-05',dueTime:null},{due:'2026-11-05',dueTime:'09:00'},{due:'2026-11-04',dueTime:null}];
+  assert.equal(tasks.sort(d.compare)[0].due,'2026-11-04');assert.equal(tasks[1].dueTime,'09:00');
 });

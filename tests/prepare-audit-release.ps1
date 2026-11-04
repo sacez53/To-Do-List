@@ -1,7 +1,9 @@
+﻿param([string]$ReleaseDate = '2026-11-04')
 $ErrorActionPreference = 'Stop'
 $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $windowsRoot = Join-Path $projectRoot 'win_app'
-$version = 'v5.4.3'
+$appVersion = (Get-Content -LiteralPath (Join-Path $windowsRoot 'package.json') -Raw | ConvertFrom-Json).version
+$version = 'v' + $appVersion
 $portable = Join-Path $windowsRoot 'release/ToDoList-win32-x64'
 $archive = Join-Path $windowsRoot "versions/$version"
 $versionRelease = Join-Path $windowsRoot "release/$version"
@@ -31,7 +33,7 @@ New-Item -ItemType Directory -Path $archive -Force | Out-Null
 foreach ($item in @('src','assets','build','main.js','package.json','package-lock.json','ToDoList.exe','README.md')) {
     Copy-Item -LiteralPath (Join-Path $windowsRoot $item) -Destination $archive -Recurse
 }
-Set-Content -LiteralPath (Join-Path $archive 'ARCHIVE.txt') -Encoding utf8 -Value 'v5.4.3 — 2026-11-03. Sources archivées. Portable correspondant : ../../release/v5.4.3/ToDoList-win32-x64/ToDoList.exe. Aucun installeur NSIS généré.'
+Set-Content -LiteralPath (Join-Path $archive 'ARCHIVE.txt') -Encoding utf8 -Value "$version — $ReleaseDate. Sources archivées. Portable correspondant : ../../release/$version/ToDoList-win32-x64/ToDoList.exe. Aucun installeur NSIS généré."
 
 # Repackage the existing Electron runtime with only current application sources.
 # Historical packager output contains old archives; do not recursively embed them.
@@ -47,7 +49,7 @@ foreach ($item in @('src','assets','main.js','package.json','package-lock.json',
 }
 $rcedit = Join-Path $windowsRoot 'node_modules/electron-winstaller/vendor/rcedit.exe'
 foreach ($binary in @((Join-Path $packaged 'ToDoList.exe'), (Join-Path $portable 'ToDoList.exe'))) {
-    & $rcedit $binary --set-file-version '5.4.3' --set-product-version '5.4.3'
+    & $rcedit $binary --set-file-version $appVersion --set-product-version $appVersion
     if ($LASTEXITCODE -ne 0) { throw "Unable to update executable metadata: $binary" }
 }
 Write-Output "Sources synchronized; archives created: $archive and $packaged"

@@ -1,9 +1,9 @@
-# To-Do List Windows — v5.4.3
+# To-Do List Windows — v5.5.0
 
 Lancer le portable : `release/ToDoList-win32-x64/ToDoList.exe`.
-La copie versionnée se trouve dans `release/v5.4.3/ToDoList-win32-x64/` et les sources dans `versions/v5.4.3/`.
+La copie versionnée se trouve dans `release/v5.5.0/ToDoList-win32-x64/` et les sources dans `versions/v5.5.0/`.
 
-Cette version applique les corrections de l'audit Web : sauvegardes conditionnelles, cache chiffré, calendrier, tris, exports, modales, clavier et contraste. Elle n'ajoute aucune fonction du catalogue de propositions.
+Cette version ajoute N01 : Aujourd’hui (retards puis tâches du jour), À venir (à partir de demain) et Toutes les tâches, avec Reporter à demain et Choisir une date. Les tâches terminées/annulées sont exclues des vues actives ; les heures et autres champs sont conservés. Les règles utilisent le jour local et se recalculent autour de minuit.
 
 Les anciennes archives sont conservées. Le portable utilise le moteur Electron existant avec des ressources actualisées ; aucun nouvel installeur NSIS n'est généré. Fermer les anciennes versions avant d'utiliser le nouveau portable.
 

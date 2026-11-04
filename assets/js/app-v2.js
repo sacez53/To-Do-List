@@ -58,7 +58,14 @@ let syncTimeout  = null;
 let editingId    = null;
 let currentView  = "list";   // list | kanban | table
 let searchQuery  = "";
-let currentSort  = "status";
+let currentSort  = "due-asc";
+let currentScope = "today";
+let scopeNow = new Date();
+let clockTimer = null;
+let reschedulingId = null;
+let rescheduleBusy = false;
+let lastSyncStatus = "syncing";
+let lastSyncDetail = "";
 
 // Filtres avancés
 let filterStatuses   = [];  // [] = tous
@@ -136,7 +143,7 @@ async function init() {
     taskStore = await TodoData.open(currentUser);
     todos = taskStore.read();
     fabAdd.disabled = false;
-    render();
+    refreshTaskClock();
     await refreshTasks();
     const params = new URLSearchParams(window.location.search);
     if (params.get("viewTask")) openModal(params.get("viewTask"), "view");
@@ -173,12 +180,13 @@ window.addEventListener("online", refreshTasks);
 window.addEventListener("focus", refreshTasks);
 
 window.addEventListener("beforeunload", event => {
-  if (localWrites || taskStore?.pending() || (modalSnapshot && modalValues() !== modalSnapshot)) { event.preventDefault(); event.returnValue = ""; }
+  if (rescheduleBusy || localWrites || taskStore?.pending() || (modalSnapshot && modalValues() !== modalSnapshot)) { event.preventDefault(); event.returnValue = ""; }
 });
 // Refresh existing sync status while the page is visible; no new product view.
 setInterval(() => { if (!document.hidden && !modalOverlay.classList.contains("open")) refreshTasks(); }, 30000);
 
 function setSyncStatus(s, detail = "") {
+  lastSyncStatus = s; lastSyncDetail = detail;
   if (!syncDot || !syncLabel) return;
   syncDot.className = `v2-sync-dot v2-sync-${s}`;
   const labels = {
@@ -219,14 +227,7 @@ function applySort(arr) {
     case "created-asc":  return copy.sort((a,b) => (a.created||0) > (b.created||0) ? 1 : -1);
     case "priority":     return copy.sort((a,b) => (PRIORITY_ORDER[a.priority||"normal"] ?? 1) - (PRIORITY_ORDER[b.priority||"normal"] ?? 1));
     case "due-asc":      return copy.sort((a,b) => {
-      if (!a.due && !b.due) return 0;
-      if (!a.due) return 1;
-      if (!b.due) return -1;
-      if (a.due !== b.due) return a.due > b.due ? 1 : -1;
-      // Même date → trier par heure
-      const at = a.dueTime || "23:59";
-      const bt = b.dueTime || "23:59";
-      return at > bt ? 1 : at < bt ? -1 : 0;
+      return TaskDates.compare(a, b);
     });
     case "overdue-first": return copy.sort((a,b) => {
       const aOver = isOverdue(a.due, a.dueTime, a.status) ? -1 : 1;
@@ -247,8 +248,7 @@ function applySort(arr) {
 //  HELPERS DATE
 // ══════════════════════════════════════════
 function isOverdue(due, time, status) {
-  if (!due || ["done", "cancelled"].includes(status)) return false;
-  return new Date(due + "T" + (time || "23:59:59")) < new Date();
+  return TaskDates.overdue(due, time, status, scopeNow);
 }
 function getDueInfo(due, dueTime, status) {
   if (!due) return null;
@@ -262,7 +262,7 @@ function getDueInfo(due, dueTime, status) {
     return { label: (isEn ? `Scheduled ${dateStr}` : `Prévu le ${dateStr}`) + timeSuffix, cls: "due-ok" };
   }
 
-  const today = new Date(); today.setHours(0,0,0,0);
+  const today = new Date(scopeNow); today.setHours(0,0,0,0);
   const diff = Math.round((d - today) / 86400000);
   
   if (isOverdue(due, dueTime, status)) return { label: (isEn ? "Overdue" : "En retard") + timeSuffix,    cls:"due-overdue" };
@@ -272,22 +272,160 @@ function getDueInfo(due, dueTime, status) {
   return { label: dateStr + timeSuffix, cls:"due-ok" };
 }
 
+function addScheduleActions(container, task) {
+  if (!TaskDates.active(task)) return;
+  const actions = document.createElement("div");
+  actions.className = "v2-schedule-actions";
+  for (const [action, label] of [["tomorrow", "schedule_tomorrow"], ["choose", "schedule_choose"]]) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "v2-schedule-btn";
+    button.dataset.taskId = String(task.id);
+    button.dataset.taskAction = action;
+    button.textContent = t(label);
+    button.setAttribute("aria-label", `${t(label)} : ${task.text}`);
+    button.addEventListener("click", async event => {
+      event.stopPropagation();
+      if (action === "choose") { openScheduleDialog(task.id); return; }
+      button.disabled = true;
+      try { await changeTaskDate(task.id, TaskDates.tomorrow()); }
+      finally { button.disabled = false; }
+    });
+    actions.appendChild(button);
+  }
+  container.appendChild(actions);
+}
+
+async function changeTaskDate(id, date) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || TaskDates.day(new Date(date + "T12:00:00")) !== date) return false;
+  const task = todos.find(task => String(task.id) === String(id));
+  if (!task || !TaskDates.active(task) || !sessionStorage.getItem("auth")) return false;
+  const oldDate = task.due;
+  task.due = date;
+  const saved = await saveTodos();
+  if (!saved && task.due === date) task.due = oldDate;
+  render();
+  if (saved) {
+    const formatted = new Date(date + "T12:00:00").toLocaleDateString(getLanguage() === "en" ? "en-US" : "fr-FR", { day: "numeric", month: "long", year: "numeric" });
+    document.getElementById("v2-schedule-feedback").textContent = t("schedule_saved", { title: task.text, date: formatted });
+  }
+  return saved;
+}
+
+function openScheduleDialog(id) {
+  const task = todos.find(task => String(task.id) === String(id));
+  if (!taskStore || !task || !TaskDates.active(task) || !sessionStorage.getItem("auth")) return;
+  reschedulingId = task.id;
+  const date = document.getElementById("schedule-date");
+  date.value = task.due || TaskDates.day();
+  date.setCustomValidity("");
+  document.getElementById("schedule-error").textContent = "";
+  document.getElementById("schedule-task-title").textContent = task.text;
+  document.getElementById("schedule-time-hint").textContent = task.dueTime ? t("schedule_keep_time", { time: task.dueTime }) : t("schedule_no_time");
+  document.getElementById("schedule-overlay").classList.add("open");
+  setTimeout(() => date.focus(), 0);
+}
+
+function closeScheduleDialog() {
+  if (rescheduleBusy) return;
+  reschedulingId = null;
+  document.getElementById("schedule-overlay").classList.remove("open");
+}
+document.getElementById("schedule-cancel").addEventListener("click", closeScheduleDialog);
+document.getElementById("schedule-overlay").addEventListener("click", event => {
+  if (event.target === event.currentTarget) closeScheduleDialog();
+});
+document.getElementById("schedule-date").addEventListener("input", event => event.target.setCustomValidity(""));
+document.getElementById("schedule-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const date = document.getElementById("schedule-date");
+  if (rescheduleBusy || reschedulingId === null || !date.reportValidity()) return;
+  const task = todos.find(task => String(task.id) === String(reschedulingId));
+  if (!task || !TaskDates.active(task) || !sessionStorage.getItem("auth")) {
+    document.getElementById("schedule-error").textContent = t("schedule_unavailable");
+    return;
+  }
+  rescheduleBusy = true;
+  document.getElementById("schedule-save").disabled = true;
+  document.getElementById("schedule-cancel").disabled = true;
+  try {
+    const saved = await changeTaskDate(reschedulingId, date.value);
+    rescheduleBusy = false;
+    if (saved) closeScheduleDialog();
+  } finally {
+    rescheduleBusy = false;
+    document.getElementById("schedule-save").disabled = false;
+    document.getElementById("schedule-cancel").disabled = false;
+  }
+});
+
 // ══════════════════════════════════════════
 //  RENDU PRINCIPAL
 // ══════════════════════════════════════════
+function setTaskScope(scope) {
+  if (!["today", "upcoming", "all"].includes(scope)) return;
+  currentScope = scope;
+  currentSort = scope === "all" ? "status" : "due-asc";
+  sortSelect.value = currentSort;
+  render();
+}
 function render() {
+  scopeNow = new Date();
+  const focused = document.activeElement;
+  const focusId = focused?.dataset.taskId;
+  const focusAction = focused?.dataset.taskAction;
   updateStats();
-  const visible = applySort(applyFilters(todos));
-
+  const scoped = todos.filter(task => TaskDates.matches(task, currentScope, scopeNow));
+  const visible = applySort(applyFilters(scoped));
+  // Keep the urgent group first even when a secondary sort is chosen.
+  if (currentScope === "today") visible.sort((a, b) =>
+    Number(isOverdue(b.due, b.dueTime, b.status)) - Number(isOverdue(a.due, a.dueTime, a.status)));
+  document.querySelectorAll("[data-scope]").forEach(button => {
+    const selected = button.dataset.scope === currentScope;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+    button.querySelector(".v2-scope-count").textContent = todos.filter(task => TaskDates.matches(task, button.dataset.scope, scopeNow)).length;
+  });
+  document.getElementById("v2-scope-heading").textContent = t("scope_" + currentScope);
+  document.getElementById("v2-scope-description").textContent = t("scope_" + currentScope + "_description");
+  document.getElementById("v2-scope-results").textContent = t(visible.length === 1 ? "scope_result_one" : "scope_results", { count: visible.length });
   boardEl.className = `v2-board v2-board--${currentView}`;
   boardEl.innerHTML = "";
-
-  if (currentView === "kanban") renderKanban(visible);
+  if (!visible.length) renderEmpty();
+  else if (currentView === "kanban") renderKanban(visible);
   else if (currentView === "table") renderTable(visible);
-  else renderList(visible);
-
+  else if (currentScope === "today") {
+    const late = visible.filter(task => isOverdue(task.due, task.dueTime, task.status));
+    const today = visible.filter(task => !isOverdue(task.due, task.dueTime, task.status));
+    for (const [label, items] of [["scope_overdue", late], ["scope_today", today]]) {
+      if (!items.length) continue;
+      const heading = document.createElement("h3");
+      heading.className = "v2-day-heading" + (label === "scope_overdue" ? " v2-day-heading--overdue" : "");
+      heading.textContent = `${t(label)} · ${items.length}`;
+      boardEl.appendChild(heading);
+      renderList(items);
+    }
+  } else renderList(visible);
   updateFilterBadge();
+  boardEl.querySelectorAll(".v2-item,.v2-card,.v2-table-row").forEach(row => {
+    for (const [selector, action] of [[".task-summary", "summary"], [".v2-edit-btn", "edit"], ["button.v2-badge", "status"]]) {
+      const button = row.querySelector(selector);
+      if (button) { button.dataset.taskId = row.dataset.taskId; button.dataset.taskAction = action; }
+    }
+  });
+  if (focusId && focusAction) {
+    const replacement = [...boardEl.querySelectorAll("[data-task-action]")].find(button => button.dataset.taskId === focusId && button.dataset.taskAction === focusAction);
+    (replacement || document.querySelector(`[data-scope="${currentScope}"]`))?.focus();
+  }
 }
+function refreshTaskClock() {
+  clearTimeout(clockTimer);
+  if (taskStore && sessionStorage.getItem("auth")) render();
+  clockTimer = setTimeout(refreshTaskClock, TaskDates.nextTick());
+}
+window.addEventListener("focus", refreshTaskClock);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshTaskClock(); });
+
 
 function updateStats() {
   const activeTodos = todos.filter(t => !t.archived);
@@ -302,6 +440,12 @@ function updateStats() {
 
 function renderEmpty() {
   const p = document.createElement("p"); p.className = "v2-empty";
+  const hasFilters = searchQuery || filterStatuses.length || filterPriorities.length || filterDueBefore || filterDueAfter || filterHasNotes || filterNoDue;
+  if (currentScope !== "all" && !hasFilters) {
+    p.textContent = t("scope_" + currentScope + "_empty");
+    boardEl.replaceChildren(p);
+    return;
+  }
   p.textContent = searchQuery ? t("search_no_results", { query: searchQuery }) :
     (todos.some(t => !t.archived) ? TodoRuntime.message("Aucun résultat avec ces filtres. Réinitialisez les filtres pour retrouver vos tâches.", "No matches for these filters. Reset filters to see your tasks.") : t("empty_tasks"));
   boardEl.replaceChildren(p);
@@ -315,12 +459,13 @@ function renderList(items) {
   const ul = document.createElement("ul");
   ul.className = "v2-list";
   items.forEach((todo, i) => {
-    // Failsafe removed
+    // Task content is rendered as text or escaped HTML.
     const info    = STATUS_INFO[todo.status] || STATUS_INFO.todo;
     const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
     const prio    = todo.priority || "normal";
     const li = document.createElement("li");
     li.className = "v2-item";
+    li.dataset.taskId = String(todo.id);
     li.style.animationDelay = `${Math.min(i, 10)*20}ms`;
     li.innerHTML = `
       <div class="v2-item-left">
@@ -344,6 +489,10 @@ function renderList(items) {
       saveTodos(); render();
     });
     li.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id, "edit"); });
+    const actions = document.createElement("div"); actions.className = "v2-task-controls";
+    actions.appendChild(li.querySelector(".v2-edit-btn"));
+    addScheduleActions(actions, todo);
+    li.appendChild(actions);
     li.addEventListener("click", () => openModal(todo.id, "view"));
     ul.appendChild(li);
   });
@@ -370,11 +519,12 @@ function renderKanban(items) {
       list.innerHTML = `<p class="v2-kanban-empty">${t("kanban_empty")}</p>`;
     } else {
       colItems.forEach(todo => {
-        // Failsafe removed
+        // Task content is rendered as text or escaped HTML.
         const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
         const prio    = todo.priority || "normal";
         const card = document.createElement("div");
         card.className = "v2-card";
+        card.dataset.taskId = String(todo.id);
         card.innerHTML = `
           <div class="v2-card-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem;">
             <button type="button" class="task-summary v2-card-text ${todo.status === "done" ? "v2-done" : ""}" style="margin-bottom:0;flex:1;cursor:pointer;" title="${t("task_recap_title")}">${escHtml(todo.text)}</button>
@@ -393,6 +543,7 @@ function renderKanban(items) {
             openModal(todo.id, "edit");
           });
         }
+        addScheduleActions(card, todo);
         card.addEventListener("click", () => openModal(todo.id, "view"));
         list.appendChild(card);
       });
@@ -425,12 +576,13 @@ function renderTable(items) {
   `;
   const tbody = document.createElement("tbody");
   items.forEach(todo => {
-    // Failsafe removed
+    // Task content is rendered as text or escaped HTML.
     const info    = STATUS_INFO[todo.status] || STATUS_INFO.todo;
     const dueInfo = getDueInfo(todo.due, todo.dueTime, todo.status);
     const prio    = todo.priority || "normal";
     const tr = document.createElement("tr");
     tr.className = "v2-table-row";
+    tr.dataset.taskId = String(todo.id);
     tr.innerHTML = `
       <td class="v2-table-text" title="${t("task_recap_title")}">
         <button type="button" class="task-summary ${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</button>
@@ -451,6 +603,7 @@ function renderTable(items) {
       });
     }
     tr.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id, "edit"); });
+    addScheduleActions(tr.lastElementChild, todo);
     tr.addEventListener("click", () => openModal(todo.id, "view"));
     tbody.appendChild(tr);
   });
@@ -778,7 +931,7 @@ fabAdd.addEventListener("click", () => openModal(null));
 modalClose.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
 confirmOverlay.addEventListener("click", e => { if (e.target === confirmOverlay) { confirmCleanup?.(); } });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { if (confirmCleanup) confirmCleanup(); else closeModal(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { if (reschedulingId !== null) { closeScheduleDialog(); return; } if (confirmCleanup) confirmCleanup(); else closeModal(); } });
 
 modalSave.addEventListener("click", async () => {
   if (modalSave.disabled) return;
@@ -820,12 +973,15 @@ function escHtml(s) {
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-window.addEventListener("sessionExpired", () => { modalSnapshot = null; closeModal(true); confirmCleanup?.(); boardEl.replaceChildren(); todos = []; fabAdd.disabled = true; });
+window.addEventListener("sessionExpired", () => { clearTimeout(clockTimer); closeScheduleDialog(); modalSnapshot = null; closeModal(true); confirmCleanup?.(); boardEl.replaceChildren(); todos = []; fabAdd.disabled = true; });
+document.querySelectorAll("[data-scope]").forEach(button => button.addEventListener("click", () => setTaskScope(button.dataset.scope)));
+sortSelect.value = currentSort;
 // ── Lancement ──
 buildFilterPanel();
 init();
 
 window.addEventListener("languageChanged", () => {
+  setSyncStatus(lastSyncStatus, lastSyncDetail);
   buildFilterPanel();
   render();
 });

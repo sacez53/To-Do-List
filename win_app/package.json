@@ -1,6 +1,6 @@
 {
   "name": "todolist-app",
-  "version": "5.4.3",
+  "version": "5.5.0",
   "description": "Application To-Do List Windows",
   "main": "main.js",
   "scripts": {

@@ -4,6 +4,26 @@
 
 const I18N_DICTIONARY = {
   fr: {
+    "scope_navigation": "Période des tâches",
+    "scope_today": "Aujourd’hui",
+    "scope_upcoming": "À venir",
+    "scope_all": "Toutes les tâches",
+    "scope_overdue": "En retard",
+    "scope_today_description": "Les tâches actives en retard, puis celles du jour.",
+    "scope_upcoming_description": "Les tâches actives à partir de demain, par échéance.",
+    "scope_all_description": "Toutes vos tâches non archivées, y compris celles sans échéance, terminées ou annulées.",
+    "scope_result_one": "1 tâche affichée",
+    "global_progress": "Progression globale",
+    "scope_results": "{count} tâches affichées",
+    "scope_today_empty": "Aucune tâche active en retard ou prévue aujourd’hui. Retrouvez les autres dans Toutes les tâches.",
+    "scope_upcoming_empty": "Aucune tâche active prévue après aujourd’hui. Les tâches sans date sont dans Toutes les tâches.",
+    "schedule_tomorrow": "Reporter à demain",
+    "schedule_choose": "Choisir une date",
+    "schedule_keep_time": "L’heure {time} sera conservée.",
+    "schedule_no_time": "Aucune heure définie : seule la date sera modifiée.",
+    "schedule_saved": "Échéance modifiée pour « {title} » : {date}.",
+    "schedule_unavailable": "Cette tâche n’est plus active ou votre session a expiré. Fermez ce dialogue pour continuer.",
+
     // Navigation & Header
     "app_title": "To‑Do List",
     "space_of": "Espace de",
@@ -189,6 +209,26 @@ const I18N_DICTIONARY = {
     "footer_data": "Gestion des données"
   },
   en: {
+    "scope_navigation": "Task period",
+    "scope_today": "Today",
+    "scope_upcoming": "Upcoming",
+    "scope_all": "All tasks",
+    "scope_overdue": "Overdue",
+    "scope_today_description": "Active overdue tasks first, then today’s tasks.",
+    "scope_upcoming_description": "Active tasks from tomorrow onwards, ordered by due date.",
+    "scope_all_description": "All unarchived tasks, including undated, completed and cancelled tasks.",
+    "scope_result_one": "1 task shown",
+    "global_progress": "Overall progress",
+    "scope_results": "{count} tasks shown",
+    "scope_today_empty": "No active overdue tasks or tasks due today. Find other tasks in All tasks.",
+    "scope_upcoming_empty": "No active tasks due after today. Undated tasks are in All tasks.",
+    "schedule_tomorrow": "Move to tomorrow",
+    "schedule_choose": "Choose a date",
+    "schedule_keep_time": "The time {time} will be kept.",
+    "schedule_no_time": "No time set: only the date will change.",
+    "schedule_saved": "Due date updated for “{title}”: {date}.",
+    "schedule_unavailable": "This task is no longer active or your session has expired. Close this dialog to continue.",
+
     // Navigation & Header
     "app_title": "To‑Do List",
     "space_of": "Workspace of",
