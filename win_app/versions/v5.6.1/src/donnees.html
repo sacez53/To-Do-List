@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Ma To-Do List — Données</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/logo/logo-t.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="../assets/js/transitions.js?v=22"></script>
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #0f0f0f;
+      --line: #1e1e1e;
+      --line-strong: #2e2e2e;
+      --text: #efefef;
+      --text-muted: #9a9a9a;
+      --text-faint: #a0a0a0;
+      --white: #fff;
+      --black: #000;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+    }
+
+    html {
+      color-scheme: dark;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--text);
+      background-image: radial-gradient(circle, #161616 1px, transparent 1px);
+      background-size: 22px 22px;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+
+    .nav-logo-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      border: 1px solid var(--line-strong);
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .nav-logo:hover {
+      color: var(--white);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-ghost {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+
+    .nav-ghost:hover {
+      color: var(--white);
+      border-color: var(--text-faint);
+    }
+
+    .nav-cta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      background: var(--white);
+      border: 1px solid var(--white);
+      border-radius: 2px;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .nav-cta:hover {
+      background: transparent;
+      color: var(--white);
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3.5rem 1.25rem 2.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .page-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--line-strong));
+    }
+
+    .page-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--line-strong);
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+      animation: fadeUp 500ms ease both;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.6rem, 6vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      animation: fadeUp 500ms 80ms ease both;
+    }
+
+    .page-header p {
+      font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+      color: var(--text-muted);
+      max-width: 44ch;
+      line-height: 1.65;
+      animation: fadeUp 500ms 160ms ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Wrapper ── */
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 1.25rem 4rem;
+      flex: 1;
+    }
+
+    /* ── Bloc section ── */
+    .block {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      animation: fadeUp 500ms 220ms ease both;
+    }
+
+    .block+.block {
+      margin-top: 2rem;
+    }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .block-num {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      min-width: 2ch;
+    }
+
+    .block-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .block-body {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .block-body p {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .block-body p+p {
+      margin-top: 0.9rem;
+    }
+
+    /* ── Boutons action ── */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .btn-action {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      background: var(--white);
+      border: 1px solid var(--white);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .btn-action:hover {
+      background: transparent;
+      color: var(--white);
+    }
+
+    .btn-action-ghost {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--line-strong);
+      background: transparent;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+
+    .btn-action-ghost:hover {
+      color: var(--white);
+      border-color: var(--text-faint);
+    }
+
+    /* ── Zone de danger ── */
+    .danger-header {
+      background: rgba(249, 115, 115, 0.05);
+    }
+
+    .danger-title {
+      color: #f97373;
+    }
+
+    .btn-danger {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #f97373;
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border: 1px solid rgba(249, 115, 115, 0.3);
+      background: transparent;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .btn-danger:hover {
+      background: #f97373;
+      color: var(--black);
+    }
+
+    /* ── Modale ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--bg);
+      border: 1px solid var(--line-strong);
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      border-radius: 2px;
+      transform: translateY(10px);
+      transition: transform 200ms ease;
+    }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal h2 {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      color: var(--white);
+    }
+
+    .modal p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      overflow-x: hidden;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem 1.25rem;
+      margin-bottom: 0.75rem;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .footer-links a {
+      color: var(--text-faint);
+      text-decoration: none;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 160ms ease;
+    }
+    .footer-links a:hover { color: var(--white); }
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      nav {
+        padding: 0.75rem 1rem;
+      }
+      .nav-ghost {
+        display: none;
+      }
+    }
+    @media (max-width: 480px) {
+      .btn-action, .btn-action-ghost, .btn-danger {
+        padding: 0.75rem 1rem;
+      }
+      .footer-links {
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+      footer a {
+        padding: 0.25rem 0.5rem;
+        display: inline-block;
+      }
+    }
+  </style>
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
+      });
+    }
+  </script>
+  <script src="../assets/js/runtime.js?v=22"></script>
+  <script src="../assets/js/dialogs.js?v=22"></script>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-logo" href="../index.html"><img src="../assets/icons/icon-192.png" alt="Logo T" class="nav-logo-icon"> <span>To‑Do List</span></a>
+    <div class="nav-links">
+      <a class="nav-ghost" href="../index.html">Accueil</a>
+      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <span class="page-tag">Paramètres · <span id="app-version">v5.3</span></span>
+    <h1>Données</h1>
+    <p>Outils de portabilité, d'exportation et de gestion de votre compte personnel.</p>
+  </header>
+
+  <main class="wrapper">
+
+    <!-- 01 — Exportation -->
+    <section class="block" aria-labelledby="section-export">
+      <div class="block-header">
+        <span class="block-num">01</span>
+        <span class="block-title" id="section-export">Exportation (Portabilité)</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Récupérez l'intégralité de vos tâches pour les sauvegarder ou les importer dans un autre outil. Les exports
+          incluent les titres, notes, statuts, priorités et dates d'échéance.
+        </p>
+      </div>
+      <div class="actions">
+        <button class="btn-action" id="export-json">Export JSON</button>
+        <button class="btn-action-ghost" id="export-csv">Export CSV</button>
+      </div>
+    </section>
+
+    <!-- 02 — Zone de danger -->
+    <section class="block" aria-labelledby="section-danger" style="border-color: rgba(249, 115, 115, 0.2);">
+      <div class="block-header danger-header">
+        <span class="block-num">02</span>
+        <span class="block-title danger-title" id="section-danger">Zone de danger</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Les actions suivantes sont <strong>irréversibles</strong>. La suppression de votre compte entraînera la
+          destruction immédiate de toutes vos tâches stockées sur nos serveurs.
+        </p>
+      </div>
+      <div class="actions">
+        <button class="btn-danger" id="btn-delete-account">Supprimer mon compte</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modale de confirmation -->
+  <div class="modal-overlay" id="confirm-overlay">
+    <div class="modal">
+      <h2 id="modal-title">Confirmer l'action</h2>
+      <p id="modal-desc">Êtes-vous sûr de vouloir continuer ? Cette action est irréversible.</p>
+      <div class="modal-actions">
+        <button class="btn-action-ghost" id="cancel-action">Annuler</button>
+        <button class="btn-action" id="confirm-action" style="background: #f97373; border-color: #f97373;">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="../index.html">Accueil</a>
+      <a href="./confidentialite.html">Confidentialité</a>
+      <a href="./mentions-legales.html">Mentions Légales</a>
+      <a href="./cgu.html">CGU</a>
+    </div>
+    <p>© 2026 · Sacha G. Photographe</p>
+  </footer>
+  <script src="../assets/js/crypto.js?v=22"></script>
+  <script src="../assets/js/task-store.js?v=22"></script>
+  <script src="../assets/js/donnees.js?v=22"></script>
+  <script src="../assets/js/burger-menu.js?v=22"></script>
+  <script>
+    fetch('../assets/json/version.json')
+      .then(r => r.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('app-version').textContent = data.version;
+        }
+      })
+      .catch(e => console.error('Erreur chargement version:', e));
+  </script>
+</body>
+
+</html>

@@ -1,6 +1,14 @@
-# Ma To-Do List — v5.6.0
+# Ma To-Do List — v5.6.1
 
 Gestionnaire de tâches personnel en HTML, CSS et JavaScript, disponible sur le Web et sous Windows avec Electron.
+
+## Adaptation téléphone — v5.6.1
+
+À 600 px et moins, le haut de page est compact, les trois périodes tiennent sur une rangée et la progression globale passe après les tâches. Les commandes d’une tâche sont alignées sur trois colonnes. La vue Tableau devient une série de cartes avec leurs libellés ; le Kanban se parcourt horizontalement par colonnes.
+
+Le bouton flottant est remplacé par une barre d’ajout en bas sur téléphone. Elle se masque pendant la saisie et dans les dialogues. Les champs gardent une taille de texte de 16 px, les commandes tactiles disposent d’au moins 44 px de hauteur et les dialogues défilent dans le viewport visible, avec leurs actions accessibles. Le calendrier et les onglets des paramètres sont aussi ajustés.
+
+La recette locale vérifie les largeurs 320, 375, 390, 430 et 600 px, une hauteur réduite à 420 px et le paysage. Ce sont des contrôles Chromium avec captures, sans certification sur des appareils physiques iOS/Android. Les captures sont dans `output/playwright/phone-*.png`.
 
 ## Saisie rapide et raccourcis — v5.6.0
 
@@ -49,7 +57,7 @@ Servir le dossier avec un serveur HTTP local ou un hébergement statique HTTPS. 
 
 ## Windows
 
-Le portable courant est `win_app/release/ToDoList-win32-x64/ToDoList.exe`. Le portable de cette livraison est conservé dans `win_app/release/v5.6.0/ToDoList-win32-x64/`. Les sources sont archivées dans `win_app/versions/v5.6.0/`. Les anciennes versions ne sont pas supprimées.
+Le portable courant est `win_app/release/ToDoList-win32-x64/ToDoList.exe`. Le portable de cette livraison est conservé dans `win_app/release/v5.6.1/ToDoList-win32-x64/`. Les sources sont archivées dans `win_app/versions/v5.6.1/`. Les anciennes versions ne sont pas supprimées.
 
 Cette livraison actualise les ressources du portable avec le moteur Electron existant. Elle ne génère pas de nouvel installeur NSIS. Les scripts historiques de construction restent dans `win_app/package.json` ; leur exécution nécessite les dépendances et outils de construction appropriés.
 

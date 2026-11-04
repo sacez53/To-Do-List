@@ -4,10 +4,11 @@
 
 const I18N_DICTIONARY = {
   fr: {
+    "board_scroll_hint": "Faites glisser pour voir les autres colonnes.",
     "quick_label": "Ajouter une tâche",
     "quick_placeholder": "Que devez-vous faire ?",
     "quick_add": "Ajouter",
-    "quick_hint": "Entrée pour créer une tâche sans échéance.",
+    "quick_hint": "Entrée : ajouter sans échéance.",
     "quick_full": "Formulaire complet",
     "quick_details": "Compléter les détails",
     "quick_required": "Saisissez un titre pour créer la tâche.",
@@ -229,10 +230,11 @@ const I18N_DICTIONARY = {
     "footer_data": "Gestion des données"
   },
   en: {
+    "board_scroll_hint": "Swipe to see the other columns.",
     "quick_label": "Add a task",
     "quick_placeholder": "What do you need to do?",
     "quick_add": "Add",
-    "quick_hint": "Press Enter to create a task without a due date.",
+    "quick_hint": "Enter: add without a due date.",
     "quick_full": "Full form",
     "quick_details": "Add details",
     "quick_required": "Enter a title to create the task.",

@@ -406,6 +406,10 @@ function render() {
   document.getElementById("v2-scope-heading").textContent = t("scope_" + currentScope);
   document.getElementById("v2-scope-description").textContent = t("scope_" + currentScope + "_description");
   document.getElementById("v2-scope-results").textContent = t(visible.length === 1 ? "scope_result_one" : "scope_results", { count: visible.length });
+  document.getElementById("v2-board-scroll-hint").hidden = currentView !== "kanban";
+  boardEl.tabIndex = currentView === "kanban" ? 0 : -1;
+  boardEl.setAttribute("role", "region");
+  boardEl.setAttribute("aria-label", t("view_" + currentView));
   boardEl.className = `v2-board v2-board--${currentView}`;
   boardEl.innerHTML = "";
   if (!visible.length) renderEmpty();
@@ -610,6 +614,7 @@ function renderTable(items) {
       <td>${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon" title="${escHtml(todo.notes)}">📝</span>` : `<span class="v2-muted">—</span>`}</td>
       <td><button class="v2-edit-btn" title="${t("edit_task_title")}">${t("btn_edit")}</button></td>
     `;
+    [t("table_col_task"), t("table_col_status"), t("table_col_priority"), t("table_col_due"), t("table_col_notes"), ""].forEach((label, index) => tr.cells[index].dataset.label = label);
     const tbBadge = tr.querySelector(".v2-badge");
     if (tbBadge) {
       tbBadge.addEventListener("click", e => {
@@ -625,6 +630,11 @@ function renderTable(items) {
     tbody.appendChild(tr);
   });
   table.appendChild(tbody);
+  table.setAttribute("role", "table");
+  table.querySelectorAll("thead,tbody").forEach(group => group.setAttribute("role", "rowgroup"));
+  table.querySelectorAll("tr").forEach(row => row.setAttribute("role", "row"));
+  table.querySelectorAll("th").forEach(cell => cell.setAttribute("role", "columnheader"));
+  table.querySelectorAll("td").forEach(cell => cell.setAttribute("role", "cell"));
   boardEl.appendChild(table);
 }
 
@@ -1104,6 +1114,22 @@ window.addEventListener("sessionExpired", () => {
   clearTimeout(clockTimer); closeScheduleDialog(); modalSnapshot = null; closeModal(true); confirmCleanup?.(); boardEl.replaceChildren(); todos = []; fabAdd.disabled = true; });
 document.querySelectorAll("[data-scope]").forEach(button => button.addEventListener("click", () => setTaskScope(button.dataset.scope)));
 sortSelect.value = currentSort;
+// Keep sheets within the visible viewport when a phone keyboard reduces it.
+function updateTaskInputFocus() {
+  document.body.classList.toggle("task-input-focused", !!document.activeElement?.matches("input,textarea,select"));
+}
+document.addEventListener("focusin", updateTaskInputFocus);
+document.addEventListener("focusout", () => queueMicrotask(updateTaskInputFocus));
+function updateTaskViewport() {
+  updateTaskInputFocus();
+  const viewport = window.visualViewport;
+  document.documentElement.style.setProperty("--task-viewport-height", `${viewport?.height || window.innerHeight}px`);
+  document.documentElement.style.setProperty("--task-viewport-top", `${viewport?.offsetTop || 0}px`);
+}
+window.addEventListener("resize", updateTaskViewport);
+window.visualViewport?.addEventListener("resize", updateTaskViewport);
+window.visualViewport?.addEventListener("scroll", updateTaskViewport);
+updateTaskViewport();
 // ── Lancement ──
 buildFilterPanel();
 init();
