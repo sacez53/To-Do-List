@@ -1,0 +1,13 @@
+{
+  "statusLabels": {
+    "todo": { "label": "À faire", "icon": "📋" },
+    "inprogress": { "label": "En cours", "icon": "⚡" },
+    "waiting": { "label": "En attente", "icon": "⏳" },
+    "done": { "label": "Terminé", "icon": "✅" },
+    "cancelled": { "label": "Annulé", "icon": "❌" }
+  },
+  "priorityLabels": {
+    "high": "🔴 Haute",
+    "normal": "🔵 Basse"
+  }
+}

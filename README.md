@@ -1,6 +1,14 @@
-# Ma To-Do List — v6.0.1
+# Ma To-Do List — v6.0.2
 
 Gestionnaire de tâches personnel en HTML, CSS et JavaScript, disponible sur le Web et sous Windows avec Electron.
+
+## Styles de toutes les pages — v6.0.2
+
+Les pages À propos, Développeur, Confidentialité, Mentions légales, CGU, Données et Commentaires utilisent maintenant les styles partagés de `assets/css/pages.css`. Leurs anciens blocs CSS intégrés sont retirés. Les en-têtes, les menus et les pieds de page reprennent les couleurs et les bordures de l’application. La connexion, le calendrier et les paramètres utilisent aussi cette présentation commune.
+
+Les pages de texte ont des titres de section HTML, des cartes lisibles et des liens accessibles au clavier. Les commentaires reprennent les mêmes contrôles de saisie ; le formulaire connecté et l’état visiteur sont adaptés aux petites largeurs. Les anciennes entrées App et Welcome redirigent toujours vers les tâches, avec un lien de secours présenté dans le même style.
+
+Les vérifications Chromium couvrent les pages à 320, 390 et 1440 px, les menus ouverts et fermés, la connexion et l’inscription, l’état visiteur des commentaires, les onglets des paramètres, les archives avec titres longs, le message de session expirée et l’ouverture puis l’annulation du dialogue de suppression du compte. Les parcours de tâches restent vérifiés jusqu’à 1920 px. Le cache Web passe à v26 ; les sources et le portable Windows sont alignés sur 6.0.2.
 
 ## Commandes des tâches — v6.0.1
 

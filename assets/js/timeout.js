@@ -50,84 +50,27 @@
 
     const overlay = document.createElement("div");
     overlay.id = "timeout-overlay";
-    overlay.style.cssText = `
-      position: fixed;
-      inset: 0;
-      z-index: 9999999;
-      background: rgba(8, 8, 8, 0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 300ms ease;
-    `;
+    overlay.className = "timeout-overlay";
 
     const modal = document.createElement("div");
-    modal.style.cssText = `
-      background: #0f0f0f;
-      border: 1px solid #2e2e2e;
-      padding: 2.5rem 2rem;
-      border-radius: 4px;
-      text-align: center;
-      max-width: 90vw;
-      width: 400px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      transform: translateY(20px);
-      transition: transform 300ms ease;
-    `;
+    modal.className = "modal timeout-modal";
 
     const icon = document.createElement("div");
-    icon.textContent = "⏳";
-    icon.style.cssText = `
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    `;
+    icon.textContent = "◷";
+    icon.className = "timeout-symbol";
 
     const title = document.createElement("h2");
     title.textContent = TodoRuntime.message("Session expirée", "Session expired");
-    title.style.cssText = `
-      font-size: 1.2rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #efefef;
-      margin-bottom: 0.8rem;
-      font-family: "IBM Plex Mono", monospace;
-    `;
+    title.className = "modal-heading";
 
     const text = document.createElement("p");
     text.textContent = TodoRuntime.message(`Session expirée après ${timeoutMinutes} minutes d’inactivité.`, `Session expired after ${timeoutMinutes} minutes of inactivity.`);
-    text.style.cssText = `
-      font-size: 0.85rem;
-      color: #9a9a9a;
-      line-height: 1.5;
-      margin-bottom: 2rem;
-      font-family: "IBM Plex Mono", monospace;
-    `;
+    text.className = "timeout-message";
 
     const btn = document.createElement("button");
     btn.textContent = TodoRuntime.message("Se reconnecter", "Sign in again");
-    btn.style.cssText = `
-      background: #fff;
-      color: #000;
-      border: none;
-      padding: 0.8rem 1.5rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-      border-radius: 2px;
-      transition: background 160ms ease, color 160ms ease;
-      font-family: "IBM Plex Mono", monospace;
-    `;
+    btn.className = "btn-save";
     
-    // Effet de hover
-    btn.onmouseover = () => { btn.style.background = "#000"; btn.style.color = "#fff"; btn.style.border = "1px solid #fff"; };
-    btn.onmouseout = () => { btn.style.background = "#fff"; btn.style.color = "#000"; btn.style.border = "none"; };
-
     btn.addEventListener("click", () => {
       if (typeof window.transitionTo === "function") {
         window.transitionTo("./login.html");
@@ -149,8 +92,7 @@
 
     // Animation d'entrée
     requestAnimationFrame(() => {
-      overlay.style.opacity = "1";
-      modal.style.transform = "translateY(0)";
+      overlay.classList.add("visible");
     });
   }
 

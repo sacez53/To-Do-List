@@ -426,48 +426,26 @@ function updateArchivedView() {
         
         archivedTasks.forEach(task => {
             const row = document.createElement("div");
-            row.style.display = "flex";
-            row.style.justifyContent = "space-between";
-            row.style.alignItems = "center";
-            row.style.padding = "0.5rem";
-            row.style.background = "var(--surface-3)";
-            row.style.borderRadius = "3px";
+            row.className = "archive-item";
             
             const span = document.createElement("span");
-            span.style.color = "var(--text)";
-            span.style.fontSize = "0.8rem";
-            span.style.overflow = "hidden";
-            span.style.textOverflow = "ellipsis";
-            span.style.whiteSpace = "nowrap";
+            span.className = "archive-item-title";
             span.textContent = task.text;
             
             const btnWrap = document.createElement("div");
-            btnWrap.style.display = "flex";
-            btnWrap.style.gap = "0.5rem";
+            btnWrap.className = "archive-item-actions";
             
             const btnRestore = document.createElement("button");
+            btnRestore.className = "archive-restore";
             btnRestore.textContent = TodoRuntime.message("Désarchiver", "Unarchive");
-            btnRestore.style.background = "transparent";
-            btnRestore.style.border = "1px solid var(--line-strong)";
-            btnRestore.style.color = "var(--text-muted)";
-            btnRestore.style.padding = "0.2rem 0.5rem";
-            btnRestore.style.fontSize = "0.7rem";
-            btnRestore.style.cursor = "pointer";
-            btnRestore.style.borderRadius = "3px";
             btnRestore.addEventListener("click", async () => {
                 task.archived = false;
                 await saveArchivedChanges(todos);
             });
             
             const btnDelete = document.createElement("button");
+            btnDelete.className = "archive-delete";
             btnDelete.textContent = TodoRuntime.message("Supprimer", "Delete");
-            btnDelete.style.background = "transparent";
-            btnDelete.style.border = "1px solid rgba(248, 113, 113, 0.4)";
-            btnDelete.style.color = "#f87171";
-            btnDelete.style.padding = "0.2rem 0.5rem";
-            btnDelete.style.fontSize = "0.7rem";
-            btnDelete.style.cursor = "pointer";
-            btnDelete.style.borderRadius = "3px";
             btnDelete.addEventListener("click", async () => {
                 if (confirm(TodoRuntime.message("Placer cette tâche dans la corbeille pendant 30 jours ?", "Move this task to the trash for 30 days?"))) {
                     const deleted = TodoData.trash(task);

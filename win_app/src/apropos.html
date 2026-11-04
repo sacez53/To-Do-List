@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="../assets/js/transitions.js?v=25"></script>
+  <script src="../assets/js/transitions.js?v=26"></script>
   <script>
     // Déconnexion automatique
     sessionStorage.removeItem("auth");
@@ -20,453 +20,7 @@
     sessionStorage.removeItem("encKey");
     sessionStorage.removeItem("encSalt");
   </script>
-  <style>
-    :root {
-      --bg: #080808;
-      --surface: #0f0f0f;
-      --line: #1e1e1e;
-      --line-strong: #2e2e2e;
-      --text: #efefef;
-      --text-muted: #9a9a9a;
-      --text-faint: #a0a0a0;
-      --white: #fff;
-      --black: #000;
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "IBM Plex Mono", "Courier New", monospace;
-    }
-
-    html {
-      color-scheme: dark;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg);
-      color: var(--text);
-      background-image: radial-gradient(circle, #161616 1px, transparent 1px);
-      background-size: 22px 22px;
-      overflow-x: hidden;
-    }
-
-    /* ── Nav ── */
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .nav-logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 160ms ease;
-    }
-
-    .nav-logo-icon {
-      width: 18px;
-      height: 18px;
-      border-radius: 3px;
-      border: 1px solid var(--line-strong);
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    .nav-logo:hover {
-      color: var(--white);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .nav-link {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      text-decoration: none;
-      padding: 0.4rem 0.75rem;
-      border: 1px solid transparent;
-      border-radius: 2px;
-      transition: color 160ms ease, border-color 160ms ease;
-    }
-
-    .nav-link:hover {
-      color: var(--white);
-      border-color: var(--line-strong);
-    }
-
-    .nav-cta {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--black);
-      text-decoration: none;
-      padding: 0.4rem 0.9rem;
-      background: var(--white);
-      border: 1px solid var(--white);
-      border-radius: 2px;
-      transition: background 160ms ease, color 160ms ease;
-    }
-
-    .nav-cta:hover {
-      background: transparent;
-      color: var(--white);
-    }
-
-    /* ── Page header ── */
-    .page-header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 3.5rem 1.25rem 2.5rem;
-      text-align: center;
-      position: relative;
-    }
-
-    .page-header::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 1px;
-      height: 60px;
-      background: linear-gradient(to bottom, transparent, var(--line-strong));
-    }
-
-    .page-tag {
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 1.25rem;
-      border: 1px solid var(--line-strong);
-      padding: 0.3rem 0.7rem;
-      border-radius: 2px;
-      animation: fadeUp 500ms ease both;
-    }
-
-    .page-header h1 {
-      font-size: clamp(1.6rem, 6vw, 2.8rem);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      line-height: 1.1;
-      margin-bottom: 0.75rem;
-      animation: fadeUp 500ms 80ms ease both;
-    }
-
-    .page-header p {
-      font-size: clamp(0.82rem, 2.5vw, 0.95rem);
-      color: var(--text-muted);
-      max-width: 44ch;
-      line-height: 1.65;
-      animation: fadeUp 500ms 160ms ease both;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(18px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* ── Wrapper ── */
-    .wrapper {
-      max-width: 860px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 0 1.25rem 4rem;
-      flex: 1;
-    }
-
-    /* ── Section block ── */
-    .block {
-      border-left: 1px solid var(--line);
-      border-right: 1px solid var(--line);
-      animation: fadeUp 500ms 240ms ease both;
-    }
-
-    .block+.block {
-      margin-top: 2rem;
-    }
-
-    .block-header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .block-num {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      min-width: 2ch;
-    }
-
-    .block-title {
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .block-body {
-      padding: 1.25rem 1rem;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .block-body p {
-      font-size: 0.88rem;
-      color: var(--text);
-      line-height: 1.75;
-    }
-
-    .block-body p+p {
-      margin-top: 0.9rem;
-    }
-
-    /* ── Row list (clé / valeur) ── */
-    .row-list {
-      list-style: none;
-    }
-
-    .row-list li {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      align-items: baseline;
-      gap: 0.75rem;
-      padding: 0.8rem 1rem;
-      border-bottom: 1px solid var(--line);
-      transition: background 160ms ease;
-    }
-
-    .row-list li:hover {
-      background: var(--surface);
-    }
-
-    .row-key {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-faint);
-    }
-
-    .row-val {
-      font-size: 0.85rem;
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    /* ── Tag chips ── */
-    .chip-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      padding: 1rem;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .chip {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      border: 1px solid var(--line-strong);
-      padding: 0.25rem 0.55rem;
-      border-radius: 2px;
-    }
-
-    /* ── Timeline ── */
-    .timeline {
-      list-style: none;
-    }
-
-    .timeline li {
-      display: grid;
-      grid-template-columns: 90px 1fr;
-      gap: 1rem;
-      padding: 0.9rem 1rem;
-      border-bottom: 1px solid var(--line);
-      transition: background 160ms ease;
-    }
-
-    .timeline li:hover {
-      background: var(--surface);
-    }
-
-    .tl-date {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      color: var(--text-faint);
-      padding-top: 0.15rem;
-    }
-
-    .tl-text {
-      font-size: 0.85rem;
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    .tl-text strong {
-      color: var(--text-muted);
-      font-weight: 700;
-    }
-
-    /* ── CTA bas ── */
-    .cta-row {
-      display: flex;
-      justify-content: center;
-      padding: 2rem 1rem;
-      border: 1px solid var(--line);
-      margin-top: 2rem;
-      animation: fadeUp 500ms 320ms ease both;
-    }
-
-    .cta-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.9rem 2rem;
-      border: 1px solid var(--white);
-      border-radius: 2px;
-      background: var(--white);
-      color: var(--black);
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      text-decoration: none;
-      transition: background 160ms ease, color 160ms ease;
-    }
-
-    .cta-btn:hover {
-      background: transparent;
-      color: var(--white);
-    }
-
-    .cta-btn .arrow {
-      transition: transform 160ms ease;
-    }
-
-    .cta-btn:hover .arrow {
-      transform: translateX(4px);
-    }
-
-    /* ── Footer ── */
-    footer {
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-      text-align: center;
-      padding: 1.5rem 1rem;
-      border-top: 1px solid var(--line);
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      overflow-x: hidden;
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 0.75rem 1.25rem;
-      margin-bottom: 0.75rem;
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-
-    .footer-links a {
-      color: var(--text-faint);
-      text-decoration: none;
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      transition: color 160ms ease;
-    }
-
-    .footer-links a:hover {
-      color: var(--white);
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 600px) {
-      nav {
-        padding: 0.75rem 1rem;
-      }
-      .nav-ghost {
-        display: none;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .row-list li {
-        grid-template-columns: 1fr;
-        gap: 0.25rem;
-      }
-
-      .timeline li {
-        grid-template-columns: 1fr;
-        gap: 0.2rem;
-      }
-
-      .nav-cta, .nav-link, .btn-action, .btn-action-ghost, .cta-btn {
-        padding: 0.75rem 1rem;
-      }
-      .footer-links {
-        flex-direction: column;
-        gap: 0.55rem;
-      }
-      .footer-links a {
-        padding: 0.25rem 0.5rem;
-        display: inline-block;
-      }
-      footer a {
-        padding: 0.25rem 0.5rem;
-        display: inline-block;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="../assets/css/style2.css?v=26">
   <link rel="manifest" href="../manifest.json">
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
@@ -477,34 +31,30 @@
       });
     }
   </script>
-  <script src="../assets/js/runtime.js?v=25"></script>
-  <script src="../assets/js/dialogs.js?v=25"></script>
-  <link rel="stylesheet" href="../assets/css/interface.css?v=25">
+  <script src="../assets/js/runtime.js?v=26"></script>
+  <script src="../assets/js/dialogs.js?v=26"></script>
+  <link rel="stylesheet" href="../assets/css/interface.css?v=26">
+  <link rel="stylesheet" href="../assets/css/pages.css?v=26">
 </head>
 
 <body class="interface-v6 information-page">
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
 
-  <nav>
-    <a class="nav-logo" href="../index.html"><img src="../assets/icons/icon-192.png" alt="Logo T" class="nav-logo-icon"> <span>To‑Do List</span></a>
-    <div class="nav-links">
-      <a class="nav-link" href="../index.html">Accueil</a>
-      <a class="nav-cta" href="./login.html" id="nav-connexion">Connexion →</a>
-    </div>
-  </nav>
+<header class="site-header"><div class="site-header-inner"><a class="workspace-brand" href="../index.html"><span class="brand-mark" aria-hidden="true">T</span><span data-i18n="app_title">To-Do List</span></a><nav class="nav-links site-header-actions" aria-label="Navigation principale"><a class="site-button" href="./login.html" id="nav-connexion">Connexion <span aria-hidden="true">↗</span></a></nav></div></header>
 
   <header class="page-header">
-    <span class="page-tag">Documentation · <span id="app-version">v6.0.1</span></span>
+    <span class="page-tag">Documentation · <span id="app-version">v6.0.2</span></span>
     <h1>À propos</h1>
     <p>Présentation du projet et de son créateur — une application moderne, bilingue et multi-plateforme pour organiser efficacement chaque journée.</p>
   </header>
 
-  <main class="wrapper">
+  <main class="wrapper" id="main-content">
 
     <!-- 01 — Le projet -->
     <section class="block" aria-labelledby="section-projet">
       <div class="block-header">
         <span class="block-num">01</span>
-        <span class="block-title" id="section-projet">Le projet</span>
+        <h2 class="block-title" id="section-projet">Le projet</h2>
       </div>
       <div class="block-body">
         <p>
@@ -523,7 +73,7 @@
     <section class="block" aria-labelledby="section-features">
       <div class="block-header">
         <span class="block-num">02</span>
-        <span class="block-title" id="section-features">Fonctionnalités clés</span>
+        <h2 class="block-title" id="section-features">Fonctionnalités clés</h2>
       </div>
       <ul class="row-list">
         <li>
@@ -581,7 +131,7 @@
     <section class="block" aria-labelledby="section-stack">
       <div class="block-header">
         <span class="block-num">03</span>
-        <span class="block-title" id="section-stack">Stack technique</span>
+        <h2 class="block-title" id="section-stack">Stack technique</h2>
       </div>
       <ul class="row-list">
         <li>
@@ -633,7 +183,7 @@
     <section class="block" aria-labelledby="section-auteur">
       <div class="block-header">
         <span class="block-num">04</span>
-        <span class="block-title" id="section-auteur">Qui suis‑je ?</span>
+        <h2 class="block-title" id="section-auteur">Qui suis‑je ?</h2>
       </div>
       <div class="block-body">
         <p>
@@ -678,7 +228,7 @@
     <section class="block" aria-labelledby="section-history">
       <div class="block-header">
         <span class="block-num">05</span>
-        <span class="block-title" id="section-history">Historique des versions</span>
+        <h2 class="block-title" id="section-history">Historique des versions</h2>
       </div>
       <ul class="timeline">
         <li><span class="tl-date">Nov. 2026</span><span class="tl-text"><strong>v6.0.0</strong> — Refonte de l’interface : navigation latérale sur ordinateur, présentation compacte sur téléphone et styles communs aux pages.</span></li>
@@ -740,7 +290,7 @@
 
   </main>
 
-  <footer>
+  <footer class="site-footer">
     <div class="footer-links">
       <a href="../index.html">Accueil</a>
       <a href="./confidentialite.html">Confidentialité</a>
@@ -762,7 +312,7 @@
       })
       .catch(e => console.error('Erreur chargement version:', e));
   </script>
-  <script src="../assets/js/burger-menu.js?v=25"></script>
+  <script src="../assets/js/burger-menu.js?v=26"></script>
 </body>
 
 </html>

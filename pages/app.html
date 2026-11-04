@@ -1,28 +1,16 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <title>To‑Do List — App</title>
-  <script>
-    // Redirection transparente vers la nouvelle version
-    window.location.replace("./app-v2.html" + window.location.search);
-  </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Ouverture — To-Do List</title>
   <link rel="icon" type="image/svg+xml" href="../assets/logo/logo-t.svg">
-  <link rel="icon" type="image/png" sizes="192x192" href="../assets/icons/icon-192.png">
-  <link rel="manifest" href="../manifest.json">
-  <meta name="theme-color" content="#080808">
-  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
-  <script>
-    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
-      });
-    }
-  </script>
-  <script src="../assets/js/runtime.js?v=25"></script>
-  <script src="../assets/js/dialogs.js?v=25"></script>
-  <link rel="stylesheet" href="../assets/css/interface.css?v=25">
+  <link rel="stylesheet" href="../assets/css/style2.css?v=26">
+  <link rel="stylesheet" href="../assets/css/interface.css?v=26">
+  <link rel="stylesheet" href="../assets/css/pages.css?v=26">
+  <script>location.replace("./app-v2.html" + location.search);</script>
 </head>
-<body class="interface-v6"></body>
+<body class="interface-v6">
+  <main class="redirect-page"><span class="brand-mark" aria-hidden="true">T</span><h1>Ouverture de votre espace</h1><p>Vos tâches sont sur la page suivante.</p><a class="cta-btn" href="./app-v2.html">Continuer vers mes tâches →</a></main>
+</body>
 </html>

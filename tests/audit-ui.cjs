@@ -13,12 +13,14 @@ app.commandLine.appendSwitch('disable-gpu-shader-disk-cache');
 fs.mkdirSync(out,{recursive:true});
 const bootstrap = `<script>
 sessionStorage.setItem('auth','true');sessionStorage.setItem('username','audit');if(!sessionStorage.getItem('encKey'))sessionStorage.setItem('encKey',btoa(String.fromCharCode(...new Uint8Array(32).fill(7))));sessionStorage.setItem('lang','fr');
+if(new URLSearchParams(location.search).has('guest')){sessionStorage.removeItem('auth');sessionStorage.removeItem('username');}
 window.__fixture={account:{password:'hash',todos:[{id:'a',text:'Task A',status:'todo',priority:'normal',notes:'Notes',created:'2026-01-01T12:00:00Z'},{id:'b',text:'<b>Literal task</b>',status:'inprogress',priority:'high',notes:'',due:'2026-11-03'}]},version:0};
 if(sessionStorage.getItem("__keepFixture"))window.__fixture=JSON.parse(sessionStorage.getItem("__keepFixture"));
 window.__alerts=[];window.alert=msg=>__alerts.push(msg);window.confirm=()=>true;
 const originalFetch=window.fetch.bind(window);
 window.fetch=async(url,options={})=>{
  if(String(url).includes('firebase.json'))return Response.json({url:'https://fixture.invalid'});
+ if(String(url).includes('security.json')&&new URLSearchParams(location.search).has('timeout'))return Response.json({timeoutMinutes:0.02});
  if(String(url).includes('fixture.invalid')){
   if(String(url).endsWith('/comments.json'))return Response.json({demo:{text:'Une présentation plus claire, sur téléphone aussi.',username:'demo',createdAt:'2026-11-04T10:00:00Z'}});
   if(__fixture.failure)return new Response('{}',{status:__fixture.failure});
@@ -389,7 +391,11 @@ app.whenReady().then(async()=>{
   await new Promise(r=>setTimeout(r,450));
   await fs.promises.writeFile(path.join(out,'phone-settings.png'),(await win.webContents.capturePage()).toPNG());
   assert.equal(await run('typeof saveArchivedChanges'), 'function');
-  await run(`(async()=>{await archiveStore.sync();const current=archiveStore.read();current.push({id:'archive-ui',text:'Archive récupérable',notes:'Archive notes',status:'done',archived:true});await archiveStore.save(current);await archiveStore.sync();updateArchivedView();document.querySelector('[data-tab="tab-archive"]').click();document.querySelectorAll('#archived-tasks-container button')[1].click();})()`);
+  await run(`(async()=>{await archiveStore.sync();const current=archiveStore.read();current.push({id:'archive-ui',text:'Archive récupérable avec un titre plus long pour vérifier le retour à la ligne sur téléphone',notes:'Archive notes',status:'done',archived:true});await archiveStore.save(current);await archiveStore.sync();updateArchivedView();document.querySelector('[data-tab="tab-archive"]').click();})()`);
+  assert.equal(await run('[...document.querySelectorAll(".archive-item-actions button")].every(b=>b.getBoundingClientRect().height>=44)'),true);
+  assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
+  await fs.promises.writeFile(path.join(out,'phone-settings-archive-populated.png'),(await win.webContents.capturePage()).toPNG());
+  await run('document.querySelectorAll("#archived-tasks-container button")[1].click()');
   await until('!!archiveStore.read().find(t=>t.id==="archive-ui").deletedAt && !!document.getElementById("archive-trash-undo")');
   await run('document.getElementById("archive-trash-undo").click()');
   await until('!document.getElementById("archive-trash-undo") && !archiveStore.read().find(t=>t.id==="archive-ui").deletedAt');
@@ -417,6 +423,7 @@ app.whenReady().then(async()=>{
       win.setContentSize(width,width===320?740:900);await new Promise(r=>setTimeout(r,150));
       await run('window.scrollTo(0,0)');
       assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`${page} overflows at ${width}`);
+      assert.equal(await run('(()=>{const brand=document.querySelector(".site-header .workspace-brand").getBoundingClientRect(),nav=document.querySelector(".site-header-actions").getBoundingClientRect();return brand.right<=nav.left+1 || brand.bottom<=nav.top+1})()'),true,`header overlaps at ${page} ${width}`);
       if(await run('!!document.querySelector(".bm-trigger")')) {
         assert.equal(await run('getComputedStyle(document.querySelector(".bm-dropdown")).display'),'none');
         await run('document.querySelector(".bm-trigger").click()');
@@ -424,14 +431,49 @@ app.whenReady().then(async()=>{
         assert.equal(await run('(()=>{const r=document.querySelector(".bm-dropdown").getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1})()'),true,`navigation outside ${page} at ${width}`);
         await run('document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))');
         assert.equal(await run('document.activeElement===document.querySelector(".bm-trigger")'),true);
+        await new Promise(r=>setTimeout(r,100));
       }
       if(width!==320) await fs.promises.writeFile(path.join(out,`${width===390?'phone':'desktop'}-${name}.png`),(await win.webContents.capturePage()).toPNG());
+      if(page==='pages/donnees.html') {
+        await run('document.getElementById("btn-delete-account").click()');
+        await new Promise(r=>setTimeout(r,150));
+        assert.equal(await run('getComputedStyle(document.getElementById("confirm-overlay")).display'),'flex');
+        assert.equal(await run('(()=>{const r=document.querySelector("#confirm-overlay .modal").getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight+1 && r.left>=0 && r.right<=innerWidth+1})()'),true,`data dialog outside ${width}`);
+        await run('document.getElementById("cancel-action").click()');
+        assert.equal(await run('document.getElementById("confirm-overlay").classList.contains("active")'),false);
+      }
       if(page==='pages/login.html') {
         await run('document.getElementById("tab-register").click()');
         assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`registration overflows at ${width}`);
         await run('document.getElementById("tab-login").click()');
       }
+      if(page==='pages/settings.html') {
+        for(const tab of ['display','archive','danger']) {
+          await run(`document.querySelector('[data-tab="tab-${tab}"]').click()`);
+          await new Promise(r=>setTimeout(r,100));
+          assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`${tab} preferences overflow at ${width}`);
+          assert.equal(await run(`document.querySelector('#tab-${tab} .settings-section').getBoundingClientRect().height>100`),true);
+          if(width===390) await fs.promises.writeFile(path.join(out,`phone-settings-${tab}.png`),(await win.webContents.capturePage()).toPNG());
+        }
+        await run('document.querySelector("[data-tab=tab-account]").click()');
+      }
     }
+  }
+  await win.loadURL(`http://127.0.0.1:${port}/pages/commentaires.html?guest=1`);
+  await until('getComputedStyle(document.getElementById("comment-auth-msg")).display==="flex"');
+  for(const width of [320,390,1440]) {
+    win.setContentSize(width,900);await new Promise(r=>setTimeout(r,100));
+    assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`guest comments overflow at ${width}`);
+    assert.equal(await run('getComputedStyle(document.getElementById("comment-form")).display'),'none');
+    if(width===390) await fs.promises.writeFile(path.join(out,'phone-comments-guest.png'),(await win.webContents.capturePage()).toPNG());
+  }
+  await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html?timeout=1`);
+  await until('!!document.getElementById("timeout-overlay")');
+  for(const [width,height] of [[320,420],[390,844],[1440,900]]) {
+    win.setContentSize(width,height);await new Promise(r=>setTimeout(r,200));
+    assert.equal(await run('(()=>{const r=document.querySelector(".timeout-modal").getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1 && r.top>=0 && r.bottom<=innerHeight+1})()'),true,`timeout dialog outside ${width}x${height}`);
+    assert.equal(await run('document.querySelector(".timeout-modal button").getBoundingClientRect().height>=44'),true);
+    if(width===390) await fs.promises.writeFile(path.join(out,'phone-session-expired.png'),(await win.webContents.capturePage()).toPNG());
   }
   console.log('SHARED UI PASS: login/registration, home, calendar, settings, information and data pages at 320/390/1440px.');
   console.log('UI PASS: three views, summary/edit, deletion cancellation, safe text, creation, dirty form, focus, HTTP 403, mobile fit, calendar month/status, password rotation and JSON export.');
