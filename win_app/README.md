@@ -1,11 +1,15 @@
-# To-Do List Windows — v5.7.0
+# To-Do List Windows — v6.0.1
 
 Lancer le portable : `release/ToDoList-win32-x64/ToDoList.exe`.
-La copie versionnée se trouve dans `release/v5.7.0/ToDoList-win32-x64/` et les sources dans `versions/v5.7.0/`.
+La copie versionnée se trouve dans `release/v6.0.1/ToDoList-win32-x64/` et les sources dans `versions/v6.0.1/`.
 
-Cette version ajoute N03 : corbeille avec conservation de 30 jours, notification Annuler, restauration complète et suppression définitive confirmée. Les tâches supprimées disparaissent des listes, du calendrier et des archives. Des marqueurs chiffrés empêchent une ancienne restauration hors ligne de rétablir une tâche supprimée définitivement. La purge automatique s’effectue au prochain accès ou à la prochaine synchronisation.
+Les tâches affichent seulement Modifier dans les vues principales. Reporter à demain et Choisir une date sont disponibles dans leur résumé, ouvert par le titre, pour les tâches actives. Le statut se modifie dans le formulaire.
 
-Mettre à jour tous les appareils et fermer les anciens onglets : les anciennes versions ignorent le schéma de corbeille. Les quatre onglets restent accessibles sur deux rangées dans les petites fenêtres ; la présentation de bureau est conservée.
+Toutes les tâches est la vue affichée par défaut à l’ouverture.
+
+Cette version refait l’interface avec une navigation latérale sur ordinateur, une zone de tâches plus large et des commandes regroupées. Les petites fenêtres utilisent quatre périodes sur une rangée et une barre d’ajout fixe. Le thème sombre et la typographie monospace sont conservés. La connexion, le calendrier et les paramètres reprennent les styles communs.
+
+La corbeille conserve les tâches pendant 30 jours. La notification Annuler, la restauration et les marqueurs de suppression définitive restent disponibles. Les anciens clients qui ignorent ce schéma doivent être mis à jour.
 
 N02 reste disponible : saisie rapide avec Entrée, protection contre le double appui, reprise du brouillon dans le formulaire complet et aide des raccourcis. N rejoint la saisie rapide, Maj+N ouvre le formulaire complet, ? ouvre l’aide. Les raccourcis sont ignorés dans les champs et les dialogues, et désactivables depuis l’aide. Le choix est mémorisé pour ce compte sur cet appareil. Aucune interprétation de dates en langage naturel.
 

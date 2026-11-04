@@ -197,10 +197,10 @@
       }
 
       .bm-trigger {
-        width: 38px;
-        height: 38px;
-        min-width: 38px;
-        min-height: 38px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
         padding: 5px;
       }
 
@@ -256,8 +256,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
+        width: 44px;
+        height: 44px;
         background: #161616;
         border: 1px solid #2a2a2a;
         border-radius: 3px;
@@ -276,6 +276,8 @@
         flex-shrink: 0;
       }
     }
+
+    .bm-wrap:not(.bm-open) .bm-dropdown { display: none; }
 
     body.bm-locked {
       overflow: hidden;
@@ -333,6 +335,7 @@
   const trigger  = wrap.querySelector(".bm-trigger");
   const backdrop = wrap.querySelector(".bm-backdrop");
   const closeBtn = wrap.querySelector(".bm-close-btn");
+  const dropdown = wrap.querySelector(".bm-dropdown");
 
   function openMenu() {
     wrap.classList.add("bm-open");
@@ -340,12 +343,15 @@
     if (window.innerWidth <= 600) {
       document.body.classList.add("bm-locked");
     }
+    dropdown.querySelector(".bm-link")?.focus();
   }
 
   function closeMenu() {
+    const restoreFocus = dropdown.contains(document.activeElement);
     wrap.classList.remove("bm-open");
     trigger.setAttribute("aria-expanded", "false");
     document.body.classList.remove("bm-locked");
+    if (restoreFocus) trigger.focus({ preventScroll: true });
   }
 
   trigger.addEventListener("click", e => {
@@ -363,7 +369,14 @@
   });
 
   document.addEventListener("keydown", e => {
-    if (e.key === "Escape") closeMenu();
+    if (!wrap.classList.contains("bm-open")) return;
+    if (e.key === "Escape") { e.preventDefault(); closeMenu(); }
+    if (e.key === "Tab" && window.innerWidth <= 600) {
+      const controls = [...dropdown.querySelectorAll("button,a")].filter(el => el.getClientRects().length);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   });
 
   wrap.querySelector(".bm-dropdown").addEventListener("click", e => {

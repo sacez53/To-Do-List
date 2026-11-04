@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>To‑Do List — App</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <link rel="icon" type="image/svg+xml" href="../assets/logo/logo-t.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style2.css?v=24" />
+  <script src="../assets/js/transitions.js?v=24"></script>
+  <script src="../assets/js/i18n.js?v=24"></script>
+  <script>if (!sessionStorage.getItem("auth")) window.location.replace("./login.html");</script>
+
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js')
+          .catch(err => console.error('Service Worker Error:', err));
+      });
+    }
+  </script>
+  <script src="../assets/js/runtime.js?v=24"></script>
+  <script src="../assets/js/dialogs.js?v=24"></script>
+  <link rel="stylesheet" href="../assets/css/interface.css?v=24">
+</head>
+
+<body class="interface-v6 task-app">
+
+  <!-- Header -->
+  <a class="skip-link" href="#main-content" data-i18n="skip_content">Aller aux tâches</a>
+  <header class="v2-header workspace-header">
+    <a class="workspace-brand" href="#main-content"><span class="brand-mark" aria-hidden="true">T</span><span data-i18n="app_title">To-Do List</span></a>
+    <p class="workspace-session"><span data-i18n="space_of">Espace de</span> <strong id="v2-user-label"></strong></p>
+    <span class="v2-sync"><span class="v2-sync-dot" id="v2-sync-dot"></span><span class="v2-sync-label" id="v2-sync-label" role="status" aria-live="polite" data-i18n="loading">Chargement...</span></span>
+  </header>
+
+  <div class="workspace-shell">
+    <aside class="workspace-sidebar" aria-label="Navigation de l’espace" data-i18n-aria="workspace_navigation">
+      <p class="ui-eyebrow" data-i18n="workspace_label">Mon espace</p>
+  <div class="v2-add-dock">
+  <button class="v2-fab" id="v2-fab" aria-label="Ajouter une tâche" data-i18n-aria="modal_new_task">
+    <span class="v2-fab-label" data-i18n="modal_new_task">Nouvelle tâche</span>
+    <span class="v2-fab-icon" aria-hidden="true">+</span>
+  </button>
+  </div>
+    <nav class="v2-scopes" aria-label="Période des tâches" data-i18n-aria="scope_navigation">
+      <button type="button" class="v2-scope" data-scope="today" data-i18n-aria="scope_today" aria-label="today" aria-pressed="false"><span class="scope-label-full" data-i18n="scope_today">Aujourd’hui</span><span class="scope-label-short" data-i18n="scope_today_short"></span><span class="v2-scope-count">0</span></button>
+      <button type="button" class="v2-scope" data-scope="upcoming" data-i18n-aria="scope_upcoming" aria-label="upcoming" aria-pressed="false"><span class="scope-label-full" data-i18n="scope_upcoming">À venir</span><span class="scope-label-short" data-i18n="scope_upcoming_short"></span><span class="v2-scope-count">0</span></button>
+      <button type="button" class="v2-scope active" data-scope="all" data-i18n-aria="scope_all" aria-label="all" aria-pressed="true"><span class="scope-label-full" data-i18n="scope_all">Toutes les tâches</span><span class="scope-label-short" data-i18n="scope_all_short"></span><span class="v2-scope-count">0</span></button>
+      <button type="button" class="v2-scope" data-scope="trash" data-i18n-aria="scope_trash" aria-label="trash" aria-pressed="false"><span class="scope-label-full" data-i18n="scope_trash">Corbeille</span><span class="scope-label-short" data-i18n="scope_trash_short"></span><span class="v2-scope-count">0</span></button>
+    </nav>
+      <div class="workspace-links v2-header-actions">
+        <a class="v2-back-btn" href="calendar.html" data-i18n="calendar">Calendrier</a>
+        <a class="v2-back-btn" href="settings.html" data-i18n="settings">Paramètres</a>
+        <button type="button" id="v2-logout-btn" data-i18n="logout">Déconnexion</button>
+      </div>
+      <p class="sidebar-note" data-i18n="workspace_note">Une tâche à la fois.</p>
+    </aside>
+    <main class="container workspace-main" id="main-content" role="main">
+      <header class="workspace-heading"><p class="ui-eyebrow" data-i18n="workspace_tasks">Vos tâches</p>
+    <div class="v2-scope-intro">
+      <h1 id="v2-scope-heading" data-i18n="scope_all">Toutes les tâches</h1>
+      <p id="v2-scope-description" data-i18n="scope_all_description">Toutes vos tâches non archivées, y compris celles sans échéance, terminées ou annulées.</p>
+    </div></header>
+    <section class="v2-capture" aria-labelledby="quick-add-label">
+      <form id="quick-add-form" novalidate>
+        <label id="quick-add-label" for="quick-add-title" data-i18n="quick_label">Ajouter une tâche</label>
+        <div class="v2-capture-row">
+          <input type="text" id="quick-add-title" class="modal-input" required autocomplete="off" placeholder="Que devez-vous faire ?" data-i18n-placeholder="quick_placeholder" aria-describedby="quick-add-hint quick-add-error" disabled />
+          <button type="submit" id="quick-add-submit" class="btn-save" data-i18n="quick_add" disabled>Ajouter</button>
+        </div>
+        <p id="quick-add-hint" class="v2-capture-hint" data-i18n="quick_hint">Entrée pour créer une tâche sans échéance.</p>
+        <p id="quick-add-error" class="v2-capture-error" role="alert"></p>
+      </form>
+      <div class="v2-capture-tools">
+        <button type="button" id="quick-add-full" class="v2-capture-link" data-i18n="quick_full" disabled>Formulaire complet</button>
+        <button type="button" id="shortcuts-open" class="v2-capture-link" aria-haspopup="dialog" aria-controls="shortcuts-overlay" data-i18n="shortcuts_help">Raccourcis clavier</button>
+      </div>
+      <p id="quick-add-status" class="v2-capture-status" role="status" aria-live="polite"></p>
+      <button type="button" id="quick-add-details" class="v2-capture-link" data-i18n="quick_details" hidden>Compléter les détails</button>
+    </section>
+      <section class="workspace-controls" aria-label="Affichage et filtres" data-i18n-aria="workspace_controls">
+    <!-- Toolbar -->
+    <div class="v2-toolbar">
+      <div class="v2-search-wrap">
+        <span class="v2-search-icon">⌕</span>
+        <input type="search" aria-label="Rechercher des tâches" data-i18n-aria="search_placeholder" id="v2-search" class="v2-search" placeholder="Rechercher..." data-i18n-placeholder="search_placeholder" autocomplete="off" />
+        <button class="v2-search-clear" aria-label="Effacer la recherche" data-i18n-aria="clear_search" id="v2-search-clear" style="display:none">✕</button>
+      </div>
+      <label class="sr-only" for="v2-sort" data-i18n="sort_label">Trier les tâches</label><select id="v2-sort" class="v2-sort">
+        <option value="status" data-i18n="sort_status">Statut</option>
+        <option value="az" data-i18n="sort_az">A → Z</option>
+        <option value="za" data-i18n="sort_za">Z → A</option>
+        <option value="created-desc" data-i18n="sort_recent">Récents</option>
+        <option value="created-asc" data-i18n="sort_old">Anciens</option>
+        <option value="priority" data-i18n="sort_priority">Priorité ↑</option>
+        <option value="due-asc" data-i18n="sort_due">Échéance ↑</option>
+        <option value="overdue-first" data-i18n="sort_overdue_first">Retards d'abord</option>
+        <option value="notes-first" data-i18n="sort_notes_first">Notes en premier</option>
+      </select>
+    </div>
+
+    <!-- Switcher vue -->
+    <div class="v2-view-switcher">
+      <button class="v2-view-btn active" aria-pressed="true" data-view="list" data-i18n="view_list">☰ Liste</button>
+      <button class="v2-view-btn" aria-pressed="false" data-view="kanban" data-i18n="view_kanban">⬛ Kanban</button>
+      <button class="v2-view-btn" aria-pressed="false" data-view="table" data-i18n="view_table">⊞ Tableau</button>
+    </div>
+
+    <!-- Filtres avancés -->
+    <div class="v2-filter-bar">
+      <button id="v2-filter-toggle" aria-controls="v2-filter-panel" aria-expanded="false" class="v2-filter-toggle">
+        <span class="scope-label-full" data-i18n="adv_filters">Filtres avancés</span><span class="scope-label-short" data-i18n="filter_short">Filtres</span>
+        <span class="v2-filter-count" id="v2-filter-count"></span>
+      </button>
+
+    </div>
+
+    <div id="v2-filter-panel" class="v2-filter-panel">
+      <button id="v2-filter-reset" class="v2-filter-reset" data-i18n="reset_filters">Réinitialiser</button>
+      <div class="v2-fp-group">
+        <h4 data-i18n="filter_status">Statut</h4>
+        <div class="v2-fp-checks" id="fp-statuses"></div>
+      </div>
+      <div class="v2-fp-group">
+        <h4 data-i18n="filter_priority">Priorité</h4>
+        <div class="v2-fp-checks" id="fp-priorities"></div>
+      </div>
+      <div class="v2-fp-group">
+        <h4 data-i18n="filter_due">Date d'échéance</h4>
+        <div class="v2-fp-date">
+          <label for="fp-due-before" data-i18n="filter_before">Avant le</label>
+          <input type="date" id="fp-due-before" />
+          <label for="fp-due-after" data-i18n="filter_after">Après le</label>
+          <input type="date" id="fp-due-after" />
+        </div>
+      </div>
+      <div class="v2-fp-group">
+        <h4 data-i18n="filter_others">Autres</h4>
+        <div class="v2-fp-checks">
+          <label class="v2-fp-check"><input type="checkbox" id="fp-has-notes"> <span data-i18n="filter_with_notes">📝 Avec notes</span></label>
+          <label class="v2-fp-check"><input type="checkbox" id="fp-no-due"> <span data-i18n="filter_no_due">📅 Sans date</span></label>
+        </div>
+      </div>
+    </div>
+
+      </section>
+      <div class="workspace-results">
+    <p id="v2-scope-results" class="v2-scope-results" role="status" aria-live="polite"></p>
+    <p id="v2-schedule-feedback" class="v2-schedule-feedback" role="status" aria-live="polite"></p>
+    <p id="v2-board-scroll-hint" class="v2-mobile-scroll-hint" data-i18n="board_scroll_hint" hidden>Faites glisser pour voir les autres colonnes.</p>
+    <p id="trash-feedback" class="v2-schedule-feedback" role="status" aria-live="polite"></p>
+      </div>
+      <div id="v2-board" class="v2-board"></div>
+    <section class="v2-overall-progress" aria-label="Progression globale" data-i18n-aria="global_progress">
+    <p class="v2-global-stats-label" data-i18n="global_progress">Progression globale</p>
+    <div class="v2-stats">
+      <span id="v2-stat-total">0 tâches</span>
+      <span id="v2-stat-done">0 terminées</span>
+      <span id="v2-stat-progress">0%</span>
+    </div>
+    <div class="v2-progress-wrap">
+      <div class="v2-progress-bar" id="v2-progress-bar" style="width:0%"></div>
+    </div>
+
+    </section>
+    </main>
+  </div>
+
+  <footer class="v2-footer">
+    <div class="v2-footer-links">
+      <a href="./confidentialite.html" data-i18n="footer_privacy">Confidentialité</a>
+      <a href="./mentions-legales.html" data-i18n="footer_legal">Mentions Légales</a>
+      <a href="./cgu.html" data-i18n="footer_cgu">CGU</a>
+      <a href="./donnees.html" data-i18n="footer_data">Gestion des données</a>
+    </div>
+    <p>© 2026 · Sacha G.</p>
+  </footer>
+
+  <aside id="trash-notice" class="v2-trash-notice" hidden aria-label="Annulation de suppression" data-i18n-aria="trash_notice">
+    <span id="trash-notice-text" role="status" aria-live="polite"></span>
+    <button type="button" id="trash-undo" class="v2-capture-link" data-i18n="trash_undo">Annuler</button>
+    <button type="button" id="trash-notice-close" class="v2-capture-link" aria-label="Fermer" data-i18n-aria="btn_close">✕</button>
+  </aside>
+
+  <!-- FAB -->
+
+
+  <!-- Modale ajout/édition/récapitulatif (réutilisée de style2.css) -->
+  <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+    <div class="modal">
+      <button class="modal-close" id="modal-close" data-i18n-aria="btn_close" aria-label="Fermer">✕</button>
+      <h2 class="modal-heading" id="modal-heading" data-i18n="modal_new_task">Nouvelle tâche</h2>
+
+      <!-- Vue récapitulative (lecture seule) -->
+      <div class="modal-recap" id="modal-recap" style="display:none;">
+        <div class="modal-recap-title" id="recap-title"></div>
+        <div class="modal-recap-badges">
+          <span class="v2-badge" id="recap-status"></span>
+          <span class="v2-prio" id="recap-priority"></span>
+          <span class="v2-due" id="recap-due"></span>
+        </div>
+        <div class="modal-recap-section">
+          <div class="modal-recap-label" data-i18n="modal_field_notes">Notes</div>
+          <div class="modal-recap-notes" id="recap-notes"></div>
+        </div>
+        <div class="modal-recap-meta" id="recap-meta"></div>
+      </div>
+
+      <!-- Corps du formulaire (édition / création) -->
+      <div class="modal-body" id="modal-body">
+      <div class="modal-field">
+        <label for="modal-text" data-i18n="modal_field_title">Titre</label>
+        <input type="text" id="modal-text" class="modal-input" placeholder="Nom de la tâche..." data-i18n-placeholder="modal_placeholder_title" />
+      </div>
+      <div class="modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div class="modal-field">
+          <label for="modal-status" data-i18n="modal_field_status">Statut</label>
+          <select id="modal-status" class="modal-select">
+            <option value="todo" data-i18n="status_todo">📋 À faire</option>
+            <option value="inprogress" data-i18n="status_inprogress">⚡ En cours</option>
+            <option value="waiting" data-i18n="status_waiting">⏳ En attente</option>
+            <option value="done" data-i18n="status_done">✅ Terminé</option>
+            <option value="cancelled" data-i18n="status_cancelled">❌ Annulé</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label for="modal-priority" data-i18n="modal_field_priority">Priorité</label>
+          <select id="modal-priority" class="modal-select">
+            <option value="normal" data-i18n="prio_normal">— Normale</option>
+            <option value="high" data-i18n="prio_high">🔴 Haute</option>
+            <option value="low" data-i18n="prio_low">🔵 Basse</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div class="modal-field">
+          <label for="modal-due"><span data-i18n="modal_field_due">Date d'échéance</span> <span style="opacity:.5;font-size:.65rem;" data-i18n="modal_field_optional">(optionnel)</span></label>
+          <input type="date" id="modal-due" class="modal-input" />
+        </div>
+        <div class="modal-field">
+          <label for="modal-due-time"><span data-i18n="modal_field_time">Heure</span> <span style="opacity:.5;font-size:.65rem;" data-i18n="modal_field_optional">(optionnel)</span></label>
+          <input type="time" id="modal-due-time" class="modal-input" />
+        </div>
+      </div>
+      <div class="modal-field">
+        <label for="modal-notes" data-i18n="modal_field_notes">Notes</label>
+        <textarea id="modal-notes" class="modal-textarea" placeholder="Ajouter une note..." data-i18n-placeholder="modal_placeholder_notes"></textarea>
+      </div>
+      </div>
+      <div class="modal-actions">
+        <!-- Mode récapitulatif -->
+        <button class="btn-save" id="modal-edit-btn" style="display:none;" data-i18n="btn_edit">Modifier</button>
+        <button class="btn-delete" id="modal-close-recap-btn" style="display:none;" data-i18n="btn_close">Fermer</button>
+
+        <!-- Mode édition / création -->
+        <button class="btn-save" id="modal-save" data-i18n="btn_create">Créer</button>
+        <button class="btn-delete" id="modal-cancel-edit-btn" style="display:none;" data-i18n="btn_cancel">Annuler</button>
+        <button class="btn-delete" id="modal-delete" style="display:none" data-i18n="btn_delete">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="schedule-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="schedule-heading">
+    <form id="schedule-form" class="modal" style="max-width:420px;">
+      <h2 id="schedule-heading" class="modal-heading" data-i18n="schedule_choose">Choisir une date</h2>
+      <p id="schedule-task-title" class="v2-schedule-title"></p>
+      <p id="schedule-error" class="v2-schedule-error" role="alert"></p>
+      <div class="modal-field">
+        <label for="schedule-date" data-i18n="modal_field_due">Date d’échéance</label>
+        <input type="date" id="schedule-date" class="modal-input" required aria-describedby="schedule-time-hint" />
+        <p id="schedule-time-hint" class="v2-schedule-hint"></p>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" id="schedule-save" class="btn-save" data-i18n="btn_save">Enregistrer</button>
+        <button type="button" id="schedule-cancel" class="btn-delete" data-i18n="btn_cancel">Annuler</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="shortcuts-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="shortcuts-heading">
+    <div class="modal" style="max-width:460px;">
+      <h2 id="shortcuts-heading" class="modal-heading" data-i18n="shortcuts_help">Raccourcis clavier</h2>
+      <dl class="v2-shortcut-list">
+        <div><dt><kbd>N</kbd></dt><dd data-i18n="shortcuts_quick">Rejoindre la saisie rapide</dd></div>
+        <div><dt><kbd data-i18n="shortcuts_shift">Maj</kbd> + <kbd>N</kbd></dt><dd data-i18n="shortcuts_full">Ouvrir le formulaire complet</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd data-i18n="shortcuts_show_help">Afficher cette aide</dd></div>
+      </dl>
+      <p class="v2-capture-hint" data-i18n="shortcuts_context">Les raccourcis sont ignorés dans les champs de saisie et les dialogues. Échap ferme un dialogue ; Tab permet de parcourir les commandes.</p>
+      <label class="v2-shortcuts-toggle" for="shortcuts-enabled"><input type="checkbox" id="shortcuts-enabled" checked /><span data-i18n="shortcuts_enable">Activer les raccourcis</span></label>
+      <p class="v2-capture-hint" data-i18n="shortcuts_local">Ce choix est mémorisé pour ce compte sur cet appareil.</p>
+      <p id="shortcuts-error" class="v2-capture-error" role="alert"></p>
+      <div class="modal-actions"><button type="button" id="shortcuts-close" class="btn-save" data-i18n="btn_close">Fermer</button></div>
+    </div>
+  </div>
+
+  <!-- Modale confirmation -->
+  <div id="confirm-overlay" class="modal-overlay" role="alertdialog" aria-modal="true">
+    <div class="modal confirm-modal" style="max-width:340px;">
+      <h2 class="modal-heading" data-i18n="confirm_delete_title">Supprimer la tâche ?</h2>
+      <p style="font-size:.78rem;color:var(--text-muted);" data-i18n="confirm_delete_desc">Cette action est irréversible.</p>
+      <div class="modal-actions">
+        <button class="btn-delete" id="confirm-yes" data-i18n="btn_delete">Supprimer</button>
+        <button class="btn-save" id="confirm-no" data-i18n="btn_cancel">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/crypto.js?v=24"></script>
+  <script src="../assets/js/task-store.js?v=24"></script>
+  <script src="../assets/js/timeout.js?v=24"></script>
+  <script src="../assets/js/task-dates.js?v=24"></script>
+  <script src="../assets/js/quick-capture.js?v=24"></script>
+  <script src="../assets/js/app-v2.js?v=24"></script>
+</body>
+
+</html>
+

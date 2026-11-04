@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Ma To-Do List — À propos</title>
   <link rel="icon" type="image/svg+xml" href="../assets/logo/logo-t.svg">
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/icons/icon-192.png">
@@ -11,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="../assets/js/transitions.js?v=23"></script>
+  <script src="../assets/js/transitions.js?v=25"></script>
   <script>
     // Déconnexion automatique
     sessionStorage.removeItem("auth");
@@ -476,11 +477,12 @@
       });
     }
   </script>
-  <script src="../assets/js/runtime.js?v=23"></script>
-  <script src="../assets/js/dialogs.js?v=23"></script>
+  <script src="../assets/js/runtime.js?v=25"></script>
+  <script src="../assets/js/dialogs.js?v=25"></script>
+  <link rel="stylesheet" href="../assets/css/interface.css?v=25">
 </head>
 
-<body>
+<body class="interface-v6 information-page">
 
   <nav>
     <a class="nav-logo" href="../index.html"><img src="../assets/icons/icon-192.png" alt="Logo T" class="nav-logo-icon"> <span>To‑Do List</span></a>
@@ -491,7 +493,7 @@
   </nav>
 
   <header class="page-header">
-    <span class="page-tag">Documentation · <span id="app-version">v5.3</span></span>
+    <span class="page-tag">Documentation · <span id="app-version">v6.0.1</span></span>
     <h1>À propos</h1>
     <p>Présentation du projet et de son créateur — une application moderne, bilingue et multi-plateforme pour organiser efficacement chaque journée.</p>
   </header>
@@ -679,6 +681,7 @@
         <span class="block-title" id="section-history">Historique des versions</span>
       </div>
       <ul class="timeline">
+        <li><span class="tl-date">Nov. 2026</span><span class="tl-text"><strong>v6.0.0</strong> — Refonte de l’interface : navigation latérale sur ordinateur, présentation compacte sur téléphone et styles communs aux pages.</span></li>
         <li>
           <span class="tl-date">Oct. 2026</span>
           <span class="tl-text"><strong>v5.3</strong> — Identité visuelle unifiée : intégration du logo officiel « T » en favicons haute définition et en en-têtes sur l'ensemble des pages Web et de l'application de bureau Windows.</span>
@@ -759,7 +762,7 @@
       })
       .catch(e => console.error('Erreur chargement version:', e));
   </script>
-  <script src="../assets/js/burger-menu.js?v=23"></script>
+  <script src="../assets/js/burger-menu.js?v=25"></script>
 </body>
 
 </html>

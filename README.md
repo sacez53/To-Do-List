@@ -1,6 +1,24 @@
-# Ma To-Do List — v5.7.0
+# Ma To-Do List — v6.0.1
 
 Gestionnaire de tâches personnel en HTML, CSS et JavaScript, disponible sur le Web et sous Windows avec Electron.
+
+## Commandes des tâches — v6.0.1
+
+La Liste, le Kanban et le Tableau affichent seulement Modifier comme action sur une tâche. Les statuts sont des badges informatifs. Le titre ouvre le résumé, où les tâches actives disposent de Reporter à demain et Choisir une date. La nouvelle échéance et une confirmation s’affichent dans ce résumé après enregistrement. Les tâches terminées, annulées ou en corbeille n’ont pas ces commandes.
+
+Toutes les tâches reste la vue par défaut. Les copies Web et Windows utilisent la version 6.0.1, avec le cache Web v25. Les sources et le portable sont archivés dans les dossiers Windows correspondants, sans remplacer la version 6.0.0.
+
+## Refonte de l’interface — v6.0.0
+
+L’application ouvre Toutes les tâches par défaut. Aujourd’hui et À venir restent accessibles dans la navigation. Le thème sombre et la typographie monospace sont conservés. Sur ordinateur, une barre latérale regroupe les périodes, la corbeille et les liens du compte. Le contenu occupe la largeur disponible jusqu’à 1440 px. La saisie rapide précède les commandes de recherche et d’affichage ; la progression globale suit les tâches.
+
+À 700 px et moins, les quatre périodes tiennent sur une rangée. Les liens Calendrier et Paramètres restent visibles. Une barre d’ajout fixe ouvre le formulaire complet ; elle se masque pendant la saisie ou l’ouverture d’un dialogue. Les commandes de vue et les filtres partagent une rangée. Les tâches disposent d’actions tactiles d’au moins 44 px ; le Tableau prend la forme de cartes et le Kanban défile horizontalement.
+
+L’accueil présente un aperçu statique, identifié comme tel. La connexion, les paramètres et les pages d’information reprennent les mêmes couleurs et les mêmes bordures. Les styles communs sont dans `assets/css/interface.css`, chargé après les styles historiques. Les libellés de navigation sont disponibles en français et en anglais. Le titre d’une tâche ouvre toujours son résumé en lecture seule ; Modifier ouvre le formulaire éditable.
+
+La recette conserve les 24 tests de logique et les parcours Chromium de N01, N02 et N03. Les contrôles de mise en page couvrent 320 à 1920 px, les limites entre téléphone et ordinateur, ainsi que les dialogues à hauteur réduite. Les captures sont dans `output/playwright/`. Ces vérifications utilisent Chromium local et des données fictives ; aucun appareil iOS ou Android physique n’a été testé.
+
+La version Web utilise le cache v24. Les sources Windows, le portable immédiat et les dossiers `win_app/versions/v6.0.0/` et `win_app/release/v6.0.0/` sont alignés. Aucun nouvel installeur NSIS n’est généré.
 
 ## Corbeille et annulation — v5.7.0
 

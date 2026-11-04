@@ -58,6 +58,8 @@ const recapPriority      = document.getElementById("recap-priority");
 const recapDue           = document.getElementById("recap-due");
 const recapNotes         = document.getElementById("recap-notes");
 const recapMeta          = document.getElementById("recap-meta");
+const recapSchedule      = document.getElementById("recap-schedule");
+const recapScheduleFeedback = document.getElementById("recap-schedule-feedback");
 
 // ── État ──
 let todos        = [];
@@ -68,7 +70,7 @@ let editingId    = null;
 let currentView  = "list";   // list | kanban | table
 let searchQuery  = "";
 let currentSort  = "due-asc";
-let currentScope = "today";
+let currentScope = "all";
 let scopeNow = new Date();
 let clockTimer = null;
 let reschedulingId = null;
@@ -99,7 +101,7 @@ const STATUS_ORDER = ["inprogress","todo","waiting","done","cancelled"];
 const PRIORITY_ORDER = { high:0, normal:1, low:2 };
 
 function getStatusInfo(s) {
-  const icons = { todo:"📋", inprogress:"⚡", waiting:"⏳", done:"✅", cancelled:"❌" };
+  const icons = { todo:"○", inprogress:"↻", waiting:"◷", done:"✓", cancelled:"×" };
   const labels = {
     todo: t("status_todo"),
     inprogress: t("status_inprogress"),
@@ -112,20 +114,20 @@ function getStatusInfo(s) {
 
 function getPriorityLabel(p) {
   const map = {
-    high: "🔴 " + t("prio_high"),
-    normal: "— " + t("prio_normal"),
-    low: "🔵 " + t("prio_low")
+    high: t("prio_high"),
+    normal: t("prio_normal"),
+    low: t("prio_low")
   };
   return map[p] || p;
 }
 
 function getKanbanCols() {
   return [
-    { id:"todo",       label: t("status_todo"),       icon:"📋" },
-    { id:"inprogress", label: t("status_inprogress"), icon:"⚡" },
-    { id:"waiting",    label: t("status_waiting"),    icon:"⏳" },
-    { id:"done",       label: t("status_done"),       icon:"✅" },
-    { id:"cancelled",  label: t("status_cancelled"),  icon:"❌" }
+    { id:"todo",       label: t("status_todo"),       icon:"○" },
+    { id:"inprogress", label: t("status_inprogress"), icon:"↻" },
+    { id:"waiting",    label: t("status_waiting"),    icon:"◷" },
+    { id:"done",       label: t("status_done"),       icon:"✓" },
+    { id:"cancelled",  label: t("status_cancelled"),  icon:"×" }
   ];
 }
 
@@ -306,9 +308,16 @@ function addScheduleActions(container, task) {
     button.addEventListener("click", async event => {
       event.stopPropagation();
       if (action === "choose") { openScheduleDialog(task.id); return; }
+      const wasFocused = document.activeElement === button;
       button.disabled = true;
       try { await changeTaskDate(task.id, TaskDates.tomorrow()); }
-      finally { button.disabled = false; }
+      finally {
+        button.disabled = false;
+        if (wasFocused && modalOverlay.classList.contains("open") && modalBody.style.display === "none" && String(editingId) === String(task.id)
+          && [document.body, modalClose, button].includes(document.activeElement)) {
+          recapSchedule.querySelector('[data-task-action="tomorrow"]')?.focus();
+        }
+      }
     });
     actions.appendChild(button);
   }
@@ -323,10 +332,14 @@ async function changeTaskDate(id, date) {
   task.due = date;
   const saved = await saveTodos();
   if (!saved && task.due === date) task.due = oldDate;
+  const showingSummary = modalOverlay.classList.contains("open") && modalBody.style.display === "none" && String(editingId) === String(id);
   render();
+  if (showingSummary) openModal(id, "view");
   if (saved) {
     const formatted = new Date(date + "T12:00:00").toLocaleDateString(getLanguage() === "en" ? "en-US" : "fr-FR", { day: "numeric", month: "long", year: "numeric" });
-    document.getElementById("v2-schedule-feedback").textContent = t("schedule_saved", { title: task.text, date: formatted });
+    const message = t("schedule_saved", { title: task.text, date: formatted });
+    document.getElementById("v2-schedule-feedback").textContent = message;
+    if (showingSummary) recapScheduleFeedback.textContent = message;
   }
   return saved;
 }
@@ -466,7 +479,7 @@ function setTaskScope(scope) {
 }
 function render() {
   scopeNow = new Date();
-  const focused = document.activeElement;
+  const focused = boardEl.contains(document.activeElement) ? document.activeElement : null;
   const focusId = focused?.dataset.taskId;
   const focusAction = focused?.dataset.taskAction;
   const showingTrash = currentScope === "trash";
@@ -580,29 +593,22 @@ function renderList(items) {
     li.style.animationDelay = `${Math.min(i, 10)*20}ms`;
     li.innerHTML = `
       <div class="v2-item-left">
-        <button class="v2-badge v2-badge--${todo.status}" title="${t("badge_status_title")}">${info.icon} ${info.label}</button>
+        <span class="v2-badge v2-badge--${todo.status}">${info.icon} ${info.label}</span>
         <div class="v2-item-body" title="${t("task_recap_title")}">
           <button type="button" class="task-summary v2-item-text ${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</button>
           <div class="v2-item-meta">
             ${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : ""}
-            ${dueInfo ? `<span class="v2-due ${dueInfo.cls}">📅 ${dueInfo.label}</span>` : ""}
-            ${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon" title="${escHtml(todo.notes)}">📝</span>` : ""}
+            ${dueInfo ? `<span class="v2-due ${dueInfo.cls}">${dueInfo.label}</span>` : ""}
+            ${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon" title="${escHtml(todo.notes)}">↳</span>` : ""}
           </div>
           ${todo.notes && todo.notes.trim() ? `<span class="v2-note-preview">${escHtml(todo.notes.slice(0, 80))}${todo.notes.length > 80 ? "…" : ""}</span>` : ""}
         </div>
       </div>
       <button class="v2-edit-btn" title="${t("edit_task_title")}">${t("btn_edit")}</button>
     `;
-    li.querySelector(".v2-badge").addEventListener("click", e => {
-      e.stopPropagation();
-      const cycle = ["todo", "inprogress", "waiting", "done", "cancelled"];
-      todo.status = cycle[(cycle.indexOf(todo.status) + 1) % cycle.length];
-      saveTodos(); render();
-    });
     li.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id, "edit"); });
     const actions = document.createElement("div"); actions.className = "v2-task-controls";
     actions.appendChild(li.querySelector(".v2-edit-btn"));
-    addScheduleActions(actions, todo);
     li.appendChild(actions);
     li.addEventListener("click", () => openModal(todo.id, "view"));
     ul.appendChild(li);
@@ -643,8 +649,8 @@ function renderKanban(items) {
           </div>
           <div class="v2-card-meta">
             ${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : ""}
-            ${dueInfo ? `<span class="v2-due ${dueInfo.cls}">📅 ${dueInfo.label}</span>` : ""}
-            ${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon">📝</span>` : ""}
+            ${dueInfo ? `<span class="v2-due ${dueInfo.cls}">${dueInfo.label}</span>` : ""}
+            ${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon">↳</span>` : ""}
           </div>
         `;
         const cardEditBtn = card.querySelector(".v2-card-edit-btn");
@@ -654,7 +660,6 @@ function renderKanban(items) {
             openModal(todo.id, "edit");
           });
         }
-        addScheduleActions(card, todo);
         card.addEventListener("click", () => openModal(todo.id, "view"));
         list.appendChild(card);
       });
@@ -698,24 +703,14 @@ function renderTable(items) {
       <td class="v2-table-text" title="${t("task_recap_title")}">
         <button type="button" class="task-summary ${todo.status === "done" ? "v2-done" : ""} ${todo.status === "cancelled" ? "v2-cancelled" : ""}">${escHtml(todo.text)}</button>
       </td>
-      <td><button class="v2-badge v2-badge--${todo.status}" title="${t("badge_status_title")}" style="background:transparent;cursor:pointer;">${info.icon} ${info.label}</button></td>
+      <td><span class="v2-badge v2-badge--${todo.status}">${info.icon} ${info.label}</span></td>
       <td>${prio !== "normal" ? `<span class="v2-prio v2-prio--${prio}">${PRIORITY_LABEL[prio]}</span>` : `<span class="v2-muted">—</span>`}</td>
       <td>${dueInfo ? `<span class="v2-due ${dueInfo.cls}">${dueInfo.label}</span>` : `<span class="v2-muted">—</span>`}</td>
-      <td>${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon" title="${escHtml(todo.notes)}">📝</span>` : `<span class="v2-muted">—</span>`}</td>
+      <td>${todo.notes && todo.notes.trim() ? `<span class="v2-note-icon" title="${escHtml(todo.notes)}">↳</span>` : `<span class="v2-muted">—</span>`}</td>
       <td><button class="v2-edit-btn" title="${t("edit_task_title")}">${t("btn_edit")}</button></td>
     `;
     [t("table_col_task"), t("table_col_status"), t("table_col_priority"), t("table_col_due"), t("table_col_notes"), ""].forEach((label, index) => tr.cells[index].dataset.label = label);
-    const tbBadge = tr.querySelector(".v2-badge");
-    if (tbBadge) {
-      tbBadge.addEventListener("click", e => {
-        e.stopPropagation();
-        const cycle = ["todo", "inprogress", "waiting", "done", "cancelled"];
-        todo.status = cycle[(cycle.indexOf(todo.status) + 1) % cycle.length];
-        saveTodos(); render();
-      });
-    }
     tr.querySelector(".v2-edit-btn").addEventListener("click", e => { e.stopPropagation(); openModal(todo.id, "edit"); });
-    addScheduleActions(tr.lastElementChild, todo);
     tr.addEventListener("click", () => openModal(todo.id, "view"));
     tbody.appendChild(tr);
   });
@@ -753,7 +748,7 @@ function buildFilterPanel() {
   // Priorités
   const prioWrap = panel.querySelector("#fp-priorities");
   prioWrap.innerHTML = "";
-  [["high","🔴 " + t("prio_high")],["normal","— " + t("prio_normal")],["low","🔵 " + t("prio_low")]].forEach(([id,lbl]) => {
+  [["high",t("prio_high")],["normal",t("prio_normal")],["low",t("prio_low")]].forEach(([id,lbl]) => {
     const label = document.createElement("label");
     label.className = "v2-fp-check";
     label.innerHTML = `<input type="checkbox" value="${id}" ${filterPriorities.includes(id) ? "checked" : ""}> ${lbl}`;
@@ -834,6 +829,9 @@ if (modalCancelEditBtn) {
 function openModal(id = null, mode = 'edit') {
   quickModalDraft = null;
   if (!taskStore || !sessionStorage.getItem("auth")) return;
+  recapSchedule.replaceChildren();
+  recapSchedule.hidden = true;
+  recapScheduleFeedback.textContent = "";
   modalSnapshot = null;
   if (id === null) {
     editingId = null;
@@ -868,6 +866,10 @@ function openModal(id = null, mode = 'edit') {
   editingId = todo.id;
 
   if (mode === "view") {
+    if (TaskDates.active(todo)) {
+      addScheduleActions(recapSchedule, todo);
+      recapSchedule.hidden = false;
+    }
     // ── Mode récapitulatif ──
     modalHeading.textContent = t("modal_summary");
     if (modalEditBtn) modalEditBtn.textContent = t("btn_edit");
@@ -912,7 +914,7 @@ function openModal(id = null, mode = 'edit') {
           }
         } catch(e) {}
         const timeSuffix = todo.dueTime ? ` ⏱ ${todo.dueTime}` : "";
-        recapDue.textContent = `📅 ${dateFull}${timeSuffix} (${dueInfo.label})`;
+        recapDue.textContent = `${dateFull}${timeSuffix} (${dueInfo.label})`;
         recapDue.className = `v2-due ${dueInfo.cls}`;
         recapDue.style.display = "";
       } else {

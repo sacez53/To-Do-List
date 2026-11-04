@@ -20,6 +20,7 @@ const originalFetch=window.fetch.bind(window);
 window.fetch=async(url,options={})=>{
  if(String(url).includes('firebase.json'))return Response.json({url:'https://fixture.invalid'});
  if(String(url).includes('fixture.invalid')){
+  if(String(url).endsWith('/comments.json'))return Response.json({demo:{text:'Une présentation plus claire, sur téléphone aussi.',username:'demo',createdAt:'2026-11-04T10:00:00Z'}});
   if(__fixture.failure)return new Response('{}',{status:__fixture.failure});
   if(options.method==='PUT'){if(options.headers['if-match']!==String(__fixture.version))return new Response('{}',{status:412});__fixture.account=JSON.parse(options.body);__fixture.version++;if(sessionStorage.getItem("__keepFixture"))sessionStorage.setItem("__keepFixture",JSON.stringify(__fixture));}
   return Response.json(__fixture.account,{headers:{ETag:String(__fixture.version)}});
@@ -39,6 +40,23 @@ const server=http.createServer((req,res)=>{
 let win,errors=[];
 const run=code=>win.webContents.executeJavaScript(code,true);
 async function until(code){for(let i=0;i<150;i++){if(await run(code))return;await new Promise(r=>setTimeout(r,40));}throw new Error('Timed out: '+code);}
+async function checkDesktopLayouts() {
+  for(const width of [701,768,1040,1440,1920]) {
+    win.setContentSize(width,1000);await new Promise(r=>setTimeout(r,100));
+    await run('document.body.focus();window.scrollTo(0,0)');
+    assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`desktop overflow at ${width}`);
+    assert.equal(await run('document.querySelector(".workspace-sidebar").getBoundingClientRect().right<document.querySelector(".workspace-main").getBoundingClientRect().left'),true,`sidebar overlap at ${width}`);
+    assert.equal(await run('getComputedStyle(document.querySelector(".v2-add-dock")).position'),'static');
+    assert.equal(await run('getComputedStyle(filterPanel).display'),'none');
+    await run('filterToggle.click()');
+    assert.equal(await run('getComputedStyle(filterPanel).display'),'grid');
+    assert.equal(await run('filterReset.getBoundingClientRect().right<=innerWidth'),true);
+    await run('filterToggle.click()');
+    if(width===1440) await fs.promises.writeFile(path.join(out,'redesign-desktop-1440.png'),(await win.webContents.capturePage()).toPNG());
+  }
+  win.setContentSize(1040,900);await new Promise(r=>setTimeout(r,100));
+  console.log('DESKTOP PASS: 701/768/1040/1440/1920px, sidebar separation, compact capture, filter panel and page fit.');
+}
 async function checkPhoneLayouts() {
   for (const width of [320,375,390,430,600]) {
     win.setContentSize(width,812);
@@ -72,16 +90,17 @@ async function checkPhoneLayouts() {
   for(const [width,height] of [[320,640],[390,420],[844,390]]) {
     win.setContentSize(width,height);await new Promise(r=>setTimeout(r,100));
     if(width>600) continue; // Landscape is checked for page fit below.
-    for(const dialog of ['edit','schedule','help']) {
-      await run(dialog==='edit'?'openModal("late","edit")':dialog==='schedule'?'openScheduleDialog("late")':'openShortcutHelp()');
+    for(const dialog of ['edit','summary','schedule','help']) {
+      await run(dialog==='edit'?'openModal("late","edit")':dialog==='summary'?'openModal("late","view")':dialog==='schedule'?'openScheduleDialog("late")':'openShortcutHelp()');
       await new Promise(r=>setTimeout(r,250));
-      const overlay = dialog==='edit'?'modal-overlay':dialog==='schedule'?'schedule-overlay':'shortcuts-overlay';
+      const overlay = ['edit','summary'].includes(dialog)?'modal-overlay':dialog==='schedule'?'schedule-overlay':'shortcuts-overlay';
       assert.equal(await run(`(()=>{const r=document.getElementById('${overlay}').querySelector('.modal').getBoundingClientRect();return r.top>=-1 && r.bottom<=innerHeight+1 && r.left>=0 && r.right<=innerWidth+1})()`),true,`${dialog} outside ${width}x${height}`);
-      const control=dialog==='edit'?'modal-save':dialog==='schedule'?'schedule-save':'shortcuts-close';
+      const control=dialog==='edit'?'modal-save':dialog==='summary'?'modal-close-recap-btn':dialog==='schedule'?'schedule-save':'shortcuts-close';
       await run(`document.getElementById('${control}').scrollIntoView({block:'nearest'})`);
       assert.equal(await run(`(()=>{const r=document.getElementById('${control}').getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight+1})()`),true,`${dialog} action unreachable`);
+      if(dialog==='summary' && width===320)await fs.promises.writeFile(path.join(out,'summary-phone.png'),(await win.webContents.capturePage()).toPNG());
       if(dialog==='edit' && height===420)await fs.promises.writeFile(path.join(out,'phone-edit-short-height.png'),(await win.webContents.capturePage()).toPNG());
-      await run(dialog==='edit'?'closeModal(true)':dialog==='schedule'?'closeScheduleDialog()':'closeShortcutHelp()');
+      await run(['edit','summary'].includes(dialog)?'closeModal(true)':dialog==='schedule'?'closeScheduleDialog()':'closeShortcutHelp()');
       await new Promise(r=>setTimeout(r,80));
     }
   }
@@ -103,8 +122,8 @@ app.whenReady().then(async()=>{
   win.webContents.on('console-message',(_event,level,message)=>{if(level===3)errors.push(message);});
   await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
   await until('!!taskStore && todos.filter(t=>!TodoData.removed(t)).length===2 && !syncRunning');
-  assert.equal(await run('currentScope'),'today');
-  assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=a]")===null'),true);
+  assert.equal(await run('currentScope'),'all');
+  assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=a]")!==null'),true);
   await run('setTaskScope("all")');
   assert.equal(await run('localStorage.getItem("todos_audit")'),null);
   assert.equal(await run('localStorage.getItem("todo_state_audit").includes("Task A")'),false);
@@ -252,6 +271,7 @@ app.whenReady().then(async()=>{
   assert.equal(await run('document.getElementById("v2-scope-description").textContent.includes("30 jours")'),true);
   await run('boardEl.querySelector("[data-task-id=trash-ui] .task-summary").click()');
   assert.equal(await run('modalEditBtn.style.display'),'none');
+  assert.equal(await run('recapSchedule.hidden && !recapSchedule.querySelector("button")'),true);
   assert.equal(await run('modalBody.style.display'),'none');
   assert.equal(await run('recapNotes.textContent'),'Notes à conserver');
   await run('closeModal(true);boardEl.querySelector("[data-task-id=trash-ui] [data-task-action=restore]").click()');
@@ -293,18 +313,30 @@ app.whenReady().then(async()=>{
   })()`);
   await until('!syncRunning && !taskStore.pending()');
   await checkPhoneLayouts();
+  await checkDesktopLayouts();
   assert.deepEqual(await run('[...boardEl.querySelectorAll(".v2-item")].map(row=>row.dataset.taskId)'),['late','today']);
   assert.equal(await run('boardEl.querySelector(".v2-day-heading--overdue").textContent.startsWith("En retard")'),true);
   for(const view of ['list','kanban','table']) {
     await run(`document.querySelector('[data-view="${view}"]').click()`);
-    assert.equal(await run('boardEl.querySelectorAll("[data-task-action=tomorrow]").length'),2);
-    assert.equal(await run('boardEl.querySelectorAll("[data-task-action=choose]").length'),2);
+    assert.equal(await run('boardEl.querySelectorAll("[data-task-action=tomorrow]").length'),0);
+    assert.equal(await run('boardEl.querySelectorAll("[data-task-action=choose]").length'),0);
+    assert.equal(await run('[...boardEl.querySelectorAll("button:not(.task-summary)")].every(b=>b.classList.contains("v2-edit-btn"))'),true);
+    await run('boardEl.querySelector(".task-summary[data-task-id=late]").click()');
+    assert.equal(await run('modalBody.style.display'),'none');
+    assert.equal(await run('recapSchedule.querySelectorAll("button").length'),2);
+    await run('closeModal(true)');
   }
   await run('document.querySelector("[data-view=list]").click();setTaskScope("upcoming")');
   assert.deepEqual(await run('[...boardEl.querySelectorAll(".v2-item")].map(row=>row.dataset.taskId)'),['future']);
   await run('setTaskScope("all")');
   assert.equal(await run('boardEl.querySelector("[data-task-id=undated]")!==null'),true);
   assert.equal(await run('boardEl.querySelector("[data-task-id=done] [data-task-action=tomorrow]")===null'),true);
+  for(const id of ['done','cancelled']) {
+    await run(`openModal('${id}','view')`);
+    assert.equal(await run('recapSchedule.hidden && !recapSchedule.querySelector("button")'),true);
+    await run('closeModal(true)');
+  }
+
   await run('setLanguage("en")');assert.equal(await run('document.getElementById("v2-scope-heading").textContent'),'All tasks');
   await run('setLanguage("fr");setTaskScope("today")');
   await new Promise(r=>setTimeout(r,550));
@@ -314,21 +346,25 @@ app.whenReady().then(async()=>{
   assert.equal(await run('getComputedStyle(boardEl.querySelector(".v2-item")).flexDirection'),'column');
   assert.equal(await run('boardEl.querySelector(".v2-item-body").getBoundingClientRect().width>150'),true);
   await fs.promises.writeFile(path.join(out,'n01-mobile.png'),(await win.webContents.capturePage()).toPNG());
-  await run('document.querySelector("[data-task-id=late][data-task-action=tomorrow]").click()');
+  await run('boardEl.querySelector(".task-summary[data-task-id=late]").click();recapSchedule.querySelector("[data-task-action=tomorrow]").focus();recapSchedule.querySelector("[data-task-action=tomorrow]").click()');
   await until('!localWrites && !syncRunning && todos.find(t=>t.id==="late").due===TaskDates.tomorrow()');
   assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=late]")===null'),true);
   assert.deepEqual(await run('(()=>{const task=todos.find(t=>t.id==="late");return [task.dueTime,task.status,task.priority,task.notes]})()'),['08:30','todo','high','Keep these notes']);
   assert.equal(await run('(async()=>{const reopened=await TodoData.open("audit");return reopened.read().find(t=>t.id==="late").due===TaskDates.tomorrow()})()'),true);
-  await run('setTaskScope("upcoming");document.querySelector("[data-task-id=future][data-task-action=choose]").click()');
+  assert.equal(await run('modalOverlay.classList.contains("open") && recapScheduleFeedback.textContent.includes("Dossier en retard")'),true);
+  assert.equal(await run('document.activeElement.dataset.taskAction'),'tomorrow');
+  assert.equal(await run('recapDue.textContent.includes("Demain")'),true);
+  await run('closeModal(true);setTaskScope("upcoming");boardEl.querySelector(".task-summary[data-task-id=future]").click();recapSchedule.querySelector("[data-task-action=choose]").click()');
   assert.equal(await run('document.getElementById("schedule-overlay").classList.contains("open")'),true);
-  assert.equal(await run('modalOverlay.classList.contains("open")'),false);
+  assert.equal(await run('modalOverlay.classList.contains("open")'),true);
   await run('document.getElementById("schedule-date").value=TaskDates.day();document.getElementById("schedule-cancel").click()');
   assert.equal(await run('todos.find(t=>t.id==="future").due===TaskDates.tomorrow()'),true);
   await run('document.querySelector("[data-task-id=future][data-task-action=choose]").click();document.getElementById("schedule-date").value=TaskDates.day();document.getElementById("schedule-form").requestSubmit()');
   await until('reschedulingId===null && !syncRunning && !localWrites');
   assert.equal(await run('todos.find(t=>t.id==="future").dueTime'),'09:00');
   assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=future]")===null'),true);
-  await run('setTaskScope("today");document.querySelector("[data-task-id=today][data-task-action=edit]").click();modalStatus.value="done";modalSave.click()');
+  assert.equal(await run('recapScheduleFeedback.textContent.includes("Envoyer les documents")'),true);
+  await run('closeModal(true);setTaskScope("today");document.querySelector("[data-task-id=today][data-task-action=edit]").click();modalStatus.value="done";modalSave.click()');
   await until('!modalOverlay.classList.contains("open") && !syncRunning && !localWrites');
   assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=today]")===null'),true);
   // Advance the local clock to tomorrow's midnight while keeping the page open.
@@ -373,15 +409,34 @@ app.whenReady().then(async()=>{
   assert.equal(await run('modalBody.style.display'),'none');
   await run('modalEditBtn.click()');assert.equal(await run('modalBody.style.display'),'flex');
   await run('closeModal(true)');
-  for(const page of ['pages/login.html','index.html']) {
+  for(const page of ['pages/login.html','index.html','pages/calendar.html','pages/settings.html','pages/apropos.html','pages/developpeur.html','pages/confidentialite.html','pages/mentions-legales.html','pages/cgu.html','pages/donnees.html','pages/commentaires.html']) {
     await win.loadURL(`http://127.0.0.1:${port}/${page}`);
     await new Promise(r=>setTimeout(r,450));
-    assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`${page} overflows on phone`);
-    await fs.promises.writeFile(path.join(out,page==='index.html'?'phone-home.png':'phone-login.png'),(await win.webContents.capturePage()).toPNG());
+    const name=path.basename(page,'.html').replace('index','home');
+    for(const width of [320,390,1440]) {
+      win.setContentSize(width,width===320?740:900);await new Promise(r=>setTimeout(r,150));
+      await run('window.scrollTo(0,0)');
+      assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`${page} overflows at ${width}`);
+      if(await run('!!document.querySelector(".bm-trigger")')) {
+        assert.equal(await run('getComputedStyle(document.querySelector(".bm-dropdown")).display'),'none');
+        await run('document.querySelector(".bm-trigger").click()');
+        await new Promise(r=>setTimeout(r,300));
+        assert.equal(await run('(()=>{const r=document.querySelector(".bm-dropdown").getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1})()'),true,`navigation outside ${page} at ${width}`);
+        await run('document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))');
+        assert.equal(await run('document.activeElement===document.querySelector(".bm-trigger")'),true);
+      }
+      if(width!==320) await fs.promises.writeFile(path.join(out,`${width===390?'phone':'desktop'}-${name}.png`),(await win.webContents.capturePage()).toPNG());
+      if(page==='pages/login.html') {
+        await run('document.getElementById("tab-register").click()');
+        assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`registration overflows at ${width}`);
+        await run('document.getElementById("tab-login").click()');
+      }
+    }
   }
+  console.log('SHARED UI PASS: login/registration, home, calendar, settings, information and data pages at 320/390/1440px.');
   console.log('UI PASS: three views, summary/edit, deletion cancellation, safe text, creation, dirty form, focus, HTTP 403, mobile fit, calendar month/status, password rotation and JSON export.');
   console.log('Console errors:',JSON.stringify(errors));
   win.destroy();server.close();app.exit(errors.length?1:0);
- }catch(error){console.error(error);try{console.error('Capture debug:',await run('JSON.stringify({count:todos.length,busy:quickBusy,value:quickTitle.value,error:quickError.textContent,active:document.activeElement.id,width:innerWidth,body:document.body.className,dock:document.querySelector(".v2-add-dock")?getComputedStyle(document.querySelector(".v2-add-dock")).display:null,alerts:window.__alerts,sync:syncLabel.textContent})'));}catch(_){}win?.destroy();server.close();app.exit(1);}
+ }catch(error){console.error(error);try{console.error('Layout debug:',await run('JSON.stringify({page:location.pathname,width:innerWidth,overflow:[...document.querySelectorAll("body *")].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,id:e.id,cls:e.className,right:e.getBoundingClientRect().right})).slice(0,15)})'));await fs.promises.writeFile(path.join(out,'failure.png'),(await win.webContents.capturePage()).toPNG());}catch(_){}win?.destroy();server.close();app.exit(1);}
 });
 
