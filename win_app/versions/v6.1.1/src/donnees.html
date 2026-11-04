@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Ma To-Do List — Données</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/logo/logo-t.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="../assets/js/transitions.js?v=28"></script>
+  <link rel="stylesheet" href="../assets/css/style2.css?v=28">
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
+      });
+    }
+  </script>
+  <script src="../assets/js/runtime.js?v=28"></script>
+  <script src="../assets/js/dialogs.js?v=28"></script>
+  <link rel="stylesheet" href="../assets/css/interface.css?v=28">
+  <link rel="stylesheet" href="../assets/css/pages.css?v=28">
+</head>
+
+<body class="interface-v6 data-page">
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
+
+<header class="site-header"><div class="site-header-inner"><a class="workspace-brand" href="../index.html"><span class="brand-mark" aria-hidden="true">T</span><span data-i18n="app_title">To-Do List</span></a><nav class="nav-links site-header-actions" aria-label="Navigation principale"><a class="site-button" href="./login.html" id="nav-connexion">Connexion <span aria-hidden="true">↗</span></a></nav></div></header>
+
+  <header class="page-header">
+    <span class="page-tag">Paramètres · <span id="app-version">v6.1.1</span></span>
+    <h1>Données</h1>
+    <p>Outils de portabilité, d'exportation et de gestion de votre compte personnel.</p>
+  </header>
+
+  <main class="wrapper" id="main-content">
+
+    <!-- 01 — Exportation -->
+    <section class="block" aria-labelledby="section-export">
+      <div class="block-header">
+        <span class="block-num">01</span>
+        <h2 class="block-title" id="section-export">Exportation (Portabilité)</h2>
+      </div>
+      <div class="block-body">
+        <p>
+          Récupérez l'intégralité de vos tâches pour les sauvegarder ou les importer dans un autre outil. Les exports
+          incluent les titres, notes, statuts, priorités et dates d'échéance.
+        </p>
+      </div>
+      <div class="actions">
+        <button class="btn-action" id="export-json">Export JSON</button>
+        <button class="btn-action-ghost" id="export-csv">Export CSV</button>
+      </div>
+    </section>
+
+    <!-- 02 — Zone de danger -->
+    <section class="block" aria-labelledby="section-danger" style="border-color: rgba(249, 115, 115, 0.2);">
+      <div class="block-header danger-header">
+        <span class="block-num">02</span>
+        <span class="block-title danger-title" id="section-danger">Zone de danger</span>
+      </div>
+      <div class="block-body">
+        <p>
+          Les actions suivantes sont <strong>irréversibles</strong>. La suppression de votre compte entraînera la
+          destruction immédiate de toutes vos tâches stockées sur nos serveurs.
+        </p>
+      </div>
+      <div class="actions">
+        <button class="btn-danger" id="btn-delete-account">Supprimer mon compte</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modale de confirmation -->
+  <div class="modal-overlay" id="confirm-overlay">
+    <div class="modal">
+      <h2 id="modal-title">Confirmer l'action</h2>
+      <p id="modal-desc">Êtes-vous sûr de vouloir continuer ? Cette action est irréversible.</p>
+      <div class="modal-actions">
+        <button class="btn-action-ghost" id="cancel-action">Annuler</button>
+        <button class="btn-action" id="confirm-action" style="background: #f97373; border-color: #f97373;">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="../index.html">Accueil</a>
+      <a href="./confidentialite.html">Confidentialité</a>
+      <a href="./mentions-legales.html">Mentions Légales</a>
+      <a href="./cgu.html">CGU</a>
+    </div>
+    <p>© 2026 · Sacha G. Photographe</p>
+  </footer>
+  <script src="../assets/js/crypto.js?v=28"></script>
+  <script src="../assets/js/task-store.js?v=28"></script>
+  <script src="../assets/js/donnees.js?v=28"></script>
+  <script src="../assets/js/burger-menu.js?v=28"></script>
+  <script>
+    fetch('../assets/json/version.json')
+      .then(r => r.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('app-version').textContent = data.version;
+        }
+      })
+      .catch(e => console.error('Erreur chargement version:', e));
+  </script>
+</body>
+
+</html>

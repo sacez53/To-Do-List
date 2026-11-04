@@ -1,6 +1,12 @@
-# Ma To-Do List — v6.1.0
+# Ma To-Do List — v6.1.1
 
 Gestionnaire de tâches personnel en HTML, CSS et JavaScript, disponible sur le Web et sous Windows avec Electron.
+
+## Aperçu des liens partagés — v6.1.1
+
+Les balises Open Graph de l’accueil incluent maintenant l’URL publique et le logo PNG de 512 × 512 px. Les balises sont présentes dans le HTML sans exécution de JavaScript.
+
+Le cache Web passe à v28. Les sources et le portable Windows sont alignés sur 6.1.1, avec leurs dossiers d’archive.
 
 ## Création par étapes sur téléphone — v6.1.0
 

@@ -1,7 +1,7 @@
-# To-Do List Windows — v6.1.0
+# To-Do List Windows — v6.1.1
 
 Lancer le portable : `release/ToDoList-win32-x64/ToDoList.exe`.
-La copie versionnée se trouve dans `release/v6.1.0/ToDoList-win32-x64/` et les sources dans `versions/v6.1.0/`.
+La copie versionnée se trouve dans `release/v6.1.1/ToDoList-win32-x64/` et les sources dans `versions/v6.1.1/`.
 
 Dans les fenêtres de 700 px et moins, la création présente le titre, puis une échéance facultative avant les détails. Créer maintenant est disponible dès la saisie du titre. Précédent conserve les valeurs. Le formulaire complet reste disponible dans les grandes fenêtres et pour modifier une tâche existante.
 
