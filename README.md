@@ -1,6 +1,18 @@
-# Ma To-Do List — v6.0.2
+# Ma To-Do List — v6.1.0
 
 Gestionnaire de tâches personnel en HTML, CSS et JavaScript, disponible sur le Web et sous Windows avec Electron.
+
+## Création par étapes sur téléphone — v6.1.0
+
+À 700 px et moins, le formulaire de création commence par le titre. Le bouton Continuer ouvre l’échéance facultative, puis les détails. Créer maintenant permet d’enregistrer la tâche sans parcourir les étapes restantes. Le titre est obligatoire ; les autres champs conservent leurs valeurs par défaut tant qu’ils ne sont pas renseignés.
+
+Précédent conserve la saisie. Sans échéance passe à la suite quand la date et l’heure sont vides. Une heure seule demande de choisir une date ou d’effacer l’heure. L’indicateur d’étape et les messages sont disponibles en français et en anglais ; le focus rejoint le premier champ visible après chaque changement d’étape. Entrée dans le titre permet de continuer.
+
+Sur ordinateur, le formulaire présente tous les champs ensemble. La modification d’une tâche existante garde aussi le formulaire complet. Un changement de largeur conserve les valeurs ; le parcours reprend sur la partie active en revenant au format téléphone. Le titre de la saisie rapide est repris dans le formulaire, et reste dans la saisie rapide si la création est abandonnée.
+
+L’enregistrement bloque les actions concurrentes. Un double appui ne crée pas de doublon. Si la sauvegarde locale échoue, le formulaire reste ouvert avec les valeurs et une nouvelle tentative peut enregistrer une seule tâche. Les vérifications Chromium couvrent le retour arrière, les champs facultatifs, la reprise après échec et les contrôles tactiles jusqu’à une hauteur de 420 px. Les captures des étapes sont dans `output/playwright/creation-phone-step-*.png`.
+
+Le cache Web passe à v27 et les copies Windows sont alignées sur 6.1.0. Les versions antérieures restent archivées.
 
 ## Styles de toutes les pages — v6.0.2
 

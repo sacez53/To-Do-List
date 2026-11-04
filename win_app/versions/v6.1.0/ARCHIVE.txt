@@ -1,0 +1,1 @@
+﻿v6.1.0 — 2026-11-04. Sources archivées. Portable correspondant : ../../release/v6.1.0/ToDoList-win32-x64/ToDoList.exe. Aucun installeur NSIS généré.

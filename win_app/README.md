@@ -1,7 +1,9 @@
-# To-Do List Windows — v6.0.2
+# To-Do List Windows — v6.1.0
 
 Lancer le portable : `release/ToDoList-win32-x64/ToDoList.exe`.
-La copie versionnée se trouve dans `release/v6.0.2/ToDoList-win32-x64/` et les sources dans `versions/v6.0.2/`.
+La copie versionnée se trouve dans `release/v6.1.0/ToDoList-win32-x64/` et les sources dans `versions/v6.1.0/`.
+
+Dans les fenêtres de 700 px et moins, la création présente le titre, puis une échéance facultative avant les détails. Créer maintenant est disponible dès la saisie du titre. Précédent conserve les valeurs. Le formulaire complet reste disponible dans les grandes fenêtres et pour modifier une tâche existante.
 
 Les pages de l’application partagent maintenant les mêmes en-têtes, menus et pieds de page. Les pages d’information, les commentaires et la gestion des données utilisent les cartes et contrôles communs, avec une présentation adaptée aux petites fenêtres. Les styles sont dans `assets/css/interface.css` et `assets/css/pages.css`.
 

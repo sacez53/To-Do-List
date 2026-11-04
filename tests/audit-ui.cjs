@@ -42,6 +42,75 @@ const server=http.createServer((req,res)=>{
 let win,errors=[];
 const run=code=>win.webContents.executeJavaScript(code,true);
 async function until(code){for(let i=0;i<150;i++){if(await run(code))return;await new Promise(r=>setTimeout(r,40));}throw new Error('Timed out: '+code);}
+async function checkCreationWizard() {
+  win.setContentSize(390,844);await new Promise(r=>setTimeout(r,100));
+  await run('window.__wizardOriginal=JSON.parse(JSON.stringify(todos));window.__wizardStart=todos.length;openModal(null)');
+  await new Promise(r=>setTimeout(r,100));
+  assert.equal(await run('modalOverlay.classList.contains("creation-wizard") && creationStep===0'),true);
+  assert.equal(await run('[modalStatus,modalDue,modalNotes].every(field=>!field.getClientRects().length)'),true);
+  await run('creationNext.click();modalSave.click()');
+  assert.equal(await run('creationStep===0 && todos.length===__wizardStart && modalText.getAttribute("aria-invalid")==="true"'),true);
+  await run('modalText.value="Préparer <b>le dossier</b>";modalText.dispatchEvent(new Event("input"));modalText.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",isComposing:true,bubbles:true,cancelable:true}));modalText.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",repeat:true,bubbles:true,cancelable:true}))');
+  assert.equal(await run('creationStep'),0);
+  await run('modalText.focus()');
+  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter'});
+  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Enter'});
+  await until('creationStep===1');
+  assert.equal(await run('creationStep===1 && document.activeElement===modalDue'),true);
+  assert.equal(await run('document.getElementById("creation-title-preview").querySelector("b")===null'),true);
+  await run('modalDueTime.value="09:30";creationNext.click()');
+  assert.equal(await run('creationStep===1 && creationError.textContent.length>0'),true);
+  await run('modalDue.value="2026-12-14";creationNext.click();modalStatus.value="waiting";modalPriority.value="high";modalNotes.value="Note conservée"+String.fromCharCode(10)+"Deuxième ligne";creationBack.click()');
+  assert.equal(await run('modalDue.value+" "+modalDueTime.value'),'2026-12-14 09:30');
+  await run('creationBack.click()');assert.equal(await run('modalText.value'),'Préparer <b>le dossier</b>');
+  await run('creationNext.click();creationNext.click();setLanguage("en")');
+  assert.equal(await run('document.getElementById("creation-step-status").textContent.includes("Step 3 of 3")'),true);
+  assert.equal(await run('modalNotes.value'),'Note conservée\nDeuxième ligne');
+  await run('setLanguage("fr")');
+  win.setContentSize(1040,900);await new Promise(r=>setTimeout(r,120));
+  assert.equal(await run('!modalOverlay.classList.contains("creation-wizard") && [modalText,modalDue,modalStatus,modalNotes].every(field=>field.getClientRects().length)'),true);
+  win.setContentSize(390,844);await new Promise(r=>setTimeout(r,120));
+  assert.equal(await run('modalOverlay.classList.contains("creation-wizard") && creationStep===2'),true);
+  await run('modalSave.focus()');
+  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Tab'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Tab'});
+  await until('document.activeElement===modalClose');
+  await run('modalSave.click();modalSave.click()');
+  await until('!modalSaving && !modalOverlay.classList.contains("open") && !syncRunning && !localWrites');
+  assert.equal(await run('todos.length'),await run('__wizardStart+1'));
+  assert.deepEqual(await run('(()=>{const task=todos.find(t=>t.text==="Préparer <b>le dossier</b>");return [task.status,task.priority,task.due,task.dueTime,task.notes]})()'),['waiting','high','2026-12-14','09:30','Note conservée\nDeuxième ligne']);
+  await run('quickTitle.value="Créer en un geste";quickFull.click();modalSave.click()');
+  await until('!modalSaving && !modalOverlay.classList.contains("open") && !syncRunning');
+  assert.equal(await run('quickTitle.value'),'');
+  assert.deepEqual(await run('(()=>{const task=todos.find(t=>t.text==="Créer en un geste");return [task.status,task.priority,task.due,task.dueTime,task.notes]})()'),['todo','normal',null,null,'']);
+  await run('quickTitle.value="Brouillon conservé";quickFull.click();creationNext.click();modalDue.value="2026-12-15";window.confirm=()=>false;modalClose.click()');
+  assert.equal(await run('modalOverlay.classList.contains("open") && creationStep===1'),true);
+  await run('window.confirm=()=>true;modalClose.click();quickFull.click()');
+  assert.equal(await run('modalText.value==="Brouillon conservé" && creationStep===0 && modalDue.value===""'),true);
+  await run('closeModal(true);quickTitle.value="";openModal(null);modalText.value="Création à réessayer";creationNext.click();creationNext.click();modalNotes.value="Garder ce texte";window.__realWizardSave=taskStore.save;taskStore.save=async()=>{throw new Error("fixture wizard failure")};modalSave.click()');
+  await until('!modalSaving');
+  assert.equal(await run('!todos.some(t=>t.text==="Création à réessayer") && creationStep===2 && modalNotes.value==="Garder ce texte" && creationError.textContent.length>0'),true);
+  await run('taskStore.save=__realWizardSave;modalSave.click()');
+  await until('!modalSaving && !modalOverlay.classList.contains("open") && !syncRunning');
+  assert.equal(await run('todos.filter(t=>t.text==="Création à réessayer").length'),1);
+  for(const [width,height] of [[320,420],[390,640],[600,812]]) {
+    win.setContentSize(width,height);await new Promise(r=>setTimeout(r,100));
+    await run('openModal(null);modalText.value="Préparer la réunion"');
+    for(let step=0;step<3;step++) {
+      await new Promise(r=>setTimeout(r,280));
+      assert.equal(await run('(()=>{const r=modalOverlay.querySelector(".modal").getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight+1 && r.left>=0 && r.right<=innerWidth+1})()'),true,`creation step ${step} outside ${width}x${height}: `+await run('JSON.stringify({rect:modalOverlay.querySelector(".modal").getBoundingClientRect().toJSON(),height:innerHeight,viewport:getComputedStyle(document.documentElement).getPropertyValue("--task-viewport-height"),max:getComputedStyle(modalOverlay.querySelector(".modal")).maxHeight})'));
+      assert.equal(await run('[creationBack,creationNext,modalSave].filter(b=>b.getClientRects().length).every(b=>b.getBoundingClientRect().height>=44)'),true);
+      assert.equal(await run('[...modalBody.querySelectorAll("input,select,textarea"),creationBack,creationNext,modalSave].filter(b=>b.getClientRects().length).every(b=>{const r=b.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1})'),true,`creation controls overflow at ${width}, step ${step}: `+await run('JSON.stringify([creationBack,creationNext,modalSave].map(b=>({id:b.id,rect:b.getBoundingClientRect().toJSON()})))'));
+      await run('modalSave.scrollIntoView({block:"nearest"})');
+      assert.equal(await run('[creationBack,creationNext,modalSave].filter(b=>b.getClientRects().length).every(b=>{const r=b.getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight+1})'),true,`creation actions unreachable at ${width}, step ${step}`);
+      if(width===390)await fs.promises.writeFile(path.join(out,`creation-phone-step-${step+1}.png`),(await win.webContents.capturePage()).toPNG());
+      if(step<2)await run('creationNext.click()');
+    }
+    await run('closeModal(true)');
+  }
+  await run('todos=__wizardOriginal;saveTodos()');await until('!syncRunning && !localWrites && !taskStore.pending()');
+  win.setContentSize(1040,900);await new Promise(r=>setTimeout(r,100));
+  console.log('CREATION PASS: phone steps, optional details, required title/date validation, back navigation, FR/EN, desktop resize, focus trap, exact fields, duplicate guard, save failure/retry and draft cancellation.');
+}
 async function checkDesktopLayouts() {
   for(const width of [701,768,1040,1440,1920]) {
     win.setContentSize(width,1000);await new Promise(r=>setTimeout(r,100));
@@ -124,6 +193,7 @@ app.whenReady().then(async()=>{
   win.webContents.on('console-message',(_event,level,message)=>{if(level===3)errors.push(message);});
   await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
   await until('!!taskStore && todos.filter(t=>!TodoData.removed(t)).length===2 && !syncRunning');
+  await checkCreationWizard();
   assert.equal(await run('currentScope'),'all');
   assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=a]")!==null'),true);
   await run('setTaskScope("all")');

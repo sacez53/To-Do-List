@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Ma To-Do List — Le Développeur</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/logo/logo-t.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="../assets/js/transitions.js?v=27"></script>
+  <script>
+    // Déconnexion automatique
+    sessionStorage.removeItem("auth");
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("encKey");
+    sessionStorage.removeItem("encSalt");
+  </script>
+  <link rel="stylesheet" href="../assets/css/style2.css?v=27">
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#080808">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.pathname.includes('/src/')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js').catch(err => console.error('Service Worker Error:', err));
+      });
+    }
+  </script>
+  <script src="../assets/js/runtime.js?v=27"></script>
+  <script src="../assets/js/dialogs.js?v=27"></script>
+  <link rel="stylesheet" href="../assets/css/interface.css?v=27">
+  <link rel="stylesheet" href="../assets/css/pages.css?v=27">
+</head>
+
+<body class="interface-v6 information-page">
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
+
+<header class="site-header"><div class="site-header-inner"><a class="workspace-brand" href="../index.html"><span class="brand-mark" aria-hidden="true">T</span><span data-i18n="app_title">To-Do List</span></a><nav class="nav-links site-header-actions" aria-label="Navigation principale"><a class="site-link" href="../index.html">Accueil</a></nav></div></header>
+
+  <header class="page-header">
+    <span class="page-tag">Créateur · Sacha G.</span>
+    <h1>Le Développeur</h1>
+    <p>Photographe amateur, étudiant et passionné par la création d'outils numériques minimalistes.</p>
+  </header>
+
+  <main class="wrapper" id="main-content">
+
+    <!-- 01 — Profil -->
+    <section class="block">
+      <div class="block-header">
+        <span class="block-num">01</span>
+        <h2 class="block-title">Profil & Vision</h2>
+      </div>
+      <div class="profile-frame">
+        <img src="../assets/logo/developpeur.png" alt="Sacha G.">
+      </div>
+      <div class="block-body">
+        <p>
+          Je m'appelle <strong>Sacha G.</strong> Alliant la précision visuelle de la photographie à la logique rigoureuse du développement web, je conçois des outils qui simplifient le quotidien sans sacrifier l'esthétique.
+        </p>
+        <p>
+          Je crois en la puissance du <strong>minimalisme</strong>. Chaque ligne de code, comme chaque pixel d'une image, doit avoir une raison d'être. Mon objectif est de créer des expériences fluides, rapides et visuellement impeccables.
+        </p>
+      </div>
+    </section>
+
+    <!-- 02 — Parcours -->
+    <section class="block">
+      <div class="block-header">
+        <span class="block-num">02</span>
+        <h2 class="block-title">Mon Parcours</h2>
+      </div>
+      <div class="block-body">
+        <p>
+          Photographe amateur depuis plusieurs années, j'ai commencé le développement web en autodidacte pour construire mes propres outils de gestion. Ce qui n'était qu'une curiosité est devenu une véritable passion pour l'<strong>architecture logicielle</strong> et le <strong>design d'interface</strong>.
+        </p>
+        <p>
+          Cette application est née d'un besoin personnel : une interface monochrome inspirée des terminaux, capable de gérer des tâches complexes avec une simplicité déconcertante. C'est un projet en <strong>évolution constante</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- 03 — Technique -->
+    <section class="block">
+      <div class="block-header">
+        <span class="block-num">03</span>
+        <h2 class="block-title">Stack & Contact</h2>
+      </div>
+      <ul class="row-list">
+        <li>
+          <span class="row-key">Approche</span>
+          <span class="row-val">Vanilla (HTML/CSS/JS)</span>
+        </li>
+        <li>
+          <span class="row-key">Écosystème</span>
+          <span class="row-val">Firebase Realtime DB · Web Crypto (AES-256-GCM) · Electron (Windows)</span>
+        </li>
+        <li>
+          <span class="row-key">GitHub</span>
+          <span class="row-val"><a href="https://github.com/sacez53" target="_blank">github.com/sacez53</a></span>
+        </li>
+        <li>
+          <span class="row-key">Instagram</span>
+          <span class="row-val"><a href="https://www.instagram.com/sacha.guitter.photo/" target="_blank">Profil professionnel</a></span>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="../index.html">Accueil</a>
+      <a href="./confidentialite.html">Confidentialité</a>
+      <a href="./mentions-legales.html">Mentions Légales</a>
+      <a href="./cgu.html">CGU</a>
+      <a href="./donnees.html">Gestion des données</a>
+      <a href="./apropos.html">À Propos</a>
+    </div>
+    <p>© 2026 · Sacha G. Photographe & Développeur</p>
+  </footer>
+
+  <script src="../assets/js/burger-menu.js?v=27"></script>
+</body>
+
+</html>

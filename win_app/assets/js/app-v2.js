@@ -42,6 +42,14 @@ const modalPriority = document.getElementById("modal-priority");
 const modalDue      = document.getElementById("modal-due");
 const modalDueTime  = document.getElementById("modal-due-time");
 const modalNotes    = document.getElementById("modal-notes");
+const creationProgress = document.getElementById("creation-progress");
+const creationNext = document.getElementById("creation-next");
+const creationBack = document.getElementById("creation-back");
+const creationError = document.getElementById("creation-error");
+const creationMedia = window.matchMedia("(max-width: 700px)");
+let creatingTask = false;
+let creationStep = 0;
+let modalSaving = false;
 const modalSave     = document.getElementById("modal-save");
 const modalDelete   = document.getElementById("modal-delete");
 const confirmOverlay= document.getElementById("confirm-overlay");
@@ -806,6 +814,94 @@ function resetFilters() {
 // ══════════════════════════════════════════
 
 // Événements boutons de modale
+function updateCreationWizard(focus = false) {
+  const active = creatingTask && creationMedia.matches;
+  modalOverlay.classList.toggle("creation-wizard", active);
+  modalOverlay.dataset.creationStep = String(creationStep);
+  creationProgress.hidden = !active;
+  modalBody.querySelectorAll("[data-create-step]").forEach(group => {
+    group.hidden = active && Number(group.dataset.createStep) !== creationStep;
+  });
+  creationBack.hidden = !active || creationStep === 0;
+  creationNext.hidden = !active || creationStep === 2;
+  if (creatingTask) {
+    modalCancelEditBtn.style.display = active ? "none" : "";
+    modalSave.textContent = t(active && creationStep < 2 ? "creation_create_now" : "btn_create");
+  }
+  modalText.enterKeyHint = active ? "next" : "done";
+  if (active) {
+    const names = ["creation_title", "creation_date", "creation_details"];
+    const stepStatus = document.getElementById("creation-step-status");
+    const announcement = t("creation_step", { current: creationStep + 1, total: 3, name: t(names[creationStep]) });
+    if (stepStatus.textContent !== announcement) stepStatus.textContent = announcement;
+    document.getElementById("creation-hint").textContent = t(["creation_hint_title", "creation_hint_date", "creation_hint_details"][creationStep]);
+    const preview = document.getElementById("creation-title-preview");
+    preview.hidden = creationStep === 0;
+    preview.textContent = modalText.value.trim();
+    creationProgress.querySelectorAll("[data-step]").forEach(item => {
+      if (Number(item.dataset.step) === creationStep) item.setAttribute("aria-current", "step");
+      else item.removeAttribute("aria-current");
+      item.classList.toggle("completed", Number(item.dataset.step) < creationStep);
+    });
+    creationNext.textContent = t(creationStep === 1 && !modalDue.value && !modalDueTime.value ? "creation_skip_date" : "creation_next");
+  }
+  if (focus && modalOverlay.classList.contains("open")) {
+    modalOverlay.querySelector(".modal").scrollTop = 0;
+    [modalText, modalDue, modalStatus][creationStep].focus({ preventScroll: true });
+  }
+}
+
+function validateModalTitle() {
+  if (modalText.value.trim()) return true;
+  creationError.textContent = t("quick_required");
+  modalText.setAttribute("aria-invalid", "true");
+  if (creatingTask) { creationStep = 0; updateCreationWizard(); }
+  modalText.focus();
+  return false;
+}
+
+function validateCreationDate() {
+  const invalid = [modalDue, modalDueTime].find(field => !field.validity.valid);
+  const missingDate = modalDueTime.value && !modalDue.value;
+  if (!invalid && !missingDate) return true;
+  creationError.textContent = t(missingDate ? "creation_date_required" : "creation_date_invalid");
+  creationStep = 1;
+  updateCreationWizard();
+  (invalid || modalDue).focus();
+  return false;
+}
+
+creationNext.addEventListener("click", () => {
+  if (modalSaving || !creatingTask || !creationMedia.matches || !validateModalTitle()) return;
+  if (creationStep === 1 && !validateCreationDate()) return;
+  creationError.textContent = "";
+  creationStep = Math.min(2, creationStep + 1);
+  updateCreationWizard(true);
+});
+creationBack.addEventListener("click", () => {
+  if (modalSaving || !creatingTask) return;
+  creationError.textContent = "";
+  creationStep = Math.max(0, creationStep - 1);
+  updateCreationWizard(true);
+});
+modalText.addEventListener("keydown", event => {
+  if (event.key === "Enter" && creatingTask && creationMedia.matches && !event.isComposing && event.keyCode !== 229) {
+    event.preventDefault();
+    if (!event.repeat && creationStep === 0) creationNext.click();
+  }
+});
+for (const field of [modalText, modalDue, modalDueTime]) field.addEventListener("input", () => {
+  creationError.textContent = "";
+  modalText.removeAttribute("aria-invalid");
+  if (creatingTask) updateCreationWizard();
+});
+creationMedia.addEventListener("change", () => {
+  if (!creatingTask || !modalOverlay.classList.contains("open")) return;
+  const group = document.activeElement.closest("[data-create-step]");
+  if (creationMedia.matches && group) creationStep = Number(group.dataset.createStep);
+  updateCreationWizard(true);
+});
+
 if (modalEditBtn) {
   modalEditBtn.addEventListener("click", () => {
     if (editingId !== null) openModal(editingId, "edit");
@@ -829,6 +925,11 @@ if (modalCancelEditBtn) {
 function openModal(id = null, mode = 'edit') {
   quickModalDraft = null;
   if (!taskStore || !sessionStorage.getItem("auth")) return;
+  creatingTask = id === null;
+  creationStep = 0;
+  creationError.textContent = "";
+  modalText.removeAttribute("aria-invalid");
+  updateCreationWizard();
   recapSchedule.replaceChildren();
   recapSchedule.hidden = true;
   recapScheduleFeedback.textContent = "";
@@ -857,6 +958,7 @@ function openModal(id = null, mode = 'edit') {
     modalOverlay.classList.add("open");
     document.body.classList.add("modal-open");
     modalSnapshot = modalValues();
+    updateCreationWizard();
     setTimeout(() => modalText.focus(), 60);
     return;
   }
@@ -986,12 +1088,15 @@ function openModal(id = null, mode = 'edit') {
 }
 
 function closeModal(force = false) {
+  if (modalSaving && force !== true) return false;
   if (force !== true && modalSnapshot && modalValues() !== modalSnapshot && !confirm(TodoRuntime.message("Abandonner les modifications non enregistrées ?", "Discard unsaved changes?"))) return false;
   modalSnapshot = null;
   quickModalDraft = null;
   modalOverlay.classList.remove("open");
   document.body.classList.remove("modal-open");
   editingId = null;
+  creatingTask = false;
+  updateCreationWizard();
   return true;
 }
 
@@ -1159,14 +1264,22 @@ confirmOverlay.addEventListener("click", e => { if (e.target === confirmOverlay)
 document.addEventListener("keydown", e => { if (e.key === "Escape") { if (shortcutsOverlay.classList.contains("open")) { closeShortcutHelp(); return; } if (reschedulingId !== null) { closeScheduleDialog(); return; } if (confirmCleanup) confirmCleanup(); else closeModal(); } });
 
 modalSave.addEventListener("click", async () => {
-  if (modalSave.disabled) return;
+  if (modalSave.disabled || modalSaving || !taskStore || !sessionStorage.getItem("auth")) return;
+  if (!validateModalTitle() || (creatingTask && !validateCreationDate())) return;
+  modalSaving = true;
   modalSave.disabled = true;
+  creationNext.disabled = true;
+  creationBack.disabled = true;
+  modalClose.disabled = true;
+  modalCancelEditBtn.disabled = true;
+  creationError.textContent = "";
+  let createdTask = null;
   try {
   const newText = modalText.value.trim();
-  if (!newText) { modalText.focus(); return; }
   const dueTimeVal = modalDueTime ? (modalDueTime.value || null) : null;
   if (editingId === null) {
-    todos.push({ id:crypto.randomUUID(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), created:new Date().toISOString() });
+    createdTask = { id:crypto.randomUUID(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), created:new Date().toISOString() };
+    todos.push(createdTask);
   } else {
     const idx = todos.findIndex(t => String(t.id) === String(editingId));
     if (idx !== -1) Object.assign(todos[idx], { text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim() });
@@ -1174,8 +1287,18 @@ modalSave.addEventListener("click", async () => {
   if (await saveTodos()) {
     if (editingId === null && quickModalDraft !== null && quickTitle.value === quickModalDraft) quickTitle.value = "";
     render(); closeModal(true);
+  } else {
+    if (createdTask) todos = todos.filter(task => task.id !== createdTask.id);
+    creationError.textContent = t("creation_save_failed");
   }
-  } finally { modalSave.disabled = false; }
+  } finally {
+    modalSaving = false;
+    modalSave.disabled = false;
+    creationNext.disabled = false;
+    creationBack.disabled = false;
+    modalClose.disabled = false;
+    modalCancelEditBtn.disabled = false;
+  }
 });
 
 modalDelete.addEventListener("click", () => {
@@ -1235,4 +1358,5 @@ window.addEventListener("languageChanged", () => {
   if (captured && !quickDetails.hidden) showQuickSuccess(captured);
   buildFilterPanel();
   render();
+  if (creatingTask && modalOverlay.classList.contains("open")) updateCreationWizard();
 });

@@ -283,4 +283,27 @@ body.interface-v6.task-app .v2-recap-schedule .v2-schedule-actions{display:grid;
 body.interface-v6.task-app .v2-recap-schedule button{min-height:48px;font-size:.8rem;white-space:normal;line-height:1.5;padding:10px}
 #recap-schedule-feedback{font-size:.8rem;line-height:1.6}
 @media(max-width:700px){body.interface-v6.task-app .v2-recap-schedule button{font-size:.75rem}body.interface-v6.task-app .v2-task-controls button{min-height:46px}}
+.creation-progress { min-width:0; }
+#creation-step-status { margin:0; font-size:.72rem; color:var(--text-muted); line-height:1.6; }
+.creation-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; list-style:none; margin:10px 0 14px; padding:0; }
+.creation-steps li { padding:0 0 8px; border-bottom:2px solid var(--line-strong); font-size:.75rem; color:var(--text-faint); }
+.creation-steps li[aria-current="step"] { color:var(--text); border-color:var(--text); }
+.creation-steps li.completed { border-color:var(--v2-accent); }
+.creation-hint { margin:0; font-size:.8rem; color:var(--text-muted); line-height:1.65; }
+.creation-title-preview { margin:10px 0 0; padding:10px 12px; border:1px solid var(--line); border-radius:5px; background:var(--bg); font-size:.85rem; line-height:1.6; overflow-wrap:anywhere; max-height:5.4em; overflow-y:auto; }
+.creation-error { margin:0; color:#f4aaa5; font-size:.8rem; line-height:1.6; }
+.creation-error:empty { display:none; }
+body.interface-v6.task-app .modal-input[aria-invalid="true"] { border-color:#f4aaa5; }
+@media(max-width:700px){
+ body.interface-v6.task-app .creation-wizard .modal { gap:14px; }
+ body.interface-v6.task-app .creation-wizard .modal-body { gap:16px; }
+ body.interface-v6.task-app .creation-wizard .modal-field { margin:0; }
+ body.interface-v6.task-app .creation-wizard .modal-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+ body.interface-v6.task-app .creation-wizard .modal-actions button { width:100%; min-width:0; min-height:46px; }
+ body.interface-v6.task-app .creation-wizard #creation-back { grid-column:1; grid-row:1; }
+ body.interface-v6.task-app .creation-wizard #creation-next { grid-column:2; grid-row:1; }
+ body.interface-v6.task-app .creation-wizard #modal-save { grid-column:1/-1; grid-row:2; background:transparent; color:var(--text-muted); border-color:var(--line-strong); font-weight:400; }
+ body.interface-v6.task-app .creation-wizard[data-creation-step="0"] #creation-next { grid-column:1/-1; }
+ body.interface-v6.task-app .creation-wizard[data-creation-step="2"] #modal-save { grid-column:2; grid-row:1; background:var(--text); border-color:var(--text); color:var(--bg); font-weight:700; }
+}
 @media(prefers-reduced-motion:reduce){.interface-v6 *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

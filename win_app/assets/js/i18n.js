@@ -4,6 +4,22 @@
 
 const I18N_DICTIONARY = {
   fr: {
+    "creation_steps": "Étapes de création",
+    "creation_title": "Titre",
+    "creation_date": "Échéance",
+    "creation_details": "Détails",
+    "creation_step": "Étape {current} sur {total} · {name}",
+    "creation_hint_title": "Un titre suffit. Les autres informations sont facultatives.",
+    "creation_hint_date": "Ajoutez une échéance si vous en avez besoin. L’heure est facultative.",
+    "creation_hint_details": "Complétez ce qui vous est utile. Vous pourrez aussi le faire plus tard.",
+    "creation_next": "Continuer",
+    "creation_back": "Précédent",
+    "creation_skip_date": "Sans échéance",
+    "creation_create_now": "Créer maintenant",
+    "creation_date_required": "Choisissez une date pour cette heure, ou effacez l’heure.",
+    "creation_date_invalid": "Vérifiez la date et l’heure saisies.",
+    "creation_save_failed": "La tâche n’a pas été enregistrée. Votre saisie est conservée ; réessayez.",
+
     "filter_short": "Filtres",
     "skip_content": "Aller aux tâches",
     "workspace_navigation": "Navigation de l’espace",
@@ -261,6 +277,22 @@ const I18N_DICTIONARY = {
     "footer_data": "Gestion des données"
   },
   en: {
+    "creation_steps": "Creation steps",
+    "creation_title": "Title",
+    "creation_date": "Due date",
+    "creation_details": "Details",
+    "creation_step": "Step {current} of {total} · {name}",
+    "creation_hint_title": "A title is enough. Everything else is optional.",
+    "creation_hint_date": "Add a due date if needed. The time is optional.",
+    "creation_hint_details": "Fill in what you need. You can also do this later.",
+    "creation_next": "Continue",
+    "creation_back": "Previous",
+    "creation_skip_date": "No due date",
+    "creation_create_now": "Create now",
+    "creation_date_required": "Choose a date for this time, or clear the time.",
+    "creation_date_invalid": "Check the date and time.",
+    "creation_save_failed": "The task was not saved. Your entries are kept; try again.",
+
     "filter_short": "Filters",
     "skip_content": "Skip to tasks",
     "workspace_navigation": "Workspace navigation",
