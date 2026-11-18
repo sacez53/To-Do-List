@@ -149,6 +149,8 @@ const I18N_DICTIONARY = {
     "filter_no_due": "Sans date",
 
     // Statuts
+    "task_mark_done": "Marquer comme terminée",
+    "task_mark_todo": "Remettre à faire",
     "status_todo": "À faire",
     "status_inprogress": "En cours",
     "status_waiting": "En attente",
@@ -433,6 +435,8 @@ const I18N_DICTIONARY = {
     "filter_no_due": "No date",
 
     // Statuses
+    "task_mark_done": "Mark as done",
+    "task_mark_todo": "Mark as to do",
     "status_todo": "To do",
     "status_inprogress": "In progress",
     "status_waiting": "Waiting",

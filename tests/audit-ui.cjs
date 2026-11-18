@@ -271,6 +271,29 @@ async function checkPhoneLayouts() {
   await run('setTaskScope("all")');
   assert.equal(await run('localStorage.getItem("todos_audit")'),null);
   assert.equal(await run('localStorage.getItem("todo_state_audit").includes("Task A")'),false);
+  for (const view of ['list','kanban','table']) {
+    await run(`currentView="${view}";render();window.__beforeComplete=JSON.stringify(todos.find(t=>t.id==="a"));`);
+    const checkbox = page.locator('[data-task-id="a"] .v2-complete');
+    await checkbox.click();
+    await until('!completingTasks.size && !syncRunning && todos.find(t=>t.id==="a").status==="done"');
+    assert.equal(await checkbox.getAttribute('aria-checked'),'true');
+    assert.equal(await run('modalOverlay.classList.contains("open")'),false);
+    assert.equal(await run('JSON.stringify({...todos.find(t=>t.id==="a"),status:"todo"})===__beforeComplete'),true);
+    await checkbox.focus();
+    await page.keyboard.press('Space');
+    await until('!completingTasks.size && !syncRunning && todos.find(t=>t.id==="a").status==="todo"');
+    assert.equal(await checkbox.getAttribute('aria-checked'),'false');
+    assert.equal(await run('document.activeElement.dataset.taskAction'),'complete');
+  }
+  await run('window.__originalSave=taskStore.save;taskStore.save=async()=>{throw new Error("Completion fixture");}');
+  await page.locator('[data-task-id="a"] .v2-complete').click();
+  await until('!completingTasks.size');
+  assert.equal(await run('todos.find(t=>t.id==="a").status'),'todo');
+  assert.equal(await page.locator('[data-task-id="a"] .v2-complete').getAttribute('aria-checked'),'false');
+  await run('taskStore.save=__originalSave;setLanguage("en")');
+  assert.equal(await page.locator('[data-task-id="a"] .v2-complete').getAttribute('title'),'Mark as done');
+  await run('setLanguage("fr")');
+  console.log('COMPLETION PASS: every view, keyboard, focus, field preservation, local save rollback and translations.');
   for(const view of ['list','kanban','table']){
    await run(`document.querySelector('[data-view="${view}"]').click();document.querySelector('.task-summary').click()`);
    assert.equal(await run('modalRecap.style.display'),'flex');assert.equal(await run('modalBody.style.display'),'none');
@@ -461,7 +484,7 @@ async function checkPhoneLayouts() {
     await run(`document.querySelector('[data-view="${view}"]').click()`);
     assert.equal(await run('boardEl.querySelectorAll("[data-task-action=tomorrow]").length'),0);
     assert.equal(await run('boardEl.querySelectorAll("[data-task-action=choose]").length'),0);
-    assert.equal(await run('[...boardEl.querySelectorAll("button:not(.task-summary)")].every(b=>b.classList.contains("v2-edit-btn"))'),true);
+    assert.equal(await run('[...boardEl.querySelectorAll("button:not(.task-summary)")].every(b=>b.classList.contains("v2-edit-btn") || b.classList.contains("v2-complete"))'),true);
     await run('boardEl.querySelector(".task-summary[data-task-id=late]").click()');
     assert.equal(await run('modalBody.style.display'),'none');
     assert.equal(await run('recapSchedule.querySelectorAll("button").length'),2);

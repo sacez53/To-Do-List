@@ -1,4 +1,4 @@
-# Ma To-Do List — v6.4.0
+# Ma To-Do List — v6.5.0
 
 Le mode clair ou sombre se choisit dans Paramètres → Affichage. La préférence est enregistrée dans Firebase avec le compte, puis récupérée à la connexion et à l’ouverture des pages connectées. Le mode sombre conserve les couleurs précédentes.
 
@@ -33,6 +33,10 @@ Seul le titre est obligatoire. Vous pouvez aussi renseigner :
 Sur ordinateur, les champs sont affichés ensemble. Sur téléphone, **Continuer** fait avancer dans le formulaire et **Précédent** permet de revenir sans perdre la saisie. **Créer maintenant** enregistre la tâche sans remplir les détails restants. **Sans échéance** permet de passer la date.
 
 Pour programmer « Appeler le garage demain à 14 h », renseignez la date et l’heure dans les champs prévus. Écrire « demain à 14 h » dans le titre ne programme pas l’échéance.
+
+## Valider une tâche
+
+Cochez la case à côté d’une tâche pour la marquer « Terminée » dans les vues Liste, Kanban ou Tableau. Décochez-la pour la remettre « À faire ». La modification est enregistrée sans ouvrir de fenêtre. Au clavier, placez le focus sur la case avec Tab, puis appuyez sur Espace.
 
 ## Consulter et modifier une tâche
 

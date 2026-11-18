@@ -336,3 +336,11 @@ body.interface-v6 .modal{max-height:calc(100dvh - max(16px,var(--site-safe-top))
  body.interface-v6.task-app .modal-overlay{padding:max(8px,var(--site-safe-top)) var(--site-safe-right) 0 var(--site-safe-left)}
  body.interface-v6.task-app .modal{max-height:calc(var(--task-viewport-height,100dvh) - max(8px,var(--site-safe-top)));padding-bottom:max(16px,var(--site-safe-bottom))}
 }
+
+/* Completion controls keep a 44px target in every view. */
+body.interface-v6.task-app .v2-complete{display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;min-width:44px;min-height:44px;padding:0;border:0;background:transparent;color:var(--text);cursor:pointer}
+body.interface-v6.task-app .v2-complete span{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid var(--text-muted);border-radius:4px;font-size:16px;line-height:1}
+body.interface-v6.task-app .v2-complete[aria-checked="true"] span{background:var(--text);border-color:var(--text);color:var(--bg)}
+body.interface-v6.task-app .v2-complete[aria-disabled="true"]{opacity:.5;cursor:wait}
+body.interface-v6.task-app .v2-table-text{display:flex;align-items:flex-start;gap:8px}
+body.interface-v6.task-app .v2-table-text .task-summary{min-width:0;flex:1}

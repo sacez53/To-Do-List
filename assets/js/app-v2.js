@@ -91,6 +91,7 @@ let quickEnterHeld = false;
 let quickCreatedId = null;
 let quickModalDraft = null;
 let trashBusy = false;
+const completingTasks = new Set();
 let lastTrashed = null;
 const shortcutsKey = `todo_shortcuts_${currentUser}`;
 try { shortcutsEnabled.checked = localStorage.getItem(shortcutsKey) !== "false"; } catch (_) { /* Usable without preference storage. */ }
@@ -533,7 +534,29 @@ function render() {
   } else renderList(visible);
   updateFilterBadge();
   boardEl.querySelectorAll(".v2-item,.v2-card,.v2-table-row").forEach(row => {
-    for (const [selector, action] of [[".task-summary", "summary"], [".v2-edit-btn", "edit"], ["button.v2-badge", "status"]]) {
+    const task = todos.find(task => String(task.id) === row.dataset.taskId);
+    if (!task || currentScope === "trash") return;
+    const control = document.createElement("button");
+    control.type = "button";
+    control.className = "v2-complete";
+    control.setAttribute("role", "checkbox");
+    control.setAttribute("aria-checked", String(task.status === "done"));
+    control.setAttribute("aria-disabled", String(completingTasks.has(String(task.id))));
+    const label = t(task.status === "done" ? "task_mark_todo" : "task_mark_done");
+    control.title = label;
+    control.setAttribute("aria-label", `${label} : ${task.text}`);
+    const box = document.createElement("span");
+    box.setAttribute("aria-hidden", "true");
+    box.textContent = task.status === "done" ? "✓" : "";
+    control.appendChild(box);
+    control.addEventListener("click", event => {
+      event.stopPropagation();
+      toggleTaskDone(task.id);
+    });
+    row.querySelector(".v2-item-left,.v2-card-header,.v2-table-text").prepend(control);
+  });
+  boardEl.querySelectorAll(".v2-item,.v2-card,.v2-table-row").forEach(row => {
+    for (const [selector, action] of [[".v2-complete", "complete"], [".task-summary", "summary"], [".v2-edit-btn", "edit"], ["button.v2-badge", "status"]]) {
       const button = row.querySelector(selector);
       if (button) { button.dataset.taskId = row.dataset.taskId; button.dataset.taskAction = action; }
     }
@@ -582,6 +605,25 @@ function renderEmpty() {
     (todos.some(t => !t.archived && !t.deletedAt && !t.purgedAt) ? TodoRuntime.message("Aucun résultat avec ces filtres. Réinitialisez les filtres pour retrouver vos tâches.", "No matches for these filters. Reset filters to see your tasks.") : t("empty_tasks"));
   boardEl.replaceChildren(p);
 }
+async function toggleTaskDone(id) {
+  const key = String(id);
+  const task = todos.find(task => String(task.id) === key);
+  if (!task || task.deletedAt || task.purgedAt || task.archived || completingTasks.has(key)) return;
+  completingTasks.add(key);
+  const previousStatus = task.status;
+  task.status = task.status === "done" ? "todo" : "done";
+  render();
+  try {
+    if (!await saveTodos()) {
+      const current = todos.find(task => String(task.id) === key);
+      if (current) current.status = previousStatus;
+    }
+  } finally {
+    completingTasks.delete(key);
+    render();
+  }
+}
+
 // ── Vue Liste ──
 function renderList(items) {
   if (items.length === 0) {
