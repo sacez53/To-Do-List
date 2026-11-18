@@ -272,6 +272,16 @@ btnChangePassword.addEventListener("click", async () => {
 // ══════════════════════════════════════════════════════
 const btnSaveDisplay     = document.getElementById("btn-save-display");
 const selectCalendarView = document.getElementById("setting-calendar-view");
+const selectTheme = document.getElementById("setting-theme");
+if (selectTheme) {
+  selectTheme.value = TodoTheme.get();
+  selectTheme.disabled = true;
+  document.addEventListener('DOMContentLoaded', async () => {
+    await TodoTheme.ready;
+    selectTheme.value = TodoTheme.get();
+    selectTheme.disabled = false;
+  });
+}
 const selectLanguage     = document.getElementById("setting-language");
 
 // Chargement initial
@@ -289,6 +299,8 @@ if (btnSaveDisplay) {
     clearMsg(msgEl);
     btnSaveDisplay.disabled = true;
     try {
+    await TodoTheme.ready;
+    if (selectTheme) await TodoTheme.save(selectTheme.value);
     if (selectCalendarView) {
       const selectedView = selectCalendarView.value;
       localStorage.setItem(`calendarView_${currentUser}`, selectedView);

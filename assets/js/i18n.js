@@ -233,6 +233,10 @@ const I18N_DICTIONARY = {
     "success_account_created": "Compte créé ! Redirection...",
 
     // Paramètres
+    "label_app_theme": "Mode d’affichage",
+    "theme_dark": "Sombre",
+    "theme_light": "Clair",
+    "theme_account_hint": "Ce choix est enregistré dans votre compte et appliqué sur vos appareils à la connexion.",
     "settings_title": "Paramètres",
     "settings_subtitle": "Compte & Sécurité",
     "tab_account": "Compte",
@@ -513,6 +517,10 @@ const I18N_DICTIONARY = {
     "success_account_created": "Account created! Redirecting...",
 
     // Settings
+    "label_app_theme": "Appearance",
+    "theme_dark": "Dark",
+    "theme_light": "Light",
+    "theme_account_hint": "This choice is saved to your account and applied on your devices when you sign in.",
     "settings_title": "Settings",
     "settings_subtitle": "Account & Security",
     "tab_account": "Account",

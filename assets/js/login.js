@@ -121,6 +121,8 @@ loginForm.addEventListener("submit", async (e) => {
       syncUserLanguageToFirebase(username, getLanguage()).catch(console.warn);
     }
 
+    TodoTheme.accept(username, userData.theme);
+
     // ── Session ──
     sessionStorage.setItem("auth",     "true");
     sessionStorage.setItem("username", username);
@@ -207,7 +209,7 @@ registerForm.addEventListener("submit", async (e) => {
     await TodoRuntime.fetch(`${fbUrl}/users/${encodeURIComponent(username)}.json`, {
       method:  "PUT",
       headers: { "Content-Type": "application/json", "if-match": "null_etag" },
-      body:    JSON.stringify({ password: hash, salt, lang, todos: null })
+      body:    JSON.stringify({ password: hash, salt, lang, theme: "dark", todos: null })
     });
 
     // ── Dérive la clé et démarre la session ──
@@ -215,6 +217,7 @@ registerForm.addEventListener("submit", async (e) => {
     const keyB64 = await exportKey(key);
 
     setLanguage(lang);
+    TodoTheme.accept(username, "dark");
 
     sessionStorage.setItem("auth",     "true");
     sessionStorage.setItem("username", username);

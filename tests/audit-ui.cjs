@@ -21,6 +21,12 @@ window.fetch=async(url,options={})=>{
  if(String(url).includes('fixture.invalid')){
   if(String(url).endsWith('/comments.json'))return Response.json({demo:{text:'Une présentation plus claire, sur téléphone aussi.',username:'demo',createdAt:'2026-11-04T10:00:00Z'}});
   if(__fixture.failure)return new Response('{}',{status:__fixture.failure});
+  const leaf=String(url).match(/\\/(theme|lang)\\.json$/);
+  if(leaf){
+   if(options.method==='PUT')__fixture.account[leaf[1]]=JSON.parse(options.body);
+   if(sessionStorage.getItem("__keepFixture"))sessionStorage.setItem("__keepFixture",JSON.stringify(__fixture));
+   return Response.json(__fixture.account[leaf[1]] ?? null);
+  }
   if(options.method==='PUT'){if(options.headers['if-match']!==String(__fixture.version))return new Response('{}',{status:412});__fixture.account=JSON.parse(options.body);__fixture.version++;if(sessionStorage.getItem("__keepFixture"))sessionStorage.setItem("__keepFixture",JSON.stringify(__fixture));}
   return Response.json(__fixture.account,{headers:{ETag:String(__fixture.version)}});
  }
@@ -67,9 +73,9 @@ async function checkCreationWizard() {
   assert.equal(await run('modalNotes.value'),'Note conservée\nDeuxième ligne');
   await run('setLanguage("fr")');
   await resize(1040,900);await new Promise(r=>setTimeout(r,120));
-  assert.equal(await run('!modalOverlay.classList.contains("creation-wizard") && [modalText,modalDue,modalStatus,modalNotes].every(field=>field.getClientRects().length)'),true);
+  await until('!modalOverlay.classList.contains("creation-wizard") && [modalText,modalDue,modalStatus,modalNotes].every(field=>field.getClientRects().length)');
   await resize(390,844);await new Promise(r=>setTimeout(r,120));
-  assert.equal(await run('modalOverlay.classList.contains("creation-wizard") && creationStep===2'),true);
+  await until('modalOverlay.classList.contains("creation-wizard") && creationStep===2');
   await run('modalSave.focus()');
   await page.keyboard.down('Tab');await page.keyboard.up('Tab');
   await until('document.activeElement===modalClose');
@@ -509,6 +515,31 @@ async function checkPhoneLayouts() {
   assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=future] .due-overdue")!==null'),true);
   await run('window.Date=__RealDate;refreshTaskClock()');
   console.log('N01 PASS: scopes, ordering, exclusions, all layouts, FR/EN, tomorrow, chosen date, cancellation, field preservation, completed task removal and live midnight refresh.');
+  for (const name of ['app-v2','calendar','settings','login']) {
+    await page.goto(`${origin}/pages/${name}.html`);
+    await run('(async()=>{await TodoTheme.ready;await TodoTheme.save("light")})()');
+    if (name==='app-v2') await until('!!taskStore && !syncRunning');
+    if (name==='settings') await run('document.querySelector("[data-tab=tab-display]").click()');
+    for (const width of [390,1440]) {
+      await resize(width,900);await new Promise(r=>setTimeout(r,250));
+      await run('window.scrollTo(0,0)');
+      assert.equal(await run('getComputedStyle(document.documentElement).colorScheme'),'light');
+      assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`light ${name} overflow at ${width}`);
+      await page.screenshot({path:path.join(out,`light-${name}-${width}.png`)});
+      if (name==='app-v2') {
+        for (const view of ['table','kanban','list']) {
+          await run(`document.querySelector('[data-view="${view}"]').click()`);
+          assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
+        }
+        await run('openModal("a","view")');await new Promise(r=>setTimeout(r,200));
+        assert.equal(await run('getComputedStyle(document.querySelector(".modal")).backgroundColor'),'rgb(255, 255, 255)');
+        await page.screenshot({path:path.join(out,`light-summary-${width}.png`)});
+        await run('closeModal(true)');
+      }
+    }
+    await run('TodoTheme.save("dark")');
+  }
+  console.log('LIGHT UI PASS: task views, summary, calendar, settings and login at 390/1440px.');
   await page.goto(`http://127.0.0.1:${port}/pages/calendar.html`);
   await until('calendarStore && !calendarLoading');
   await resize(320,740);await new Promise(r=>setTimeout(r,100));
@@ -523,6 +554,37 @@ async function checkPhoneLayouts() {
   assert.equal(await run('[...document.querySelectorAll(".settings-tab-btn")].every(b=>b.getBoundingClientRect().height>=44)'),true);
   await new Promise(r=>setTimeout(r,450));
   await fs.promises.writeFile(path.join(out,'phone-settings.png'),await page.screenshot());
+  await until('!!TodoTheme.ready && !selectTheme.disabled');
+  await run("document.querySelector('[data-tab=\"tab-display\"]').click()");
+  assert.equal(await run('TodoTheme.get()'), 'dark');
+  const beforeTheme = await run('JSON.stringify(__fixture.account.todos)');
+  await page.selectOption('#setting-theme','light');
+  await page.click('#btn-save-display');
+  await until('!btnSaveDisplay.disabled');
+  assert.deepEqual(await run('[TodoTheme.get(),__fixture.account.theme,localStorage.getItem("theme_audit")]'), ['light','light','light']);
+  assert.equal(await run('JSON.stringify(__fixture.account.todos)'),beforeTheme);
+  assert.equal(await run('getComputedStyle(document.documentElement).colorScheme'),'light');
+  assert.equal(await run('getComputedStyle(document.body).backgroundColor'),'rgb(246, 247, 249)');
+  await new Promise(r=>setTimeout(r,200));
+  await page.screenshot({path:path.join(out,'light-settings-phone.png')});
+  await run('__fixture.failure=403');
+  await page.selectOption('#setting-theme','dark');
+  await page.click('#btn-save-display');
+  await until('!btnSaveDisplay.disabled');
+  assert.equal(await run('TodoTheme.get()'),'light');
+  assert.equal(await run('document.getElementById("msg-display").textContent.includes("403")'),true);
+  await run('delete __fixture.failure;sessionStorage.setItem("__keepFixture",JSON.stringify(__fixture));localStorage.removeItem("theme_audit")');
+  await page.reload();
+  await until('!!TodoTheme.ready && !selectTheme.disabled');
+  assert.equal(await run('TodoTheme.get()'),'light','account preference must load without local cache');
+  await run("document.querySelector('[data-tab=\"tab-display\"]').click()");
+  await page.selectOption('#setting-theme','dark');
+  await page.click('#btn-save-display');
+  await until('!btnSaveDisplay.disabled');
+  assert.equal(await run('TodoTheme.get()'),'dark');
+  assert.equal(await run('getComputedStyle(document.body).backgroundColor'),'rgb(9, 9, 11)');
+  await run("document.querySelector('[data-tab=\"tab-account\"]').click()");
+  console.log('THEME PASS: default dark, saved light, account reload without cache, unchanged tasks, HTTP failure and return to original dark palette.');
   assert.equal(await run('typeof saveArchivedChanges'), 'function');
   await run(`(async()=>{await archiveStore.sync();const current=archiveStore.read();current.push({id:'archive-ui',text:'Archive récupérable avec un titre plus long pour vérifier le retour à la ligne sur téléphone',notes:'Archive notes',status:'done',archived:true});await archiveStore.save(current);await archiveStore.sync();updateArchivedView();document.querySelector('[data-tab="tab-archive"]').click();})()`);
   assert.equal(await run('[...document.querySelectorAll(".archive-item-actions button")].every(b=>b.getBoundingClientRect().height>=44)'),true);
@@ -634,6 +696,7 @@ async function checkPhoneLayouts() {
   process.exitCode=errors.length?1:0;
  }catch(error){
   console.error(error);
+  console.error("Console errors:", JSON.stringify(errors));
   try{
     console.error('Layout debug:',await run('JSON.stringify({page:location.pathname,width:innerWidth,overflow:[...document.querySelectorAll("body *")].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,id:e.id,cls:e.className,right:e.getBoundingClientRect().right})).slice(0,15)})'));
     await page.screenshot({path:path.join(out,'failure.png')});

@@ -1,4 +1,6 @@
-# Ma To-Do List — v6.3.2
+# Ma To-Do List — v6.4.0
+
+Le mode clair ou sombre se choisit dans Paramètres → Affichage. La préférence est enregistrée dans Firebase avec le compte, puis récupérée à la connexion et à l’ouverture des pages connectées. Le mode sombre conserve les couleurs précédentes.
 
 Gérez vos tâches depuis un navigateur, sur téléphone ou ordinateur.
 

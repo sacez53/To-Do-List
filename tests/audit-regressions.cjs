@@ -253,3 +253,49 @@ test('N03: date scopes hide both trash and permanent deletion markers',()=>{
   const d=dates(),now=new Date(),base={id:'x',status:'todo',due:d.day(now)};
   for(const task of [{...base,deletedAt:now.toISOString()},{id:'x',purgedAt:now.toISOString()}])for(const scope of ['all','today','upcoming'])assert(!d.matches(task,scope,now));
 });
+
+
+function themeContext({ username = 'alice', cached, remote = 'light', fail = false } = {}) {
+  const localStorage = storage(), sessionStorage = storage(), events = {};
+  if (username) { sessionStorage.setItem('auth', 'true'); sessionStorage.setItem('username', username); }
+  if (cached) localStorage.setItem(`theme_${username}`, cached);
+  const server = { value: remote, fail, writes: [] };
+  const ctx = { URL, localStorage, sessionStorage, CustomEvent: class {},
+    document: { currentScript: { src: 'https://local/assets/js/theme.js' }, documentElement: { dataset: {} },
+      querySelectorAll: () => [], addEventListener: (name, fn) => { events[name] = fn; } },
+    TodoRuntime: { async fetch(url, options = {}) {
+      if (url.endsWith('firebase.json')) return { json: async () => ({ url: 'https://fixture.invalid' }) };
+      if (server.fail) throw new Error('HTTP 403');
+      if (options.method === 'PUT') { server.writes.push({ url, value: JSON.parse(options.body) }); server.value = JSON.parse(options.body); }
+      return { json: async () => server.value };
+    } }
+  };
+  ctx.window = ctx; ctx.dispatchEvent = () => {};
+  vm.createContext(ctx); vm.runInContext(source('theme'), ctx);
+  return { ctx, server, start: async () => { events.DOMContentLoaded(); await ctx.TodoTheme.ready; } };
+}
+test('appearance loads account preference without local cache and defaults old accounts to dark', async () => {
+  const fixture = themeContext();
+  assert.equal(fixture.ctx.TodoTheme.get(), 'dark');
+  await fixture.start();
+  assert.equal(fixture.ctx.TodoTheme.get(), 'light');
+  assert.equal(fixture.ctx.localStorage.getItem('theme_alice'), 'light');
+  const old = themeContext({ remote: null, cached: 'light' });
+  await old.start(); assert.equal(old.ctx.TodoTheme.get(), 'dark');
+  const guest = themeContext({ username: null, cached: 'light' });
+  await guest.start(); assert.equal(guest.ctx.TodoTheme.get(), 'dark');
+});
+test('appearance retains cached choice offline and saves only the account theme field', async () => {
+  const { ctx, server, start } = themeContext({ cached: 'light', fail: true });
+  await start(); assert.equal(ctx.TodoTheme.get(), 'light');
+  await assert.rejects(ctx.TodoTheme.save('dark'), /403/);
+  assert.equal(ctx.TodoTheme.get(), 'light');
+  server.fail = false;
+  await ctx.TodoTheme.save('dark');
+  assert.equal(ctx.TodoTheme.get(), 'dark');
+  assert.deepEqual(server.writes, [{ url: 'https://fixture.invalid/users/alice/theme.json', value: 'dark' }]);
+  await assert.rejects(ctx.TodoTheme.save('invalid'));
+  ctx.TodoTheme.accept('bob', 'light');
+  assert.equal(ctx.localStorage.getItem('theme_alice'), 'dark');
+  assert.equal(ctx.localStorage.getItem('theme_bob'), 'light');
+});

@@ -14,7 +14,7 @@
       position: fixed;
       inset: 0;
       z-index: 999999;
-      background: #080808;
+      background: var(--theme-transition-bg, #080808);
       opacity: 1;
       pointer-events: all;
       transition: opacity 300ms ease;
