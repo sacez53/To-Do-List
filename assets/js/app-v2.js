@@ -922,7 +922,49 @@ if (modalCancelEditBtn) {
   });
 }
 
+const agendaPanel = document.getElementById("task-agenda");
+const agendaDate = document.getElementById("agenda-date");
+const agendaTime = document.getElementById("agenda-time");
+let agendaTask = null;
+function updateAgendaLinks() {
+  const google = document.getElementById("agenda-google");
+  const outlook = document.getElementById("agenda-outlook");
+  const download = document.getElementById("agenda-ics");
+  let item;
+  try {
+    if (!agendaTask || agendaTask.deletedAt || agendaTask.purgedAt) throw new Error("task");
+    if (!agendaDate.validity.valid || !agendaTime.validity.valid) throw new Error("date");
+    item = TaskAgenda.event(agendaTask, agendaDate.value, agendaTime.value);
+  } catch (_) {}
+  document.getElementById("agenda-error").textContent = item ? "" : t("agenda_date_required");
+  download.disabled = !item;
+  document.getElementById("agenda-apple").disabled = !item;
+  for (const link of [google, outlook]) {
+    if (item) { link.removeAttribute("aria-disabled"); link.removeAttribute("tabindex"); }
+    else { link.removeAttribute("href"); link.setAttribute("aria-disabled", "true"); link.tabIndex = -1; }
+  }
+  if (item) {
+    const links = TaskAgenda.links(item);
+    google.href = links.google; outlook.href = links.outlook;
+  }
+  return item;
+}
+for (const input of [agendaDate, agendaTime]) input.addEventListener("input", updateAgendaLinks);
+function downloadAgendaFile() {
+  const item = updateAgendaLinks();
+  if (!item) return;
+  const url = URL.createObjectURL(new Blob([TaskAgenda.ics(item)], { type: "text/calendar;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url; link.download = "tache.ics";
+  document.body.appendChild(link); link.click(); link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+for (const id of ["agenda-ics", "agenda-apple"]) {
+  document.getElementById(id).addEventListener("click", downloadAgendaFile);
+}
+
 function openModal(id = null, mode = 'edit') {
+  agendaPanel.hidden = true; agendaPanel.open = false; agendaTask = null;
   quickModalDraft = null;
   if (!taskStore || !sessionStorage.getItem("auth")) return;
   creatingTask = id === null;
@@ -968,6 +1010,10 @@ function openModal(id = null, mode = 'edit') {
   editingId = todo.id;
 
   if (mode === "view") {
+    if (!todo.deletedAt) {
+      agendaTask = todo; agendaDate.value = todo.due || ""; agendaTime.value = todo.dueTime || "";
+      agendaPanel.hidden = false; updateAgendaLinks();
+    }
     if (TaskDates.active(todo)) {
       addScheduleActions(recapSchedule, todo);
       recapSchedule.hidden = false;
@@ -1359,4 +1405,5 @@ window.addEventListener("languageChanged", () => {
   buildFilterPanel();
   render();
   if (creatingTask && modalOverlay.classList.contains("open")) updateCreationWizard();
+  if (agendaTask && !agendaPanel.hidden) updateAgendaLinks();
 });

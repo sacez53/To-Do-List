@@ -10,9 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style2.css?v=30" />
-  <script src="../assets/js/transitions.js?v=30"></script>
-  <script src="../assets/js/i18n.js?v=30"></script>
+  <link rel="stylesheet" href="../assets/css/style2.css?v=32" />
+  <script src="../assets/js/transitions.js?v=32"></script>
+  <script src="../assets/js/i18n.js?v=32"></script>
   <script>if (!sessionStorage.getItem("auth")) window.location.replace("./login.html");</script>
 
   <link rel="manifest" href="../manifest.json">
@@ -26,10 +26,10 @@
       });
     }
   </script>
-  <script src="../assets/js/runtime.js?v=30"></script>
-  <script src="../assets/js/dialogs.js?v=30"></script>
-  <link rel="stylesheet" href="../assets/css/interface.css?v=30">
-  <link rel="stylesheet" href="../assets/css/pages.css?v=30">
+  <script src="../assets/js/runtime.js?v=32"></script>
+  <script src="../assets/js/dialogs.js?v=32"></script>
+  <link rel="stylesheet" href="../assets/css/interface.css?v=32">
+  <link rel="stylesheet" href="../assets/css/pages.css?v=32">
 </head>
 
 <body class="interface-v6 task-app">
@@ -224,6 +224,23 @@
           <div class="modal-recap-label" data-i18n="modal_field_notes">Notes</div>
           <div class="modal-recap-notes" id="recap-notes"></div>
         </div>
+        <details id="task-agenda" class="task-agenda" hidden>
+          <summary data-i18n="agenda_add">Ajouter à l’agenda</summary>
+          <p data-i18n="agenda_hint">Copie ponctuelle, sans synchronisation. Sans heure : journée entière ; avec une heure : durée d’une heure.</p>
+          <div class="agenda-fields">
+            <label for="agenda-date"><span data-i18n="modal_field_due">Date d’échéance</span><input id="agenda-date" type="date" required class="modal-input"></label>
+            <label for="agenda-time"><span data-i18n="modal_field_time">Heure</span><input id="agenda-time" type="time" class="modal-input"></label>
+          </div>
+          <p data-i18n="agenda_copy">La date choisie ici ne change pas la tâche. Le titre et les notes seront transmis uniquement au service sélectionné.</p>
+          <p id="agenda-error" role="status" aria-live="polite"></p>
+          <div class="agenda-actions">
+            <a id="agenda-google" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Google Agenda</a>
+            <a id="agenda-outlook" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Outlook</a>
+            <button id="agenda-apple" type="button" data-i18n="agenda_apple" aria-describedby="agenda-apple-help">Calendrier Apple</button>
+            <button id="agenda-ics" type="button" data-i18n="agenda_ics">Autre application (.ics)</button>
+          </div>
+          <p id="agenda-apple-help" data-i18n="agenda_apple_help">Pour Calendrier Apple, ouvrez le fichier .ics téléchargé dans Calendrier, puis confirmez l’ajout.</p>
+        </details>
         <div class="modal-recap-meta" id="recap-meta"></div>
       </div>
 
@@ -329,12 +346,13 @@
     </div>
   </div>
 
-  <script src="../assets/js/crypto.js?v=30"></script>
-  <script src="../assets/js/task-store.js?v=30"></script>
-  <script src="../assets/js/timeout.js?v=30"></script>
-  <script src="../assets/js/task-dates.js?v=30"></script>
-  <script src="../assets/js/quick-capture.js?v=30"></script>
-  <script src="../assets/js/app-v2.js?v=30"></script>
+  <script src="../assets/js/crypto.js?v=32"></script>
+  <script src="../assets/js/task-store.js?v=32"></script>
+  <script src="../assets/js/timeout.js?v=32"></script>
+  <script src="../assets/js/task-dates.js?v=32"></script>
+  <script src="../assets/js/quick-capture.js?v=32"></script>
+  <script src="../assets/js/task-agenda.js?v=32"></script>
+  <script src="../assets/js/app-v2.js?v=32"></script>
 </body>
 
 </html>

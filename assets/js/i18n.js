@@ -4,6 +4,13 @@
 
 const I18N_DICTIONARY = {
   fr: {
+    "agenda_apple": "Calendrier Apple",
+    "agenda_apple_help": "Pour Calendrier Apple, ouvrez le fichier .ics téléchargé dans Calendrier, puis confirmez l’ajout.",
+    "agenda_add": "Ajouter à l’agenda",
+    "agenda_hint": "Copie ponctuelle, sans synchronisation. Sans heure : journée entière ; avec une heure : durée d’une heure.",
+    "agenda_copy": "La date choisie ici ne change pas la tâche. Le titre et les notes seront transmis uniquement au service sélectionné.",
+    "agenda_ics": "Autre application (.ics)",
+    "agenda_date_required": "Choisissez une date valide et vérifiez l’heure avant de continuer.",
     "creation_steps": "Étapes de création",
     "creation_title": "Titre",
     "creation_date": "Échéance",
@@ -277,6 +284,13 @@ const I18N_DICTIONARY = {
     "footer_data": "Gestion des données"
   },
   en: {
+    "agenda_apple": "Apple Calendar",
+    "agenda_apple_help": "For Apple Calendar, open the downloaded .ics file in Calendar, then confirm the addition.",
+    "agenda_add": "Add to calendar",
+    "agenda_hint": "One-time copy, without sync. Without a time: all day; with a time: one hour long.",
+    "agenda_copy": "Choosing a date here does not change the task. The title and notes will only be sent to the selected service.",
+    "agenda_ics": "Other app (.ics)",
+    "agenda_date_required": "Choose a valid date and check the time before continuing.",
     "creation_steps": "Creation steps",
     "creation_title": "Title",
     "creation_date": "Due date",

@@ -307,3 +307,16 @@ body.interface-v6.task-app .modal-input[aria-invalid="true"] { border-color:#f4a
  body.interface-v6.task-app .creation-wizard[data-creation-step="2"] #modal-save { grid-column:2; grid-row:1; background:var(--text); border-color:var(--text); color:var(--bg); font-weight:700; }
 }
 @media(prefers-reduced-motion:reduce){.interface-v6 *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.task-agenda{border-top:1px solid var(--line);padding-top:14px;min-width:0}
+.task-agenda[hidden]{display:none}
+.task-agenda summary{cursor:pointer;min-height:44px;display:list-item;align-content:center;font-size:.85rem}
+.task-agenda p{font-size:.75rem;line-height:1.6;color:var(--text-muted);margin:10px 0}
+.agenda-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.agenda-fields label{min-width:0;font-size:.75rem;display:grid;gap:8px}
+.agenda-fields input{min-width:0;width:100%;box-sizing:border-box}
+.agenda-actions{display:flex;flex-wrap:wrap;gap:8px}
+.agenda-actions a,.agenda-actions button{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 12px;border:1px solid var(--line-strong);border-radius:5px;background:var(--surface);color:var(--text);font:inherit;font-size:.75rem;text-decoration:none;white-space:normal;cursor:pointer}
+.agenda-actions [aria-disabled=true],.agenda-actions button:disabled{opacity:.5;cursor:default}
+.task-agenda :focus-visible{outline:2px solid var(--text);outline-offset:3px}
+@media(max-width:380px){.agenda-fields{grid-template-columns:minmax(0,1fr)}.agenda-actions>*{width:100%}}

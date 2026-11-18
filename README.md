@@ -1,4 +1,4 @@
-# Ma To-Do List — v6.2.1
+# Ma To-Do List — v6.3.1
 
 Gérez vos tâches depuis un navigateur, sur téléphone ou ordinateur.
 
@@ -78,6 +78,14 @@ Si une tâche semble manquer, revenez dans **Toutes les tâches**, effacez la re
 Ouvrez **Calendrier** depuis votre espace. La vue **Mois** affiche les tâches actives à leur date d’échéance ; les flèches changent de mois. La vue **Planning** les présente sous forme de liste chronologique.
 
 Une tâche sans échéance reste accessible dans **Toutes les tâches**.
+
+## Ajouter une tâche à son agenda
+
+Ouvrez le résumé d’une tâche, puis **Ajouter à l’agenda**. Vérifiez la date et l’heure, puis choisissez **Google Agenda**, **Outlook**, **Calendrier Apple** ou **Autre application (.ics)**. Avec **Calendrier Apple**, ouvrez le fichier .ics téléchargé dans Calendrier, puis confirmez l’ajout. Le fichier .ics peut aussi être ouvert dans une application de calendrier, selon les réglages de votre appareil.
+
+Sans heure, l’événement occupe la journée entière. Avec une heure, sa durée proposée est d’une heure. Si la tâche n’a pas d’échéance, choisissez une date dans ce panneau : cela ne modifie pas la tâche.
+
+Le titre et les notes sont repris dans l’événement. Pour Google Agenda et Outlook, confirmez l’ajout dans le service choisi. Il s’agit d’une copie ponctuelle : modifier ou supprimer la tâche ensuite ne change pas l’événement déjà ajouté. Répéter l’ajout peut créer des doublons.
 
 ## Archiver ou supprimer
 

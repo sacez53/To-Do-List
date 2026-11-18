@@ -24,6 +24,41 @@ function context(local = storage(), server = { account: {password:'hash',todos:[
   return ctx;
 }
 const plain = value => JSON.parse(JSON.stringify(value));
+function agenda() {
+  const ctx = { window: {}, URL, URLSearchParams, TextEncoder };
+  vm.createContext(ctx); vm.runInContext(source('task-agenda'), ctx);
+  return ctx.window.TaskAgenda;
+}
+test('calendar copies preserve all-day dates across month/year boundaries and timed instants', () => {
+  const api = agenda();
+  const day = api.event({ id: 'a', text: 'Réunion', due: '2026-12-31' });
+  assert.equal(day.end, '2027-01-01');
+  assert.match(api.ics(day), /DTSTART;VALUE=DATE:20261231\r\nDTEND;VALUE=DATE:20270101/);
+  const item = api.event({ id: 'b', text: 'Appel', due: '2026-12-31', dueTime: '23:30' });
+  assert.equal(Date.parse(item.end) - Date.parse(item.start), 3600000);
+  assert.equal(new Date(item.start).getHours(), 23);
+  const google = new URL(api.links(item).google);
+  assert.equal(google.searchParams.get('text'), 'Appel');
+  assert.equal(google.searchParams.get('dates'), `${item.start.replace(/[-:]/g, '').replace('.000', '')}/${item.end.replace(/[-:]/g, '').replace('.000', '')}`);
+  assert.equal(new URL(api.links(day).outlook).searchParams.get('allday'), 'true');
+  assert.equal(api.event({ id: 'c', due: '2028-02-29' }).end, '2028-03-01');
+  for (const date of ['', '2026-02-30', 'invalid']) assert.throws(() => api.event({ id: 'x', due: date }));
+  assert.throws(() => api.event({ id: 'x', due: '2026-12-31', dueTime: '25:00' }));
+});
+test('calendar content safely escapes text, folds UTF-8 lines and encodes provider URLs', () => {
+  const api = agenda();
+  const task = { id: 'x\r\nBAD:1', text: 'é'.repeat(90) + ',;\\\nBEGIN:VEVENT', notes: '<img src=x> & +\r\nEND:VEVENT', due: '2026-11-18' };
+  const before = JSON.stringify(task), item = api.event(task), data = api.ics(item);
+  assert.equal(JSON.stringify(task), before);
+  for (const line of data.split('\r\n')) assert(Buffer.byteLength(line) <= 75);
+  const unfolded = data.replace(/\r\n /g, '');
+  assert.equal(data.split('\r\n').filter(line => line === 'BEGIN:VEVENT').length, 1);
+  assert(unfolded.includes('\\nBEGIN:VEVENT'));
+  assert(unfolded.includes('\\,\\;\\\\'));
+  assert.equal(new URL(api.links(item).google).searchParams.get('details'), task.notes);
+  assert.equal(new URL(api.links(item).google).searchParams.get('text'), task.text);
+  assert(new URL(api.links(item).outlook).searchParams.get('body').includes('&lt;img src=x&gt;'));
+});
 test('HTTP errors reject instead of acknowledging a save',async () => {
   const ctx=context(); ctx.fetch=async()=>new Response('{}',{status:403});
   await assert.rejects(ctx.TodoRuntime.fetch('/test'),{status:403});
