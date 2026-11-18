@@ -1,151 +1,143 @@
-# Ma To-Do List — v6.2.0
+# Ma To-Do List — v6.2.1
 
-Gestionnaire de tâches personnel en HTML, CSS et JavaScript, accessible dans un navigateur sur téléphone ou ordinateur.
+Gérez vos tâches depuis un navigateur, sur téléphone ou ordinateur.
 
-## Passage au Web uniquement — v6.2.0
+[Ouvrir le site](https://sacez53.github.io/To-Do-List/) · [Se connecter ou créer un compte](https://sacez53.github.io/To-Do-List/pages/login.html)
 
-Depuis le 16 novembre 2026, le projet est maintenu uniquement sur le Web. L'application Windows et ses fichiers de construction sont retirés du dépôt de travail. Les sources des anciennes versions restent dans l'historique Git.
+## Premiers pas
 
-Les pages publiques et les libellés français/anglais décrivent l'accès par navigateur. La connexion et l'inscription ouvrent l'application web. Le cache passe à v29.
+1. Ouvrez le site, puis la page de connexion.
+2. Si vous découvrez l’application, choisissez **Créer un compte**. Renseignez un identifiant de 3 à 20 caractères : lettres, chiffres, tiret ou tiret bas. Choisissez votre mot de passe, confirmez-le et sélectionnez la langue.
+3. Cliquez sur **Créer mon compte**. Si vous avez déjà un compte, utilisez votre identifiant et votre mot de passe dans l’onglet **Connexion**.
+4. Dans **Ajouter une tâche**, saisissez un titre et appuyez sur Entrée ou cliquez sur **Ajouter**.
 
-Les tests d'interface utilisent Playwright avec Chromium. Les consignes de maintenance ne demandent plus de copie ni de livraison Windows.
+Votre première tâche apparaît dans **Toutes les tâches**. Elle a le statut **À faire**, une priorité normale et aucune échéance.
 
-## Aperçu des liens partagés — v6.1.1
+Aucune adresse e-mail n’est demandée. Conservez votre identifiant et votre mot de passe : en cas d’oubli du mot de passe, vos tâches ne peuvent pas être récupérées.
 
-Les balises Open Graph de l’accueil incluent maintenant l’URL publique et le logo PNG de 512 × 512 px. Les balises sont présentes dans le HTML sans exécution de JavaScript.
+## Créer une tâche avec des détails
 
-Le cache Web passe à v28.
+Cliquez sur **Nouvelle tâche** ou **Formulaire complet**. Si vous avez déjà commencé un titre dans la saisie rapide, il est repris dans le formulaire.
 
-## Création par étapes sur téléphone — v6.1.0
+Seul le titre est obligatoire. Vous pouvez aussi renseigner :
 
-À 700 px et moins, le formulaire de création commence par le titre. Le bouton Continuer ouvre l’échéance facultative, puis les détails. Créer maintenant permet d’enregistrer la tâche sans parcourir les étapes restantes. Le titre est obligatoire ; les autres champs conservent leurs valeurs par défaut tant qu’ils ne sont pas renseignés.
+| Champ | Choix disponibles |
+| --- | --- |
+| Statut | À faire, En cours, En attente, Terminé ou Annulé |
+| Priorité | Basse, Normale ou Haute |
+| Échéance | Une date, avec une heure facultative |
+| Notes | Du texte pour garder les informations utiles |
 
-Précédent conserve la saisie. Sans échéance passe à la suite quand la date et l’heure sont vides. Une heure seule demande de choisir une date ou d’effacer l’heure. L’indicateur d’étape et les messages sont disponibles en français et en anglais ; le focus rejoint le premier champ visible après chaque changement d’étape. Entrée dans le titre permet de continuer.
+Sur ordinateur, les champs sont affichés ensemble. Sur téléphone, **Continuer** fait avancer dans le formulaire et **Précédent** permet de revenir sans perdre la saisie. **Créer maintenant** enregistre la tâche sans remplir les détails restants. **Sans échéance** permet de passer la date.
 
-Sur ordinateur, le formulaire présente tous les champs ensemble. La modification d’une tâche existante garde aussi le formulaire complet. Un changement de largeur conserve les valeurs ; le parcours reprend sur la partie active en revenant au format téléphone. Le titre de la saisie rapide est repris dans le formulaire, et reste dans la saisie rapide si la création est abandonnée.
+Pour programmer « Appeler le garage demain à 14 h », renseignez la date et l’heure dans les champs prévus. Écrire « demain à 14 h » dans le titre ne programme pas l’échéance.
 
-L’enregistrement bloque les actions concurrentes. Un double appui ne crée pas de doublon. Si la sauvegarde locale échoue, le formulaire reste ouvert avec les valeurs et une nouvelle tentative peut enregistrer une seule tâche. Les vérifications Chromium couvrent le retour arrière, les champs facultatifs, la reprise après échec et les contrôles tactiles jusqu’à une hauteur de 420 px. Les captures des étapes sont dans `output/playwright/creation-phone-step-*.png`.
+## Consulter et modifier une tâche
 
-Le cache Web passe à v27.
+Cliquez sur le titre ou le texte d’une tâche pour ouvrir son résumé. Vous pouvez y consulter ses notes et son échéance.
 
-## Styles de toutes les pages — v6.0.2
+Pour changer son contenu, cliquez sur **Modifier**, depuis la liste ou depuis le résumé. Modifiez les champs, puis cliquez sur **Enregistrer**. **Annuler** permet de quitter l’édition sans enregistrer vos changements.
 
-Les pages À propos, Développeur, Confidentialité, Mentions légales, CGU, Données et Commentaires utilisent maintenant les styles partagés de `assets/css/pages.css`. Leurs anciens blocs CSS intégrés sont retirés. Les en-têtes, les menus et les pieds de page reprennent les couleurs et les bordures de l’application. La connexion, le calendrier et les paramètres utilisent aussi cette présentation commune.
+Pour terminer une tâche, ouvrez **Modifier**, choisissez le statut **Terminé**, puis enregistrez. Les badges de statut affichés dans les vues sont informatifs.
 
-Les pages de texte ont des titres de section HTML, des cartes lisibles et des liens accessibles au clavier. Les commentaires reprennent les mêmes contrôles de saisie ; le formulaire connecté et l’état visiteur sont adaptés aux petites largeurs. Les anciennes entrées App et Welcome redirigent toujours vers les tâches, avec un lien de secours présenté dans le même style.
+Pour reporter une tâche active, ouvrez son résumé et utilisez **Reporter à demain** ou **Choisir une date**. Le report conserve les autres détails de la tâche.
 
-Les vérifications Chromium couvrent les pages à 320, 390 et 1440 px, les menus ouverts et fermés, la connexion et l’inscription, l’état visiteur des commentaires, les onglets des paramètres, les archives avec titres longs, le message de session expirée et l’ouverture puis l’annulation du dialogue de suppression du compte. Les parcours de tâches restent vérifiés jusqu’à 1920 px. Le cache Web passe à v26.
+## Retrouver ses tâches
 
-## Commandes des tâches — v6.0.1
+L’application s’ouvre sur **Toutes les tâches**. Utilisez les périodes pour choisir ce que vous souhaitez voir :
 
-La Liste, le Kanban et le Tableau affichent seulement Modifier comme action sur une tâche. Les statuts sont des badges informatifs. Le titre ouvre le résumé, où les tâches actives disposent de Reporter à demain et Choisir une date. La nouvelle échéance et une confirmation s’affichent dans ce résumé après enregistrement. Les tâches terminées, annulées ou en corbeille n’ont pas ces commandes.
+| Période | Contenu |
+| --- | --- |
+| Toutes les tâches | Les tâches non archivées, y compris celles sans date, terminées ou annulées |
+| Aujourd’hui | Les tâches actives en retard et celles prévues aujourd’hui |
+| À venir | Les tâches actives dont l’échéance est après aujourd’hui |
+| Corbeille | Les tâches supprimées encore récupérables |
 
-Toutes les tâches reste la vue par défaut. La version 6.0.1 utilise le cache Web v25.
+Les dates suivent le fuseau horaire de votre appareil. Une tâche sans heure passe en retard le lendemain de son échéance ; avec une heure, elle passe en retard à l’heure indiquée.
 
-## Refonte de l’interface — v6.0.0
+### Choisir un affichage
 
-L’application ouvre Toutes les tâches par défaut. Aujourd’hui et À venir restent accessibles dans la navigation. Le thème sombre et la typographie monospace sont conservés. Sur ordinateur, une barre latérale regroupe les périodes, la corbeille et les liens du compte. Le contenu occupe la largeur disponible jusqu’à 1440 px. La saisie rapide précède les commandes de recherche et d’affichage ; la progression globale suit les tâches.
+| Vue | Utilisation |
+| --- | --- |
+| Liste | Parcourir les tâches et consulter leurs détails |
+| Kanban | Voir les tâches regroupées par statut |
+| Tableau | Comparer les informations des tâches en colonnes |
 
-À 700 px et moins, les quatre périodes tiennent sur une rangée. Les liens Calendrier et Paramètres restent visibles. Une barre d’ajout fixe ouvre le formulaire complet ; elle se masque pendant la saisie ou l’ouverture d’un dialogue. Les commandes de vue et les filtres partagent une rangée. Les tâches disposent d’actions tactiles d’au moins 44 px ; le Tableau prend la forme de cartes et le Kanban défile horizontalement.
+Sur téléphone, faites défiler le Kanban horizontalement pour voir les autres colonnes.
 
-L’accueil présente un aperçu statique, identifié comme tel. La connexion, les paramètres et les pages d’information reprennent les mêmes couleurs et les mêmes bordures. Les styles communs sont dans `assets/css/interface.css`, chargé après les styles historiques. Les libellés de navigation sont disponibles en français et en anglais. Le titre d’une tâche ouvre toujours son résumé en lecture seule ; Modifier ouvre le formulaire éditable.
+### Rechercher et filtrer
 
-La recette conserve les 24 tests de logique et les parcours Chromium de N01, N02 et N03. Les contrôles de mise en page couvrent 320 à 1920 px, les limites entre téléphone et ordinateur, ainsi que les dialogues à hauteur réduite. Les captures sont dans `output/playwright/`. Ces vérifications utilisent Chromium local et des données fictives ; aucun appareil iOS ou Android physique n’a été testé.
+Saisissez du texte dans **Rechercher** pour réduire les résultats. Le menu de tri permet notamment de classer par priorité ou par échéance.
 
-La version Web utilise le cache v24.
+Ouvrez **Filtres avancés** pour sélectionner des statuts, des priorités ou une plage de dates. Vous pouvez aussi afficher les tâches avec notes ou sans date. La recherche et les filtres se combinent avec la période choisie.
 
-## Corbeille et annulation — v5.7.0
+Si une tâche semble manquer, revenez dans **Toutes les tâches**, effacez la recherche et cliquez sur **Réinitialiser** dans les filtres. Vérifiez aussi les archives et la corbeille.
 
-Supprimer une tâche la place dans la Corbeille avec un horodatage `deletedAt`. Une notification Annuler permet de la récupérer immédiatement. L’onglet Corbeille affiche la date de suppression et la fin de conservation, avec Restaurer et Supprimer définitivement. Le titre y ouvre un résumé en lecture seule.
+## Utiliser le calendrier
 
-Les tâches restent restaurables **30 jours**. La restauration restitue le titre, les notes, le statut, les priorités, les dates, l’heure et l’état archivé. Pendant leur séjour dans la corbeille, elles sont exclues des listes actives, des statistiques, du calendrier et des archives. Les exports incluent les tâches encore en corbeille avec leur date de suppression.
+Ouvrez **Calendrier** depuis votre espace. La vue **Mois** affiche les tâches actives à leur date d’échéance ; les flèches changent de mois. La vue **Planning** les présente sous forme de liste chronologique.
 
-À 30 jours, la restauration est refusée ; le contenu est purgé au prochain accès ou à la prochaine synchronisation. Il n’y a pas de tâche serveur planifiée : aucun effacement physique à une heure précise n’est promis quand aucun client ne fonctionne. Une suppression définitive manuelle demande une confirmation séparée. La suppression du compte conserve son propre parcours.
+Une tâche sans échéance reste accessible dans **Toutes les tâches**.
 
-Le schéma de tâches 2 conserve des marqueurs chiffrés `{ id, purgedAt }` sans titre, notes ou dates d’échéance. Ces marqueurs sont conservés sans limite de durée pour couvrir des appareils restés hors ligne longtemps. Une suppression définitive l’emporte sur une ancienne édition ou restauration ; le cache local et sa base de fusion sont nettoyés des champs supprimés. Une restauration faite hors ligne reste provisoire jusqu’à la synchronisation et peut être refusée si la tâche a été supprimée définitivement ailleurs.
+## Archiver ou supprimer
 
-Fermer les anciens onglets avant d’utiliser la corbeille : les anciennes versions ne connaissent pas ce schéma. Le chiffrement et les écritures conditionnelles ne remplacent pas les droits d’accès Firebase décrits plus bas.
+### Ranger les tâches terminées
 
-La recette comprend 24 tests de logique et les parcours Chromium : annulation, restauration exacte, limite des 30 jours, conflit entre appareils, conservation des marqueurs, calendrier, archives et affichage mobile. Sur téléphone, les quatre onglets se répartissent sur deux rangées.
+Dans **Paramètres → Archives**, cliquez sur **Archiver toutes les tâches terminées**. Elles quittent les vues habituelles et restent consultables dans cet onglet.
 
-## Adaptation téléphone — v5.6.1
+Cliquez sur **Désarchiver** pour remettre une tâche dans les vues habituelles.
 
-À 600 px et moins, le haut de page est compact, les trois périodes tiennent sur une rangée et la progression globale passe après les tâches. Les commandes d’une tâche sont alignées sur trois colonnes. La vue Tableau devient une série de cartes avec leurs libellés ; le Kanban se parcourt horizontalement par colonnes.
+### Récupérer une tâche supprimée
 
-Le bouton flottant est remplacé par une barre d’ajout en bas sur téléphone. Elle se masque pendant la saisie et dans les dialogues. Les champs gardent une taille de texte de 16 px, les commandes tactiles disposent d’au moins 44 px de hauteur et les dialogues défilent dans le viewport visible, avec leurs actions accessibles. Le calendrier et les onglets des paramètres sont aussi ajustés.
+Le bouton **Supprimer** du formulaire d’édition place la tâche dans la corbeille après confirmation. La notification **Annuler** permet de revenir immédiatement sur cette suppression.
 
-La recette locale vérifie les largeurs 320, 375, 390, 430 et 600 px, une hauteur réduite à 420 px et le paysage. Ce sont des contrôles Chromium avec captures, sans certification sur des appareils physiques iOS/Android. Les captures sont dans `output/playwright/phone-*.png`.
+Vous pouvez aussi ouvrir **Corbeille**, puis choisir **Restaurer**. La tâche conserve ses notes et son échéance, ainsi que ses autres détails.
 
-## Saisie rapide et raccourcis — v5.6.0
+Une tâche est récupérable pendant **30 jours**. Au-delà, elle ne peut plus être restaurée ; son contenu est effacé au prochain accès ou à la prochaine synchronisation. **Supprimer définitivement** permet de l’effacer avant ce délai, après confirmation.
 
-Le champ Ajouter une tâche crée une tâche avec son seul titre, via Entrée ou Ajouter. Un titre vide est refusé. La tâche est créée à l’état À faire, avec une priorité normale et sans échéance ; la confirmation permet de compléter ses détails. Elle est également disponible dans Toutes les tâches. Un double appui ne crée pas de doublon ; le focus reste dans le champ pour saisir la suivante.
+## Retrouver ses tâches sur un autre appareil
 
-Formulaire complet et le bouton + reprennent le titre en cours. Annuler conserve le brouillon ; enregistrer le formulaire le retire de la saisie rapide. Les mentions telles que « demain à 14 h » restent du texte : aucune date n’est interprétée.
+Ouvrez le même site et connectez-vous avec le même compte. L’indicateur en haut de l’espace affiche l’état de synchronisation. Vérifiez qu’elle est terminée avant de changer d’appareil.
 
-| Raccourci | Action |
-|---|---|
-| `N` | Rejoindre le champ de saisie rapide |
-| `Maj+N` | Ouvrir le formulaire complet |
-| `?` | Afficher l’aide des raccourcis |
+Si la connexion est coupée, vous pouvez continuer avec les tâches déjà disponibles sur l’appareil tant que la session reste ouverte. La synchronisation reprend au retour du réseau. Une première connexion nécessite Internet.
 
-Les raccourcis sont ignorés dans les champs de saisie, les zones éditables et les dialogues. Le bouton Raccourcis clavier ouvre l’aide et permet de les désactiver ; ce choix est mémorisé par compte sur l’appareil. Les boutons restent accessibles avec Tab et Entrée. Échap ferme les dialogues.
+En cas d’erreur de synchronisation, gardez la page ouverte et rétablissez la connexion. Si un conflit est signalé après des modifications sur plusieurs appareils, la copie locale est conservée. Vous pouvez l’exporter depuis **Gestion des données**.
 
-## Aujourd’hui et À venir — v5.5.0
+## Exporter ses données
 
-L’application ouvre Aujourd’hui : tâches actives en retard, puis échéances du jour. À venir affiche les tâches actives dont la date est après aujourd’hui, avec un tri chronologique initial. Toutes les tâches conserve aussi les tâches sans échéance, terminées et annulées. Les tâches archivées restent dans les paramètres.
+1. Connectez-vous à votre compte.
+2. Ouvrez **Gestion des données**, dans le pied de page.
+3. Choisissez **Export JSON** pour conserver les données structurées, ou **Export CSV** pour les ouvrir dans un tableur.
 
-Les trois raccourcis se combinent avec les vues Liste/Kanban/Tableau, la recherche et les filtres existants. Reporter à demain enregistre directement la nouvelle date ; Choisir une date demande une confirmation dans un dialogue dédié. L’heure, les notes, la priorité et le statut sont conservés. Le résumé reste en lecture seule.
+Les exports comprennent les tâches archivées et celles encore présentes dans la corbeille. Si la synchronisation échoue, le site propose d’exporter la copie locale disponible.
 
-Les jours sont calculés dans le fuseau local. Une tâche sans heure devient en retard au lendemain ; une tâche avec heure devient en retard lorsque cette heure est atteinte. L’écran se recalcule chaque minute et au retour sur la fenêtre, y compris autour de minuit. Une tâche terminée ou annulée disparaît des deux vues actives.
+Les fichiers téléchargés contiennent les tâches en clair : conservez-les dans un emplacement privé. Le site ne propose pas de réimportation de ces fichiers.
 
-## Fonctions existantes
+## Régler son compte et son affichage
 
-- Vues Liste, Kanban et Tableau ; recherche et filtres combinés.
-- Cinq statuts, trois priorités, notes, échéances avec heure.
-- Résumé en lecture seule au clic sur le titre ; formulaire au bouton Modifier.
-- Calendrier mensuel et planning ; archives dans les paramètres.
-- Interface principale français/anglais ; pages d'information principalement françaises.
-- Exports JSON et CSV sur la page Gestion des données.
+Dans **Paramètres → Affichage**, choisissez le français ou l’anglais et la vue par défaut du calendrier. Cliquez sur **Enregistrer les préférences** pour appliquer vos choix.
 
-## Données et synchronisation
+L’onglet **Compte** permet de changer l’identifiant ou le mot de passe avec confirmation du mot de passe actuel. Une session expirée demande une nouvelle connexion.
 
-Les tâches sont chiffrées côté client en AES-256-GCM avant sauvegarde. La clé est dérivée du mot de passe et conservée pendant la session. Le cache local et les modifications en attente sont chiffrés ; une ancienne copie locale en clair est migrée lors de sa lecture.
+Pour quitter votre espace, utilisez **Déconnexion**. La suppression du compte se trouve dans **Paramètres → Zone de danger** ou **Gestion des données**. Elle est définitive : exportez vos données auparavant si vous souhaitez en garder une copie.
 
-La version 5.4.3 contrôle les réponses HTTP et utilise les ETag Firebase pour éviter les écrasements concurrents. Les modifications de tâches distinctes sont fusionnées ; un conflit sur la même tâche est signalé et la copie locale conservée. La synchronisation reprend au retour du réseau et de la fenêtre ; elle n'est pas un abonnement temps réel.
+## Raccourcis clavier
 
-**Limite serveur :** l'authentification historique est vérifiée côté navigateur. Les règles d'accès Firebase ne sont pas fournies dans ce dépôt et n'ont pas été validées. Le chiffrement ne remplace pas l'autorisation côté serveur. Voir [le relevé des corrections et limites](CORRECTIFS_AUDIT.md).
+| Touche | Action |
+| --- | --- |
+| N | Rejoindre la saisie rapide |
+| Maj + N | Ouvrir le formulaire complet |
+| ? | Afficher l’aide des raccourcis |
+| Échap | Fermer un dialogue |
 
-Le mode hors ligne permet de reprendre des tâches déjà mises en cache tant qu'une session avec sa clé reste disponible ; une première connexion nécessite le serveur. Après une mise à jour, fermer les anciens onglets pour activer le nouveau worker.
+Les raccourcis de création sont ignorés pendant la saisie dans un champ ou lorsqu’un dialogue est ouvert. Le bouton **Raccourcis clavier** permet aussi de les désactiver sur l’appareil.
 
-## Lancement Web
+## Aide et informations
 
-Servir le dossier avec un serveur HTTP local ou un hébergement statique HTTPS. L'entrée est `index.html`. La configuration de base se trouve dans `assets/json/firebase.json` ; les règles serveur doivent être adaptées et vérifiées séparément.
+Après une mise à jour du site, fermez les anciens onglets, puis rouvrez le site si vous voyez encore l’ancienne interface.
 
-## Validation
+Les pages [Confidentialité](https://sacez53.github.io/To-Do-List/pages/confidentialite.html) et [Gestion des données](https://sacez53.github.io/To-Do-List/pages/donnees.html) sont accessibles depuis le pied de page.
 
-Avec Node.js 20 ou ultérieur, installer les outils de test une fois :
-
-```powershell
-npm ci
-npx playwright install chromium
-```
-
-Puis lancer les vérifications :
-
-```powershell
-npm test
-npm run test:ui
-```
-
-Pour utiliser un navigateur déjà installé, définir `PLAYWRIGHT_CHANNEL=chrome` ou `PLAYWRIGHT_CHANNEL=msedge` avant `npm run test:ui`. Ces outils ne sont nécessaires qu'aux tests ; le site se publie sans compilation.
-
-La recette UI utilise les pages locales et un serveur Firebase fictif ; elle ne modifie aucune donnée distante. Elle vérifie la corbeille, la saisie rapide, les raccourcis, les modales, les trois vues, les vues par date, les reports, le calendrier, le changement de mot de passe et l’export. Les captures de contrôle se trouvent dans `output/playwright/`. Aucun score Lighthouse ni certification d'accessibilité n'est annoncé.
-
-## Documents du projet
-
-- [Audit initial v5.4.2](AUDIT_SITE_WEB.md)
-- [Corrections v5.4.3 et points restant ouverts](CORRECTIFS_AUDIT.md)
-- [Catalogue des fonctionnalités et statut de livraison](FONCTIONNALITES_PROPOSEES.md)
-- [Règles du projet](AGENTS.md)
+Pour la maintenance du dépôt : [règles du projet](AGENTS.md) et [corrections et limites connues](CORRECTIFS_AUDIT.md). Ce dernier document décrit notamment les points restant à vérifier concernant les accès au serveur.
 
 Créé par Sacha G. — 2026.
