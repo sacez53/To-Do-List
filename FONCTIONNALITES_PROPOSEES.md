@@ -8,7 +8,7 @@ Le produit gagnerait à aider l'utilisateur à décider quoi faire aujourd'hui, 
 
 La recherche, les trois vues, les priorités, les notes, les échéances avec heure, le calendrier et les exports JSON/CSV existent déjà : ils ne sont pas comptés comme nouveautés.
 
-Avant d'ajouter des fonctions qui écrivent des données, traiter la fiabilité réseau, les conflits de synchronisation, l'isolation des comptes et les insertions HTML identifiés dans l'audit. Toute implémentation devra respecter la synchronisation Web/Windows, le versionnage et les archives prévus dans `AGENTS.md`.
+Avant d'ajouter des fonctions qui écrivent des données, traiter la fiabilité réseau, les conflits de synchronisation, l'isolation des comptes et les insertions HTML identifiés dans l'audit. Depuis la v6.2.0, le périmètre est exclusivement web ; toute implémentation doit respecter le versionnage et les vérifications prévus dans `AGENTS.md`.
 
 ## 2. Comparaison des propositions
 
@@ -88,7 +88,7 @@ Les tailles sont relatives : **S** = modification ciblée ; **M** = plusieurs co
 
 **Acceptation :** renommer un projet conserve ses tâches ; supprimer un projet propose de déplacer les tâches ou de conserver celles-ci sans projet. Les données restent compatibles avec les tâches anciennes.
 
-**Dépendances :** migration versionnée et adaptation des trois vues, du calendrier, des exports et de Windows.
+**Dépendances :** migration versionnée et adaptation des trois vues, du calendrier et des exports.
 
 ### N06 — Filtres enregistrés et vue préférée
 
@@ -130,7 +130,7 @@ Sélectionner plusieurs tâches pour changer de statut, reporter une échéance,
 
 ### N12 — Thème clair et confort de lecture
 
-Ajouter clair/sombre/système, taille de texte et densité confortable/compacte. Partager les tokens entre pages et Windows. Respecter la préférence système de réduction des animations. Valider contrastes, focus, badges et formulaires dans chaque thème ; conserver les réglages par utilisateur. Les corrections minimales d'accessibilité de l'audit restent nécessaires même sans cette fonctionnalité.
+Ajouter clair/sombre/système, taille de texte et densité confortable/compacte. Partager les variables de style entre les pages web. Respecter la préférence système de réduction des animations. Valider contrastes, focus, badges et formulaires dans chaque thème ; conserver les réglages par utilisateur. Les corrections minimales d'accessibilité de l'audit restent nécessaires même sans cette fonctionnalité.
 
 ### N13 — Mode découverte sans compte
 
@@ -160,7 +160,7 @@ Projets partagés, attribution et commentaires pourraient élargir le produit, m
 |---|---|---|
 | A — Fiabilisation | Correctifs prioritaires de l'audit | Données préservées, statuts réseau honnêtes et parcours clavier utilisables |
 | B — Utilité immédiate | N01, N02, N06 | Retrouver et créer une tâche avec peu d'étapes |
-| C — Organisation et récupération | N03, N04, N05, N07 | Schéma migrable, restauration vérifiée et parité Windows |
+| C — Organisation et récupération | N03, N04, N05, N07 | Schéma migrable et restauration vérifiée |
 | D — Routines et confort | N08, N10, N11, N12, N14 | Usage confirmé et recette mobile complète |
 | E — Services plus complexes | N09, N15 ; exploration N13/N16/N17 selon retours | Architecture, coût d'exploitation et besoin validés |
 

@@ -1,12 +1,20 @@
-# Ma To-Do List — v6.1.1
+# Ma To-Do List — v6.2.0
 
-Gestionnaire de tâches personnel en HTML, CSS et JavaScript, disponible sur le Web et sous Windows avec Electron.
+Gestionnaire de tâches personnel en HTML, CSS et JavaScript, accessible dans un navigateur sur téléphone ou ordinateur.
+
+## Passage au Web uniquement — v6.2.0
+
+Depuis le 16 novembre 2026, le projet est maintenu uniquement sur le Web. L'application Windows et ses fichiers de construction sont retirés du dépôt de travail. Les sources des anciennes versions restent dans l'historique Git.
+
+Les pages publiques et les libellés français/anglais décrivent l'accès par navigateur. La connexion et l'inscription ouvrent l'application web. Le cache passe à v29.
+
+Les tests d'interface utilisent Playwright avec Chromium. Les consignes de maintenance ne demandent plus de copie ni de livraison Windows.
 
 ## Aperçu des liens partagés — v6.1.1
 
 Les balises Open Graph de l’accueil incluent maintenant l’URL publique et le logo PNG de 512 × 512 px. Les balises sont présentes dans le HTML sans exécution de JavaScript.
 
-Le cache Web passe à v28. Les sources et le portable Windows sont alignés sur 6.1.1, avec leurs dossiers d’archive.
+Le cache Web passe à v28.
 
 ## Création par étapes sur téléphone — v6.1.0
 
@@ -18,7 +26,7 @@ Sur ordinateur, le formulaire présente tous les champs ensemble. La modificatio
 
 L’enregistrement bloque les actions concurrentes. Un double appui ne crée pas de doublon. Si la sauvegarde locale échoue, le formulaire reste ouvert avec les valeurs et une nouvelle tentative peut enregistrer une seule tâche. Les vérifications Chromium couvrent le retour arrière, les champs facultatifs, la reprise après échec et les contrôles tactiles jusqu’à une hauteur de 420 px. Les captures des étapes sont dans `output/playwright/creation-phone-step-*.png`.
 
-Le cache Web passe à v27 et les copies Windows sont alignées sur 6.1.0. Les versions antérieures restent archivées.
+Le cache Web passe à v27.
 
 ## Styles de toutes les pages — v6.0.2
 
@@ -26,13 +34,13 @@ Les pages À propos, Développeur, Confidentialité, Mentions légales, CGU, Don
 
 Les pages de texte ont des titres de section HTML, des cartes lisibles et des liens accessibles au clavier. Les commentaires reprennent les mêmes contrôles de saisie ; le formulaire connecté et l’état visiteur sont adaptés aux petites largeurs. Les anciennes entrées App et Welcome redirigent toujours vers les tâches, avec un lien de secours présenté dans le même style.
 
-Les vérifications Chromium couvrent les pages à 320, 390 et 1440 px, les menus ouverts et fermés, la connexion et l’inscription, l’état visiteur des commentaires, les onglets des paramètres, les archives avec titres longs, le message de session expirée et l’ouverture puis l’annulation du dialogue de suppression du compte. Les parcours de tâches restent vérifiés jusqu’à 1920 px. Le cache Web passe à v26 ; les sources et le portable Windows sont alignés sur 6.0.2.
+Les vérifications Chromium couvrent les pages à 320, 390 et 1440 px, les menus ouverts et fermés, la connexion et l’inscription, l’état visiteur des commentaires, les onglets des paramètres, les archives avec titres longs, le message de session expirée et l’ouverture puis l’annulation du dialogue de suppression du compte. Les parcours de tâches restent vérifiés jusqu’à 1920 px. Le cache Web passe à v26.
 
 ## Commandes des tâches — v6.0.1
 
 La Liste, le Kanban et le Tableau affichent seulement Modifier comme action sur une tâche. Les statuts sont des badges informatifs. Le titre ouvre le résumé, où les tâches actives disposent de Reporter à demain et Choisir une date. La nouvelle échéance et une confirmation s’affichent dans ce résumé après enregistrement. Les tâches terminées, annulées ou en corbeille n’ont pas ces commandes.
 
-Toutes les tâches reste la vue par défaut. Les copies Web et Windows utilisent la version 6.0.1, avec le cache Web v25. Les sources et le portable sont archivés dans les dossiers Windows correspondants, sans remplacer la version 6.0.0.
+Toutes les tâches reste la vue par défaut. La version 6.0.1 utilise le cache Web v25.
 
 ## Refonte de l’interface — v6.0.0
 
@@ -44,7 +52,7 @@ L’accueil présente un aperçu statique, identifié comme tel. La connexion, l
 
 La recette conserve les 24 tests de logique et les parcours Chromium de N01, N02 et N03. Les contrôles de mise en page couvrent 320 à 1920 px, les limites entre téléphone et ordinateur, ainsi que les dialogues à hauteur réduite. Les captures sont dans `output/playwright/`. Ces vérifications utilisent Chromium local et des données fictives ; aucun appareil iOS ou Android physique n’a été testé.
 
-La version Web utilise le cache v24. Les sources Windows, le portable immédiat et les dossiers `win_app/versions/v6.0.0/` et `win_app/release/v6.0.0/` sont alignés. Aucun nouvel installeur NSIS n’est généré.
+La version Web utilise le cache v24.
 
 ## Corbeille et annulation — v5.7.0
 
@@ -56,7 +64,7 @@ Les tâches restent restaurables **30 jours**. La restauration restitue le titre
 
 Le schéma de tâches 2 conserve des marqueurs chiffrés `{ id, purgedAt }` sans titre, notes ou dates d’échéance. Ces marqueurs sont conservés sans limite de durée pour couvrir des appareils restés hors ligne longtemps. Une suppression définitive l’emporte sur une ancienne édition ou restauration ; le cache local et sa base de fusion sont nettoyés des champs supprimés. Une restauration faite hors ligne reste provisoire jusqu’à la synchronisation et peut être refusée si la tâche a été supprimée définitivement ailleurs.
 
-Fermer les anciens onglets et mettre à jour tous les appareils Windows avant d’utiliser la corbeille : les anciennes versions ne connaissent pas ce schéma. Le chiffrement et les écritures conditionnelles ne remplacent pas les droits d’accès Firebase décrits plus bas.
+Fermer les anciens onglets avant d’utiliser la corbeille : les anciennes versions ne connaissent pas ce schéma. Le chiffrement et les écritures conditionnelles ne remplacent pas les droits d’accès Firebase décrits plus bas.
 
 La recette comprend 24 tests de logique et les parcours Chromium : annulation, restauration exacte, limite des 30 jours, conflit entre appareils, conservation des marqueurs, calendrier, archives et affichage mobile. Sur téléphone, les quatre onglets se répartissent sur deux rangées.
 
@@ -107,24 +115,29 @@ La version 5.4.3 contrôle les réponses HTTP et utilise les ETag Firebase pour 
 
 **Limite serveur :** l'authentification historique est vérifiée côté navigateur. Les règles d'accès Firebase ne sont pas fournies dans ce dépôt et n'ont pas été validées. Le chiffrement ne remplace pas l'autorisation côté serveur. Voir [le relevé des corrections et limites](CORRECTIFS_AUDIT.md).
 
-Le mode hors ligne permet de reprendre des tâches déjà mises en cache tant qu'une session avec sa clé reste disponible ; une première connexion nécessite le serveur. Après une mise à jour, fermer les anciens onglets pour activer le nouveau worker. Les anciennes applications Windows doivent également être remplacées.
+Le mode hors ligne permet de reprendre des tâches déjà mises en cache tant qu'une session avec sa clé reste disponible ; une première connexion nécessite le serveur. Après une mise à jour, fermer les anciens onglets pour activer le nouveau worker.
 
 ## Lancement Web
 
 Servir le dossier avec un serveur HTTP local ou un hébergement statique HTTPS. L'entrée est `index.html`. La configuration de base se trouve dans `assets/json/firebase.json` ; les règles serveur doivent être adaptées et vérifiées séparément.
 
-## Windows
-
-Le portable courant est `win_app/release/ToDoList-win32-x64/ToDoList.exe`. Le portable de cette livraison est conservé dans `win_app/release/v5.7.0/ToDoList-win32-x64/`. Les sources sont archivées dans `win_app/versions/v5.7.0/`. Les anciennes versions ne sont pas supprimées.
-
-Cette livraison actualise les ressources du portable avec le moteur Electron existant. Elle ne génère pas de nouvel installeur NSIS. Les scripts historiques de construction restent dans `win_app/package.json` ; leur exécution nécessite les dépendances et outils de construction appropriés.
-
 ## Validation
 
+Avec Node.js 20 ou ultérieur, installer les outils de test une fois :
+
 ```powershell
-node --test tests/audit-regressions.cjs
-.\win_app\node_modules\electron\dist\electron.exe tests/audit-ui.cjs
+npm ci
+npx playwright install chromium
 ```
+
+Puis lancer les vérifications :
+
+```powershell
+npm test
+npm run test:ui
+```
+
+Pour utiliser un navigateur déjà installé, définir `PLAYWRIGHT_CHANNEL=chrome` ou `PLAYWRIGHT_CHANNEL=msedge` avant `npm run test:ui`. Ces outils ne sont nécessaires qu'aux tests ; le site se publie sans compilation.
 
 La recette UI utilise les pages locales et un serveur Firebase fictif ; elle ne modifie aucune donnée distante. Elle vérifie la corbeille, la saisie rapide, les raccourcis, les modales, les trois vues, les vues par date, les reports, le calendrier, le changement de mot de passe et l’export. Les captures de contrôle se trouvent dans `output/playwright/`. Aucun score Lighthouse ni certification d'accessibilité n'est annoncé.
 

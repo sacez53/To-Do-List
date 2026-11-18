@@ -33,7 +33,7 @@ const I18N_DICTIONARY = {
     "scope_trash_short": "Corbeille",
     "auth_intro_title": "Vos idées ont leur place ici.",
     "auth_intro_text": "Notez ce qui vous vient. Retrouvez ensuite vos priorités dans un espace à vous.",
-    "auth_intro_note": "Sur le Web comme sur Windows.",
+    "auth_intro_note": "Dans votre navigateur, sur téléphone ou ordinateur.",
 
     "scope_trash": "Corbeille",
     "scope_trash_description": "Restaurables pendant 30 jours. Au-delà, suppression définitive au prochain accès ou à la prochaine synchronisation.",
@@ -306,7 +306,7 @@ const I18N_DICTIONARY = {
     "scope_trash_short": "Trash",
     "auth_intro_title": "A place for your ideas.",
     "auth_intro_text": "Write down what comes to mind. Find your priorities in your own workspace.",
-    "auth_intro_note": "On the Web and Windows.",
+    "auth_intro_note": "In your browser, on your phone or computer.",
 
     "scope_trash": "Trash",
     "scope_trash_description": "Restorable for 30 days. After that, permanently removed on the next access or sync.",

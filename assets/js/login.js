@@ -129,13 +129,7 @@ loginForm.addEventListener("submit", async (e) => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const redirectPage = urlParams.get('redirect');
-    const isElectron = typeof window !== 'undefined' && (
-      window.location.pathname.includes('/src/') ||
-      !window.location.pathname.includes('/pages/') ||
-      (navigator.userAgent && navigator.userAgent.toLowerCase().includes('electron'))
-    );
-    const defaultApp = isElectron ? './app.html' : './app-v2.html';
-    const nextUrl = TodoRuntime.safePage(redirectPage, defaultApp);
+    const nextUrl = TodoRuntime.safePage(redirectPage, './app-v2.html');
     window.transitionTo(nextUrl);
 
   } catch (err) {
@@ -229,13 +223,7 @@ registerForm.addEventListener("submit", async (e) => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const redirectPage = urlParams.get('redirect');
-    const isElectron = typeof window !== 'undefined' && (
-      window.location.pathname.includes('/src/') ||
-      !window.location.pathname.includes('/pages/') ||
-      (navigator.userAgent && navigator.userAgent.toLowerCase().includes('electron'))
-    );
-    const defaultApp = isElectron ? './app.html' : './app-v2.html';
-    const nextUrl = TodoRuntime.safePage(redirectPage, defaultApp);
+    const nextUrl = TodoRuntime.safePage(redirectPage, './app-v2.html');
 
     showSuccess(registerSuccess, t("success_account_created"));
     setTimeout(() => { window.transitionTo(nextUrl); }, 900);

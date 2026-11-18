@@ -1,0 +1,13 @@
+{
+  "name": "ma-todo-list-web",
+  "version": "6.2.0",
+  "private": true,
+  "description": "Gestionnaire de tâches web",
+  "scripts": {
+    "test": "node --test tests/audit-regressions.cjs",
+    "test:ui": "node tests/audit-ui.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1"
+  }
+}

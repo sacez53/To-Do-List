@@ -2,6 +2,8 @@
 
 Date : 3 novembre 2026. Périmètre : corrections du produit existant ; aucune fonctionnalité du catalogue `FONCTIONNALITES_PROPOSEES.md` n'est ajoutée.
 
+Document historique. Depuis la v6.2.0 du 16 novembre 2026, le projet est exclusivement web. La livraison Windows décrite ici a été retirée du dépôt de travail et les tests d'interface utilisent désormais Playwright ; voir `README.md` pour les commandes actuelles.
+
 ## Correctifs livrés
 
 | Référence de l'audit | Changement |

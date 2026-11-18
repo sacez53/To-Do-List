@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="../assets/js/transitions.js?v=28"></script>
+  <script src="../assets/js/transitions.js?v=29"></script>
   <script>
     // Déconnexion automatique
     sessionStorage.removeItem("auth");
@@ -20,7 +20,7 @@
     sessionStorage.removeItem("encKey");
     sessionStorage.removeItem("encSalt");
   </script>
-  <link rel="stylesheet" href="../assets/css/style2.css?v=28">
+  <link rel="stylesheet" href="../assets/css/style2.css?v=29">
   <link rel="manifest" href="../manifest.json">
   <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
@@ -31,10 +31,10 @@
       });
     }
   </script>
-  <script src="../assets/js/runtime.js?v=28"></script>
-  <script src="../assets/js/dialogs.js?v=28"></script>
-  <link rel="stylesheet" href="../assets/css/interface.css?v=28">
-  <link rel="stylesheet" href="../assets/css/pages.css?v=28">
+  <script src="../assets/js/runtime.js?v=29"></script>
+  <script src="../assets/js/dialogs.js?v=29"></script>
+  <link rel="stylesheet" href="../assets/css/interface.css?v=29">
+  <link rel="stylesheet" href="../assets/css/pages.css?v=29">
 </head>
 
 <body class="interface-v6 information-page">
@@ -43,9 +43,9 @@
 <header class="site-header"><div class="site-header-inner"><a class="workspace-brand" href="../index.html"><span class="brand-mark" aria-hidden="true">T</span><span data-i18n="app_title">To-Do List</span></a><nav class="nav-links site-header-actions" aria-label="Navigation principale"><a class="site-button" href="./login.html" id="nav-connexion">Connexion <span aria-hidden="true">↗</span></a></nav></div></header>
 
   <header class="page-header">
-    <span class="page-tag">Documentation · <span id="app-version">v6.1.1</span></span>
+    <span class="page-tag">Documentation · <span id="app-version">v6.2.0</span></span>
     <h1>À propos</h1>
-    <p>Présentation du projet et de son créateur — une application moderne, bilingue et multi-plateforme pour organiser efficacement chaque journée.</p>
+    <p>Présentation du projet et de son créateur — une application web pour organiser ses tâches sur téléphone ou ordinateur.</p>
   </header>
 
   <main class="wrapper" id="main-content">
@@ -58,7 +58,7 @@
       </div>
       <div class="block-body">
         <p>
-          <strong>Ma To‑Do List</strong> est une solution complète de gestion de tâches personnelle, disponible en <strong>Progressive Web App (PWA)</strong> et en <strong>application de bureau Windows native autonome</strong>. Conçue pour être rapide, élégante et ultra-sécurisée, elle permet de gérer ses projets au quotidien sans distraction ni superflu.
+          Ma To‑Do List est un gestionnaire de tâches personnel accessible dans un navigateur. Le site est une Progressive Web App (PWA) et s'adapte aux écrans de téléphone comme d'ordinateur.
         </p>
         <p>
           L'application repose sur <strong>Firebase Realtime Database</strong> pour la synchronisation instantanée entre vos appareils, couplée à un <strong>chiffrement de bout en bout AES-256-GCM</strong> côté client : vos données restent strictement confidentielles et aucun e-mail n'est collecté.
@@ -82,7 +82,7 @@
         </li>
         <li>
           <span class="row-key">Bilingue</span>
-          <span class="row-val">Support bilingue complet (Français / Anglais) sélectionnable à l'inscription et dans l'installeur</span>
+          <span class="row-val">Interface principale en français ou en anglais, langue sélectionnable à l'inscription et dans les paramètres</span>
         </li>
         <li>
           <span class="row-key">Double modale</span>
@@ -121,8 +121,8 @@
           <span class="row-val">Vue mensuelle avec indicateurs et planning chronologique détaillé</span>
         </li>
         <li>
-          <span class="row-key">App Windows</span>
-          <span class="row-val">Application de bureau autonome, lanceur natif et installeur officiel NSIS (Setup.exe)</span>
+          <span class="row-key">Accès web</span>
+          <span class="row-val">Depuis un navigateur sur téléphone ou ordinateur</span>
         </li>
       </ul>
     </section>
@@ -137,10 +137,6 @@
         <li>
           <span class="row-key">Front-end</span>
           <span class="row-val">HTML5 · CSS3 Vanilla · JavaScript ES2022 (modules natifs)</span>
-        </li>
-        <li>
-          <span class="row-key">Application Bureau</span>
-          <span class="row-val">Electron 44 · C# (.NET 8 Native Launcher) · NSIS Installer</span>
         </li>
         <li>
           <span class="row-key">Sécurité &amp; Chiffrement</span>
@@ -170,9 +166,6 @@
         <span class="chip">AES-256-GCM</span>
         <span class="chip">PBKDF2</span>
         <span class="chip">Firebase Realtime DB</span>
-        <span class="chip">Electron 44</span>
-        <span class="chip">C# / .NET</span>
-        <span class="chip">NSIS</span>
         <span class="chip">PWA &amp; Service Worker</span>
         <span class="chip">IBM Plex Mono</span>
         <span class="chip">Git</span>
@@ -231,22 +224,23 @@
         <h2 class="block-title" id="section-history">Historique des versions</h2>
       </div>
       <ul class="timeline">
+        <li><span class="tl-date">Nov. 2026</span><span class="tl-text"><strong>v6.2.0</strong> — Le projet se poursuit uniquement sur le Web.</span></li>
         <li><span class="tl-date">Nov. 2026</span><span class="tl-text"><strong>v6.0.0</strong> — Refonte de l’interface : navigation latérale sur ordinateur, présentation compacte sur téléphone et styles communs aux pages.</span></li>
         <li>
           <span class="tl-date">Oct. 2026</span>
-          <span class="tl-text"><strong>v5.3</strong> — Identité visuelle unifiée : intégration du logo officiel « T » en favicons haute définition et en en-têtes sur l'ensemble des pages Web et de l'application de bureau Windows.</span>
+          <span class="tl-text"><strong>v5.3</strong> — Logo « T » dans les favicons et les en-têtes des pages.</span>
         </li>
         <li>
           <span class="tl-date">Oct. 2026</span>
-          <span class="tl-text"><strong>v5.2</strong> — Support bilingue intégral (Français &amp; Anglais), installeur Windows officiel bilingue (NSIS), modale dédiée de visualisation (résumé en lecture seule) et synchronisation des préférences de langue.</span>
+          <span class="tl-text"><strong>v5.2</strong> — Interface en français et en anglais, avec synchronisation des préférences de langue.</span>
         </li>
         <li>
           <span class="tl-date">Oct. 2026</span>
-          <span class="tl-text"><strong>v5.1</strong> — Séparation stricte des modales (résumé en consultation vs. édition via bouton dédié), lanceur natif C# ultra-rapide et packaging standalone Windows.</span>
+          <span class="tl-text"><strong>v5.1</strong> — Résumé en lecture seule et formulaire d'édition accessible par le bouton « Modifier ».</span>
         </li>
         <li>
           <span class="tl-date">Oct. 2026</span>
-          <span class="tl-text"><strong>v5.0</strong> — Application de bureau native Windows (Electron), refonte architecturale des versions, chiffrement client AES-256-GCM zéro-connaissance (aucune collecte d'email ni de données en clair).</span>
+          <span class="tl-text"><strong>v5.0</strong> — Chiffrement des tâches côté client en AES-256-GCM.</span>
         </li>
         <li>
           <span class="tl-date">Juin 2026</span>
@@ -312,7 +306,7 @@
       })
       .catch(e => console.error('Erreur chargement version:', e));
   </script>
-  <script src="../assets/js/burger-menu.js?v=28"></script>
+  <script src="../assets/js/burger-menu.js?v=29"></script>
 </body>
 
 </html>

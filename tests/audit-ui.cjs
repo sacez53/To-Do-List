@@ -1,15 +1,12 @@
-// Runs real pages in the installed Electron/Chromium runtime with an isolated,
-// in-memory partition and a fake Firebase endpoint. No production requests.
-const { app, BrowserWindow, session } = require('electron');
+// Runs real web pages in an isolated Chromium context with a fake Firebase endpoint.
+// Only the local test server is reachable.
+const { chromium } = require('playwright');
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
-app.disableHardwareAcceleration();
 const root = path.resolve(__dirname,'..');
 const out = path.join(root,'output','playwright');
-app.setPath('userData',path.join(root,'output','audit-electron-profile'));
-app.commandLine.appendSwitch('disable-gpu-shader-disk-cache');
 fs.mkdirSync(out,{recursive:true});
 const bootstrap = `<script>
 sessionStorage.setItem('auth','true');sessionStorage.setItem('username','audit');if(!sessionStorage.getItem('encKey'))sessionStorage.setItem('encKey',btoa(String.fromCharCode(...new Uint8Array(32).fill(7))));sessionStorage.setItem('lang','fr');
@@ -39,11 +36,13 @@ const server=http.createServer((req,res)=>{
   let content=fs.readFileSync(file);if(ext==='.html')content=content.toString().replace('<head>','<head>'+bootstrap);
   res.end(content);
 });
-let win,errors=[];
-const run=code=>win.webContents.executeJavaScript(code,true);
+let browser, page;
+const errors=[];
+const run=code=>page.evaluate(code);
+async function resize(width,height){await page.setViewportSize({width,height});}
 async function until(code){for(let i=0;i<150;i++){if(await run(code))return;await new Promise(r=>setTimeout(r,40));}throw new Error('Timed out: '+code);}
 async function checkCreationWizard() {
-  win.setContentSize(390,844);await new Promise(r=>setTimeout(r,100));
+  await resize(390,844);await new Promise(r=>setTimeout(r,100));
   await run('window.__wizardOriginal=JSON.parse(JSON.stringify(todos));window.__wizardStart=todos.length;openModal(null)');
   await new Promise(r=>setTimeout(r,100));
   assert.equal(await run('modalOverlay.classList.contains("creation-wizard") && creationStep===0'),true);
@@ -53,8 +52,8 @@ async function checkCreationWizard() {
   await run('modalText.value="Préparer <b>le dossier</b>";modalText.dispatchEvent(new Event("input"));modalText.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",isComposing:true,bubbles:true,cancelable:true}));modalText.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",repeat:true,bubbles:true,cancelable:true}))');
   assert.equal(await run('creationStep'),0);
   await run('modalText.focus()');
-  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter'});
-  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Enter'});
+  await page.keyboard.down('Enter');
+  await page.keyboard.up('Enter');
   await until('creationStep===1');
   assert.equal(await run('creationStep===1 && document.activeElement===modalDue'),true);
   assert.equal(await run('document.getElementById("creation-title-preview").querySelector("b")===null'),true);
@@ -67,12 +66,12 @@ async function checkCreationWizard() {
   assert.equal(await run('document.getElementById("creation-step-status").textContent.includes("Step 3 of 3")'),true);
   assert.equal(await run('modalNotes.value'),'Note conservée\nDeuxième ligne');
   await run('setLanguage("fr")');
-  win.setContentSize(1040,900);await new Promise(r=>setTimeout(r,120));
+  await resize(1040,900);await new Promise(r=>setTimeout(r,120));
   assert.equal(await run('!modalOverlay.classList.contains("creation-wizard") && [modalText,modalDue,modalStatus,modalNotes].every(field=>field.getClientRects().length)'),true);
-  win.setContentSize(390,844);await new Promise(r=>setTimeout(r,120));
+  await resize(390,844);await new Promise(r=>setTimeout(r,120));
   assert.equal(await run('modalOverlay.classList.contains("creation-wizard") && creationStep===2'),true);
   await run('modalSave.focus()');
-  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Tab'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Tab'});
+  await page.keyboard.down('Tab');await page.keyboard.up('Tab');
   await until('document.activeElement===modalClose');
   await run('modalSave.click();modalSave.click()');
   await until('!modalSaving && !modalOverlay.classList.contains("open") && !syncRunning && !localWrites');
@@ -93,7 +92,7 @@ async function checkCreationWizard() {
   await until('!modalSaving && !modalOverlay.classList.contains("open") && !syncRunning');
   assert.equal(await run('todos.filter(t=>t.text==="Création à réessayer").length'),1);
   for(const [width,height] of [[320,420],[390,640],[600,812]]) {
-    win.setContentSize(width,height);await new Promise(r=>setTimeout(r,100));
+    await resize(width,height);await new Promise(r=>setTimeout(r,100));
     await run('openModal(null);modalText.value="Préparer la réunion"');
     for(let step=0;step<3;step++) {
       await new Promise(r=>setTimeout(r,280));
@@ -102,18 +101,18 @@ async function checkCreationWizard() {
       assert.equal(await run('[...modalBody.querySelectorAll("input,select,textarea"),creationBack,creationNext,modalSave].filter(b=>b.getClientRects().length).every(b=>{const r=b.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1})'),true,`creation controls overflow at ${width}, step ${step}: `+await run('JSON.stringify([creationBack,creationNext,modalSave].map(b=>({id:b.id,rect:b.getBoundingClientRect().toJSON()})))'));
       await run('modalSave.scrollIntoView({block:"nearest"})');
       assert.equal(await run('[creationBack,creationNext,modalSave].filter(b=>b.getClientRects().length).every(b=>{const r=b.getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight+1})'),true,`creation actions unreachable at ${width}, step ${step}`);
-      if(width===390)await fs.promises.writeFile(path.join(out,`creation-phone-step-${step+1}.png`),(await win.webContents.capturePage()).toPNG());
+      if(width===390)await fs.promises.writeFile(path.join(out,`creation-phone-step-${step+1}.png`),await page.screenshot());
       if(step<2)await run('creationNext.click()');
     }
     await run('closeModal(true)');
   }
   await run('todos=__wizardOriginal;saveTodos()');await until('!syncRunning && !localWrites && !taskStore.pending()');
-  win.setContentSize(1040,900);await new Promise(r=>setTimeout(r,100));
+  await resize(1040,900);await new Promise(r=>setTimeout(r,100));
   console.log('CREATION PASS: phone steps, optional details, required title/date validation, back navigation, FR/EN, desktop resize, focus trap, exact fields, duplicate guard, save failure/retry and draft cancellation.');
 }
 async function checkDesktopLayouts() {
   for(const width of [701,768,1040,1440,1920]) {
-    win.setContentSize(width,1000);await new Promise(r=>setTimeout(r,100));
+    await resize(width,1000);await new Promise(r=>setTimeout(r,100));
     await run('document.body.focus();window.scrollTo(0,0)');
     assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`desktop overflow at ${width}`);
     assert.equal(await run('document.querySelector(".workspace-sidebar").getBoundingClientRect().right<document.querySelector(".workspace-main").getBoundingClientRect().left'),true,`sidebar overlap at ${width}`);
@@ -123,14 +122,14 @@ async function checkDesktopLayouts() {
     assert.equal(await run('getComputedStyle(filterPanel).display'),'grid');
     assert.equal(await run('filterReset.getBoundingClientRect().right<=innerWidth'),true);
     await run('filterToggle.click()');
-    if(width===1440) await fs.promises.writeFile(path.join(out,'redesign-desktop-1440.png'),(await win.webContents.capturePage()).toPNG());
+    if(width===1440) await fs.promises.writeFile(path.join(out,'redesign-desktop-1440.png'),await page.screenshot());
   }
-  win.setContentSize(1040,900);await new Promise(r=>setTimeout(r,100));
+  await resize(1040,900);await new Promise(r=>setTimeout(r,100));
   console.log('DESKTOP PASS: 701/768/1040/1440/1920px, sidebar separation, compact capture, filter panel and page fit.');
 }
 async function checkPhoneLayouts() {
   for (const width of [320,375,390,430,600]) {
-    win.setContentSize(width,812);
+    await resize(width,812);
     await new Promise(r=>setTimeout(r,100));
     await run('document.body.tabIndex=-1;document.body.focus();setTaskScope("today");document.querySelector("[data-view=list]").click();window.scrollTo(0,0)');
     assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`page overflow at ${width}`);
@@ -149,17 +148,17 @@ async function checkPhoneLayouts() {
     await run('boardEl.scrollLeft=260');
     assert.equal(await run('boardEl.scrollLeft>0'),true);
   }
-  win.setContentSize(390,844);await new Promise(r=>setTimeout(r,100));
+  await resize(390,844);await new Promise(r=>setTimeout(r,100));
   await run('document.querySelector("[data-view=list]").click();document.body.focus();window.scrollTo(0,0)');
   await new Promise(r=>setTimeout(r,300));
-  await fs.promises.writeFile(path.join(out,'phone-390.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'phone-390.png'),await page.screenshot());
   await run('boardEl.querySelector(".v2-item").scrollIntoView({block:"center"})');
-  await fs.promises.writeFile(path.join(out,'phone-task-actions.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'phone-task-actions.png'),await page.screenshot());
   await run('document.querySelector("[data-view=table]").click();boardEl.scrollIntoView({block:"start"})');
-  await fs.promises.writeFile(path.join(out,'phone-table.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'phone-table.png'),await page.screenshot());
   await run('document.querySelector("[data-view=list]").click()');
   for(const [width,height] of [[320,640],[390,420],[844,390]]) {
-    win.setContentSize(width,height);await new Promise(r=>setTimeout(r,100));
+    await resize(width,height);await new Promise(r=>setTimeout(r,100));
     if(width>600) continue; // Landscape is checked for page fit below.
     for(const dialog of ['edit','summary','schedule','help']) {
       await run(dialog==='edit'?'openModal("late","edit")':dialog==='summary'?'openModal("late","view")':dialog==='schedule'?'openScheduleDialog("late")':'openShortcutHelp()');
@@ -169,29 +168,39 @@ async function checkPhoneLayouts() {
       const control=dialog==='edit'?'modal-save':dialog==='summary'?'modal-close-recap-btn':dialog==='schedule'?'schedule-save':'shortcuts-close';
       await run(`document.getElementById('${control}').scrollIntoView({block:'nearest'})`);
       assert.equal(await run(`(()=>{const r=document.getElementById('${control}').getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight+1})()`),true,`${dialog} action unreachable`);
-      if(dialog==='summary' && width===320)await fs.promises.writeFile(path.join(out,'summary-phone.png'),(await win.webContents.capturePage()).toPNG());
-      if(dialog==='edit' && height===420)await fs.promises.writeFile(path.join(out,'phone-edit-short-height.png'),(await win.webContents.capturePage()).toPNG());
+      if(dialog==='summary' && width===320)await fs.promises.writeFile(path.join(out,'summary-phone.png'),await page.screenshot());
+      if(dialog==='edit' && height===420)await fs.promises.writeFile(path.join(out,'phone-edit-short-height.png'),await page.screenshot());
       await run(['edit','summary'].includes(dialog)?'closeModal(true)':dialog==='schedule'?'closeScheduleDialog()':'closeShortcutHelp()');
       await new Promise(r=>setTimeout(r,80));
     }
   }
   assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
-  win.setContentSize(390,844);await new Promise(r=>setTimeout(r,100));
+  await resize(390,844);await new Promise(r=>setTimeout(r,100));
   // The offscreen window has no OS focus: dispatch the field focus event explicitly.
   await run('quickTitle.focus();quickTitle.dispatchEvent(new FocusEvent("focusin",{bubbles:true}))');
   assert.equal(await run('getComputedStyle(fabAdd).visibility'),'hidden');
   await run('document.body.focus();document.body.dispatchEvent(new FocusEvent("focusin",{bubbles:true}));window.scrollTo(0,0)');
-  win.setContentSize(1040,900);await new Promise(r=>setTimeout(r,100));
+  await resize(1040,900);await new Promise(r=>setTimeout(r,100));
   console.log('PHONE PASS: 320/375/390/430/600px, visible first task, three layouts, touch targets, reachable dialogs at 420px height, landscape fit and input/FAB separation.');
 }
-app.whenReady().then(async()=>{
+(async()=>{
  try {
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-  const port=server.address().port,partition='audit-'+Date.now();
-  session.fromPartition(partition).webRequest.onBeforeRequest((details,callback)=>callback({cancel:!details.url.startsWith('http://127.0.0.1:')&&!details.url.startsWith('data:')}));
-  win=new BrowserWindow({show:false,width:1040,height:800,webPreferences:{partition,contextIsolation:true,nodeIntegration:false,backgroundThrottling:false,offscreen:true}});
-  win.webContents.on('console-message',(_event,level,message)=>{if(level===3)errors.push(message);});
-  await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
+  const port=server.address().port;
+  const origin=`http://127.0.0.1:${port}`;
+  browser=await chromium.launch({headless:true,channel:process.env.PLAYWRIGHT_CHANNEL || undefined});
+  const context=await browser.newContext({viewport:{width:1040,height:800},serviceWorkers:'block'});
+  await context.route('**/*',route=>{
+    const url=new URL(route.request().url());
+    if(url.origin===origin)return route.continue();
+    // An empty stylesheet keeps the offline font fallback deterministic.
+    if(url.hostname==='fonts.googleapis.com')return route.fulfill({status:200,contentType:'text/css',body:''});
+    return route.abort();
+  });
+  page=await context.newPage();
+  page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
+  page.on('pageerror',error=>errors.push(error.message));
+  await page.goto(`http://127.0.0.1:${port}/pages/app-v2.html`);
   await until('!!taskStore && todos.filter(t=>!TodoData.removed(t)).length===2 && !syncRunning');
   await checkCreationWizard();
   assert.equal(await run('currentScope'),'all');
@@ -220,22 +229,20 @@ app.whenReady().then(async()=>{
   await run('delete __fixture.failure');
   await run('refreshTasks()'); await new Promise(r=>setTimeout(r,550));
   console.log('Visual state:',await run('JSON.stringify({overlay:getComputedStyle(document.getElementById("pt-overlay")).opacity,item:getComputedStyle(document.querySelector(".v2-item")).opacity,images:[...boardEl.querySelectorAll("img")].map(i=>i.outerHTML)})'));
-  await fs.promises.writeFile(path.join(out,'audit-desktop.png'),(await win.webContents.capturePage()).toPNG());
-  win.setContentSize(375,812);await new Promise(r=>setTimeout(r,120));
+  await fs.promises.writeFile(path.join(out,'audit-desktop.png'),await page.screenshot());
+  await resize(375,812);await new Promise(r=>setTimeout(r,120));
   assert.equal(await run('document.documentElement.scrollWidth<=window.innerWidth'),true);
-  await fs.promises.writeFile(path.join(out,'audit-mobile.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'audit-mobile.png'),await page.screenshot());
   await run('mutateTrash("b","restore")');await until('!syncRunning && !trashBusy');
   // N02: use actual Enter events for the quick-entry form.
-  win.setContentSize(1040,900);
+  await resize(1040,900);
   await run('window.__captureStart=todos.length;quickTitle.focus();quickTitle.value="   ";quickForm.requestSubmit()');
   assert.equal(await run('todos.length===__captureStart'),true);
   assert.equal(await run('quickTitle.getAttribute("aria-invalid")'),'true');
   await run('quickTitle.value="Appeler demain à 14 h <b>littéral</b>";quickTitle.dispatchEvent(new Event("input"));quickTitle.focus()');
-  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter'});
-  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});
-  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter',isAutoRepeat:true});
-  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});
-  win.webContents.sendInputEvent({type:'keyUp',keyCode:'Enter'});
+  await page.keyboard.down('Enter');
+  await page.keyboard.down('Enter');
+  await page.keyboard.up('Enter');
   await until('!quickBusy && todos.length===__captureStart+1 && !syncRunning');
   assert.equal(await run('todos.filter(t=>t.text==="Appeler demain à 14 h <b>littéral</b>").length'),1);
   assert.equal(await run('todos.find(t=>t.id===quickCreatedId).due'),null);
@@ -243,10 +250,9 @@ app.whenReady().then(async()=>{
   assert.equal(await run('document.activeElement===quickTitle'),true);
   assert.equal(await run('quickStatus.textContent.includes("Toutes les tâches")'),true);
   assert.equal(await run('quickStatus.querySelector("b")===null'),true);
-  await win.webContents.insertText('Deuxième capture');
-  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter'});
-  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});
-  win.webContents.sendInputEvent({type:'keyUp',keyCode:'Enter'});
+  await page.keyboard.insertText('Deuxième capture');
+  await page.keyboard.down('Enter');
+  await page.keyboard.up('Enter');
   await until('!quickBusy && todos.length===__captureStart+2 && !syncRunning');
   await run('quickDetails.click()');
   assert.equal(await run('modalBody.style.display'),'flex');
@@ -288,36 +294,36 @@ app.whenReady().then(async()=>{
   await run('document.body.focus();document.dispatchEvent(new KeyboardEvent("keydown",{key:"?",bubbles:true,cancelable:true}))');
   assert.equal(await run('shortcutsOverlay.classList.contains("open")'),true);
   await new Promise(r=>setTimeout(r,250));
-  await fs.promises.writeFile(path.join(out,'n02-shortcuts.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'n02-shortcuts.png'),await page.screenshot());
   await run('shortcutsEnabled.checked=false;shortcutsEnabled.dispatchEvent(new Event("change"));closeShortcutHelp()');
   await new Promise(r=>setTimeout(r,80));
   await run('document.body.focus();document.dispatchEvent(new KeyboardEvent("keydown",{key:"n",bubbles:true,cancelable:true}))');
   assert.equal(await run('document.activeElement===quickTitle'),false);
   assert.equal(await run('localStorage.getItem(shortcutsKey)'),'false');
-  await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
+  await page.goto(`http://127.0.0.1:${port}/pages/app-v2.html`);
   await until('!!taskStore && !syncRunning && todos.filter(t=>!TodoData.removed(t)).length===2');
   assert.equal(await run('shortcutsEnabled.checked'),false);
   // Help remains keyboard-accessible when its shortcut is disabled.
   await run('document.getElementById("shortcuts-open").focus()');
-  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Enter'});
-  win.webContents.sendInputEvent({type:'char',keyCode:'\r'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Enter'});
+  await page.keyboard.down('Enter');
+  await page.keyboard.up('Enter');
   await until('shortcutsOverlay.classList.contains("open")');
   await run('shortcutsEnabled.focus()');
-  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space'});
+  await page.keyboard.down(' ');await page.keyboard.up(' ');
   await until('shortcutsEnabled.checked');
-  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Escape'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Escape'});
+  await page.keyboard.down('Escape');await page.keyboard.up('Escape');
   await until('!shortcutsOverlay.classList.contains("open")');
   await run('setLanguage("en")');assert.equal(await run('document.getElementById("quick-add-label").textContent'),'Add a task');
   await run('setLanguage("fr");document.body.focus()');
   await new Promise(r=>setTimeout(r,350));
-  await fs.promises.writeFile(path.join(out,'n02-desktop.png'),(await win.webContents.capturePage()).toPNG());
-  win.setContentSize(375,900);await new Promise(r=>setTimeout(r,100));
+  await fs.promises.writeFile(path.join(out,'n02-desktop.png'),await page.screenshot());
+  await resize(375,900);await new Promise(r=>setTimeout(r,100));
   assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
   assert.equal(await run('quickTitle.getBoundingClientRect().width>150'),true);
-  await fs.promises.writeFile(path.join(out,'n02-mobile.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'n02-mobile.png'),await page.screenshot());
   console.log('N02 PASS: native Enter, duplicate protection, required title, literal text, focus, full-form draft, local-save retry, composition, contextual shortcuts, persistent opt-out, keyboard help and FR/EN.');
   // N03: exercise deletion, undo, calendar exclusion, restore and final removal.
-  win.setContentSize(1040,900);
+  await resize(1040,900);
   await run(`(async()=>{
     const task={id:'trash-ui',text:'Tâche récupérable <b>littérale</b>',status:'waiting',priority:'high',due:TaskDates.day(),dueTime:'09:15',notes:'Notes à conserver',created:'2026-01-01T12:00:00.000Z',archived:false};
     window.__trashOriginal=JSON.parse(JSON.stringify(task));todos.push(task);await saveTodos();setTaskScope('all');
@@ -332,11 +338,11 @@ app.whenReady().then(async()=>{
   await run('openModal("trash-ui","edit");modalDelete.click();confirmYes.click()');
   await until('!trashBusy && !syncRunning && !!todos.find(t=>t.id==="trash-ui").deletedAt');
   await run('sessionStorage.setItem("__keepFixture",JSON.stringify(__fixture))');
-  await win.loadURL(`http://127.0.0.1:${port}/pages/calendar.html`);
+  await page.goto(`http://127.0.0.1:${port}/pages/calendar.html`);
   await until('calendarStore && !calendarLoading');
   await run('calendarViewType="planning";updateCalendarView()');
   assert.equal(await run('calendarPlanningList.textContent.includes("Tâche récupérable")'),false);
-  await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html`);
+  await page.goto(`http://127.0.0.1:${port}/pages/app-v2.html`);
   await until('taskStore && !syncRunning');
   await run('setTaskScope("trash")');
   assert.equal(await run('boardEl.querySelector("[data-task-id=trash-ui]")!==null'),true);
@@ -352,13 +358,13 @@ app.whenReady().then(async()=>{
   await run('openModal("trash-ui","edit");modalDelete.click();confirmYes.click()');
   await until('!trashBusy && !syncRunning && !!todos.find(t=>t.id==="trash-ui").deletedAt');
   await new Promise(r=>setTimeout(r,350));
-  await fs.promises.writeFile(path.join(out,'trash-desktop.png'),(await win.webContents.capturePage()).toPNG());
-  win.setContentSize(320,740);await new Promise(r=>setTimeout(r,100));
+  await fs.promises.writeFile(path.join(out,'trash-desktop.png'),await page.screenshot());
+  await resize(320,740);await new Promise(r=>setTimeout(r,100));
   await run('document.body.focus();window.scrollTo(0,0)');
   assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
   assert.equal(await run('[...boardEl.querySelectorAll(".v2-trash-actions button")].every(b=>b.getBoundingClientRect().height>=44)'),true);
   assert.equal(await run('getComputedStyle(document.querySelector(".v2-toolbar")).display'),'none');
-  await fs.promises.writeFile(path.join(out,'trash-phone.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'trash-phone.png'),await page.screenshot());
   await run('boardEl.querySelector("[data-task-id=trash-ui] [data-task-action=purge]").click();confirmNo.click()');
   assert.equal(await run('!!todos.find(t=>t.id==="trash-ui").deletedAt'),true);
   await run('boardEl.querySelector("[data-task-id=trash-ui] [data-task-action=purge]").click();confirmYes.click()');
@@ -369,7 +375,7 @@ app.whenReady().then(async()=>{
   await run('sessionStorage.removeItem("__keepFixture");document.getElementById("trash-notice").hidden=true;setTaskScope("today");document.getElementById("trash-feedback").textContent=""');
   console.log('N03 PASS: soft deletion, Undo, exact restoration, calendar exclusion, read-only trash summary, 30-day notice, mobile actions, permanent-delete confirmation and non-restorable marker.');
   // N01: use local calendar dates, independent of the day this suite is run.
-  win.setContentSize(1040,900);
+  await resize(1040,900);
   await run(`(async()=>{
     const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
     todos=[
@@ -412,12 +418,12 @@ app.whenReady().then(async()=>{
   await run('setLanguage("en")');assert.equal(await run('document.getElementById("v2-scope-heading").textContent'),'All tasks');
   await run('setLanguage("fr");setTaskScope("today")');
   await new Promise(r=>setTimeout(r,550));
-  await fs.promises.writeFile(path.join(out,'n01-desktop.png'),(await win.webContents.capturePage()).toPNG());
-  win.setContentSize(375,900);await new Promise(r=>setTimeout(r,100));
+  await fs.promises.writeFile(path.join(out,'n01-desktop.png'),await page.screenshot());
+  await resize(375,900);await new Promise(r=>setTimeout(r,100));
   assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
   assert.equal(await run('getComputedStyle(boardEl.querySelector(".v2-item")).flexDirection'),'column');
   assert.equal(await run('boardEl.querySelector(".v2-item-body").getBoundingClientRect().width>150'),true);
-  await fs.promises.writeFile(path.join(out,'n01-mobile.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'n01-mobile.png'),await page.screenshot());
   await run('boardEl.querySelector(".task-summary[data-task-id=late]").click();recapSchedule.querySelector("[data-task-action=tomorrow]").focus();recapSchedule.querySelector("[data-task-action=tomorrow]").click()');
   await until('!localWrites && !syncRunning && todos.find(t=>t.id==="late").due===TaskDates.tomorrow()');
   assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=late]")===null'),true);
@@ -446,25 +452,25 @@ app.whenReady().then(async()=>{
   assert.equal(await run('boardEl.querySelector(".v2-item[data-task-id=future] .due-overdue")!==null'),true);
   await run('window.Date=__RealDate;refreshTaskClock()');
   console.log('N01 PASS: scopes, ordering, exclusions, all layouts, FR/EN, tomorrow, chosen date, cancellation, field preservation, completed task removal and live midnight refresh.');
-  await win.loadURL(`http://127.0.0.1:${port}/pages/calendar.html`);
+  await page.goto(`http://127.0.0.1:${port}/pages/calendar.html`);
   await until('calendarStore && !calendarLoading');
-  win.setContentSize(320,740);await new Promise(r=>setTimeout(r,100));
+  await resize(320,740);await new Promise(r=>setTimeout(r,100));
   assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
-  await fs.promises.writeFile(path.join(out,'phone-calendar.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'phone-calendar.png'),await page.screenshot());
   await run('currentCalendarDate=new Date(2026,0,31);calendarNext.click()');assert.equal(await run('currentCalendarDate.getMonth()'),1);
   await run('calendarViewType="planning";updateCalendarView()');assert.equal(await run('calendarPlanningList.querySelector("b")===null'),true);
   assert.equal(await run('getStatusInfo("inprogress").icon'),'↻');
-  await win.loadURL(`http://127.0.0.1:${port}/pages/settings.html`);
+  await page.goto(`http://127.0.0.1:${port}/pages/settings.html`);
   await until('!!archiveStore');
   assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
   assert.equal(await run('[...document.querySelectorAll(".settings-tab-btn")].every(b=>b.getBoundingClientRect().height>=44)'),true);
   await new Promise(r=>setTimeout(r,450));
-  await fs.promises.writeFile(path.join(out,'phone-settings.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'phone-settings.png'),await page.screenshot());
   assert.equal(await run('typeof saveArchivedChanges'), 'function');
   await run(`(async()=>{await archiveStore.sync();const current=archiveStore.read();current.push({id:'archive-ui',text:'Archive récupérable avec un titre plus long pour vérifier le retour à la ligne sur téléphone',notes:'Archive notes',status:'done',archived:true});await archiveStore.save(current);await archiveStore.sync();updateArchivedView();document.querySelector('[data-tab="tab-archive"]').click();})()`);
   assert.equal(await run('[...document.querySelectorAll(".archive-item-actions button")].every(b=>b.getBoundingClientRect().height>=44)'),true);
   assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true);
-  await fs.promises.writeFile(path.join(out,'phone-settings-archive-populated.png'),(await win.webContents.capturePage()).toPNG());
+  await fs.promises.writeFile(path.join(out,'phone-settings-archive-populated.png'),await page.screenshot());
   await run('document.querySelectorAll("#archived-tasks-container button")[1].click()');
   await until('!!archiveStore.read().find(t=>t.id==="archive-ui").deletedAt && !!document.getElementById("archive-trash-undo")');
   await run('document.getElementById("archive-trash-undo").click()');
@@ -475,36 +481,30 @@ app.whenReady().then(async()=>{
   await until('!btnChangePassword.disabled && document.getElementById("msg-password").textContent.includes("✓")');
   assert.equal(await run('(async()=>{const key=await importKey(sessionStorage.getItem("encKey"));return (await decryptData(__fixture.account.todos,key)).filter(t=>!TodoData.removed(t)).length})()'),2);
   assert.equal(await run('localStorage.getItem("todo_state_audit").includes("Task A")'),false);
-  await win.loadURL(`http://127.0.0.1:${port}/pages/donnees.html`);
+  await page.goto(`http://127.0.0.1:${port}/pages/donnees.html`);
   await run('window.__export=null;URL.createObjectURL=blob=>{window.__export=blob;return "blob:audit"};HTMLAnchorElement.prototype.click=function(){};document.getElementById("export-json").click()');
   await until('!!window.__export');
   assert.equal(await run('(async()=>JSON.parse(await __export.text()).donnees.find(t=>t.id==="a").creeLe)()'),'2026-01-01T12:00:00Z');
-  await win.loadURL(`http://127.0.0.1:${port}/win_app/src/app.html`);
-  await until('!!taskStore && todos.filter(t=>!TodoData.removed(t)).length===2 && !syncRunning');
-  await run('setTaskScope("all");document.querySelector(".task-summary").click()');
-  assert.equal(await run('modalBody.style.display'),'none');
-  await run('modalEditBtn.click()');assert.equal(await run('modalBody.style.display'),'flex');
-  await run('closeModal(true)');
-  for(const page of ['pages/login.html','index.html','pages/calendar.html','pages/settings.html','pages/apropos.html','pages/developpeur.html','pages/confidentialite.html','pages/mentions-legales.html','pages/cgu.html','pages/donnees.html','pages/commentaires.html']) {
-    await win.loadURL(`http://127.0.0.1:${port}/${page}`);
+  for(const pagePath of ['pages/login.html','index.html','pages/calendar.html','pages/settings.html','pages/apropos.html','pages/developpeur.html','pages/confidentialite.html','pages/mentions-legales.html','pages/cgu.html','pages/donnees.html','pages/commentaires.html']) {
+    await page.goto(`http://127.0.0.1:${port}/${pagePath}`);
     await new Promise(r=>setTimeout(r,450));
-    const name=path.basename(page,'.html').replace('index','home');
+    const name=path.basename(pagePath,'.html').replace('index','home');
     for(const width of [320,390,1440]) {
-      win.setContentSize(width,width===320?740:900);await new Promise(r=>setTimeout(r,150));
+      await resize(width,width===320?740:900);await new Promise(r=>setTimeout(r,150));
       await run('window.scrollTo(0,0)');
-      assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`${page} overflows at ${width}`);
-      assert.equal(await run('(()=>{const brand=document.querySelector(".site-header .workspace-brand").getBoundingClientRect(),nav=document.querySelector(".site-header-actions").getBoundingClientRect();return brand.right<=nav.left+1 || brand.bottom<=nav.top+1})()'),true,`header overlaps at ${page} ${width}`);
+      assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`${pagePath} overflows at ${width}`);
+      assert.equal(await run('(()=>{const brand=document.querySelector(".site-header .workspace-brand").getBoundingClientRect(),nav=document.querySelector(".site-header-actions").getBoundingClientRect();return brand.right<=nav.left+1 || brand.bottom<=nav.top+1})()'),true,`header overlaps at ${pagePath} ${width}`);
       if(await run('!!document.querySelector(".bm-trigger")')) {
         assert.equal(await run('getComputedStyle(document.querySelector(".bm-dropdown")).display'),'none');
         await run('document.querySelector(".bm-trigger").click()');
         await new Promise(r=>setTimeout(r,300));
-        assert.equal(await run('(()=>{const r=document.querySelector(".bm-dropdown").getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1})()'),true,`navigation outside ${page} at ${width}`);
+        assert.equal(await run('(()=>{const r=document.querySelector(".bm-dropdown").getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1})()'),true,`navigation outside ${pagePath} at ${width}`);
         await run('document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))');
         assert.equal(await run('document.activeElement===document.querySelector(".bm-trigger")'),true);
         await new Promise(r=>setTimeout(r,100));
       }
-      if(width!==320) await fs.promises.writeFile(path.join(out,`${width===390?'phone':'desktop'}-${name}.png`),(await win.webContents.capturePage()).toPNG());
-      if(page==='pages/donnees.html') {
+      if(width!==320) await fs.promises.writeFile(path.join(out,`${width===390?'phone':'desktop'}-${name}.png`),await page.screenshot());
+      if(pagePath==='pages/donnees.html') {
         await run('document.getElementById("btn-delete-account").click()');
         await new Promise(r=>setTimeout(r,150));
         assert.equal(await run('getComputedStyle(document.getElementById("confirm-overlay")).display'),'flex');
@@ -512,43 +512,52 @@ app.whenReady().then(async()=>{
         await run('document.getElementById("cancel-action").click()');
         assert.equal(await run('document.getElementById("confirm-overlay").classList.contains("active")'),false);
       }
-      if(page==='pages/login.html') {
+      if(pagePath==='pages/login.html') {
         await run('document.getElementById("tab-register").click()');
         assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`registration overflows at ${width}`);
         await run('document.getElementById("tab-login").click()');
       }
-      if(page==='pages/settings.html') {
+      if(pagePath==='pages/settings.html') {
         for(const tab of ['display','archive','danger']) {
           await run(`document.querySelector('[data-tab="tab-${tab}"]').click()`);
           await new Promise(r=>setTimeout(r,100));
           assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`${tab} preferences overflow at ${width}`);
           assert.equal(await run(`document.querySelector('#tab-${tab} .settings-section').getBoundingClientRect().height>100`),true);
-          if(width===390) await fs.promises.writeFile(path.join(out,`phone-settings-${tab}.png`),(await win.webContents.capturePage()).toPNG());
+          if(width===390) await fs.promises.writeFile(path.join(out,`phone-settings-${tab}.png`),await page.screenshot());
         }
         await run('document.querySelector("[data-tab=tab-account]").click()');
       }
     }
   }
-  await win.loadURL(`http://127.0.0.1:${port}/pages/commentaires.html?guest=1`);
+  await page.goto(`http://127.0.0.1:${port}/pages/commentaires.html?guest=1`);
   await until('getComputedStyle(document.getElementById("comment-auth-msg")).display==="flex"');
   for(const width of [320,390,1440]) {
-    win.setContentSize(width,900);await new Promise(r=>setTimeout(r,100));
+    await resize(width,900);await new Promise(r=>setTimeout(r,100));
     assert.equal(await run('document.documentElement.scrollWidth<=innerWidth'),true,`guest comments overflow at ${width}`);
     assert.equal(await run('getComputedStyle(document.getElementById("comment-form")).display'),'none');
-    if(width===390) await fs.promises.writeFile(path.join(out,'phone-comments-guest.png'),(await win.webContents.capturePage()).toPNG());
+    if(width===390) await fs.promises.writeFile(path.join(out,'phone-comments-guest.png'),await page.screenshot());
   }
-  await win.loadURL(`http://127.0.0.1:${port}/pages/app-v2.html?timeout=1`);
+  await page.goto(`http://127.0.0.1:${port}/pages/app-v2.html?timeout=1`);
   await until('!!document.getElementById("timeout-overlay")');
   for(const [width,height] of [[320,420],[390,844],[1440,900]]) {
-    win.setContentSize(width,height);await new Promise(r=>setTimeout(r,200));
+    await resize(width,height);await new Promise(r=>setTimeout(r,200));
     assert.equal(await run('(()=>{const r=document.querySelector(".timeout-modal").getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1 && r.top>=0 && r.bottom<=innerHeight+1})()'),true,`timeout dialog outside ${width}x${height}`);
     assert.equal(await run('document.querySelector(".timeout-modal button").getBoundingClientRect().height>=44'),true);
-    if(width===390) await fs.promises.writeFile(path.join(out,'phone-session-expired.png'),(await win.webContents.capturePage()).toPNG());
+    if(width===390) await fs.promises.writeFile(path.join(out,'phone-session-expired.png'),await page.screenshot());
   }
   console.log('SHARED UI PASS: login/registration, home, calendar, settings, information and data pages at 320/390/1440px.');
   console.log('UI PASS: three views, summary/edit, deletion cancellation, safe text, creation, dirty form, focus, HTTP 403, mobile fit, calendar month/status, password rotation and JSON export.');
   console.log('Console errors:',JSON.stringify(errors));
-  win.destroy();server.close();app.exit(errors.length?1:0);
- }catch(error){console.error(error);try{console.error('Layout debug:',await run('JSON.stringify({page:location.pathname,width:innerWidth,overflow:[...document.querySelectorAll("body *")].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,id:e.id,cls:e.className,right:e.getBoundingClientRect().right})).slice(0,15)})'));await fs.promises.writeFile(path.join(out,'failure.png'),(await win.webContents.capturePage()).toPNG());}catch(_){}win?.destroy();server.close();app.exit(1);}
-});
-
+  process.exitCode=errors.length?1:0;
+ }catch(error){
+  console.error(error);
+  try{
+    console.error('Layout debug:',await run('JSON.stringify({page:location.pathname,width:innerWidth,overflow:[...document.querySelectorAll("body *")].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,id:e.id,cls:e.className,right:e.getBoundingClientRect().right})).slice(0,15)})'));
+    await page.screenshot({path:path.join(out,'failure.png')});
+  }catch(_){}
+  process.exitCode=1;
+ }finally{
+  await browser?.close();
+  await new Promise(resolve=>server.close(resolve));
+ }
+})();

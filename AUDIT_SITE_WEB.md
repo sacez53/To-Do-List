@@ -2,6 +2,8 @@
 
 Date : 3 novembre 2026 — version Web déclarée : v5.4.2.
 
+Document historique. Depuis la v6.2.0 du 16 novembre 2026, le projet est exclusivement web. Les anciennes consignes de synchronisation Windows ci-dessous ne s'appliquent plus ; les consignes actuelles sont dans `AGENTS.md`.
+
 ## 1. Conclusion
 
 Le site possède un socle fonctionnel riche pour un outil personnel : trois vues des tâches, recherche, filtres combinés, calendrier, chiffrement client et export des données. La séparation entre consultation et modification des tâches est correctement prévue dans les trois vues.
