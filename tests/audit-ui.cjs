@@ -202,6 +202,14 @@ async function checkPhoneLayouts() {
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`http://127.0.0.1:${port}/pages/app-v2.html`);
   await until('!!taskStore && todos.filter(t=>!TodoData.removed(t)).length===2 && !syncRunning');
+  await resize(390,844);
+  await run('document.documentElement.style.setProperty("--site-safe-top","59px");document.documentElement.style.setProperty("--site-safe-bottom","34px");window.scrollTo(0,0)');
+  assert.equal(await run('document.querySelector(".workspace-header").getBoundingClientRect().top>=59'),true,'header hidden by iPhone status area');
+  await run('openModal("a","view")');
+  await new Promise(r=>setTimeout(r,250));
+  assert.equal(await run('modalOverlay.querySelector(".modal").getBoundingClientRect().top>=59'),true,'summary inside unsafe top area');
+  await run('closeModal(true);document.documentElement.style.removeProperty("--site-safe-top");document.documentElement.style.removeProperty("--site-safe-bottom")');
+  await resize(1040,800);
   await checkCreationWizard();
   // Calendar export never navigates to a real provider or changes the task.
   await run('openModal("a","view");window.__agendaBefore=JSON.stringify(todos);');
@@ -241,6 +249,10 @@ async function checkPhoneLayouts() {
     assert.equal(await page.locator('#agenda-apple').isVisible(),true);
     if(width===390)await page.screenshot({path:path.join(out,'agenda-phone.png')});
   }
+  // Reopening a long summary must start at its heading, after an agenda export.
+  await run('closeModal(true);openModal("a","view")');
+  await new Promise(r=>setTimeout(r,250));
+  assert.equal(await run('modalOverlay.querySelector(".modal").scrollTop'),0,'reopened summary hides its heading');
   await run('closeModal(true);openModal("a","edit")');
   assert.equal(await run('document.getElementById("task-agenda").hidden'),true);
   await run('closeModal(true);openModal("b","view")');
@@ -534,6 +546,32 @@ async function checkPhoneLayouts() {
     await page.goto(`http://127.0.0.1:${port}/${pagePath}`);
     await new Promise(r=>setTimeout(r,450));
     const name=path.basename(pagePath,'.html').replace('index','home');
+    if (['index.html','pages/login.html'].includes(pagePath)) {
+      for (const [width,height,top,left,right] of [[390,844,59,0,0],[844,390,0,59,59]]) {
+        await resize(width,height);
+        await run(`document.documentElement.style.setProperty('--site-safe-top','${top}px');document.documentElement.style.setProperty('--site-safe-left','${left}px');document.documentElement.style.setProperty('--site-safe-right','${right}px');document.documentElement.style.setProperty('--site-safe-bottom','34px');document.body.focus();window.scrollTo(0,0)`);
+        await new Promise(r=>setTimeout(r,100));
+        await run('document.body.tabIndex=-1;document.body.focus()');
+        assert.equal(await run('document.querySelector(".skip-link").getBoundingClientRect().bottom<=0'),true,"skip link must be hidden until keyboard focus");
+        await page.locator(".skip-link").focus();
+        assert.equal(await run('document.querySelector(".skip-link").getBoundingClientRect().top>=parseFloat(getComputedStyle(document.body).paddingTop)'),true);
+        await run('document.body.focus()');
+        const bounds=await run('(()=>{const h=document.querySelector(".site-header").getBoundingClientRect();const b=document.querySelector(".site-header .workspace-brand").getBoundingClientRect();const n=document.querySelector(".site-header-actions").getBoundingClientRect();return {top:h.top,left:b.left,right:n.right,brandBottom:b.bottom,navBottom:n.bottom,overflow:document.documentElement.scrollWidth>innerWidth}})()');
+        assert(bounds.top>=top && bounds.left>=left && bounds.right<=width-right+1,`iPhone header obscured: ${pagePath} ${width}`);
+        assert(bounds.brandBottom<height-34 && bounds.navBottom<height-34);
+        assert.equal(bounds.overflow,false);
+        await page.screenshot({path:path.join(out,`iphone-safe-${name}-${width}.png`)});
+        if(pagePath==='pages/login.html') {
+          await page.locator('#tab-register').click();
+          await page.locator('#reg-user').scrollIntoViewIfNeeded();
+          assert(await page.locator('#reg-user').isVisible());
+          await run('window.scrollTo(0,0)');
+          assert.equal(await run('document.querySelector(".site-header").getBoundingClientRect().top>=parseFloat(getComputedStyle(document.body).paddingTop)'),true);
+          await page.locator('#tab-login').click();
+        }
+      }
+      await run('for(const side of ["top","left","right","bottom"])document.documentElement.style.removeProperty("--site-safe-"+side);window.scrollTo(0,0)');
+    }
     for(const width of [320,390,1440]) {
       await resize(width,width===320?740:900);await new Promise(r=>setTimeout(r,150));
       await run('window.scrollTo(0,0)');

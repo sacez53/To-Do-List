@@ -320,3 +320,19 @@ body.interface-v6.task-app .modal-input[aria-invalid="true"] { border-color:#f4a
 .agenda-actions [aria-disabled=true],.agenda-actions button:disabled{opacity:.5;cursor:default}
 .task-agenda :focus-visible{outline:2px solid var(--text);outline-offset:3px}
 @media(max-width:380px){.agenda-fields{grid-template-columns:minmax(0,1fr)}.agenda-actions>*{width:100%}}
+
+/* Keep page content clear of the iPhone status bar and landscape cutout. */
+:root{--site-safe-top:env(safe-area-inset-top,0px);--site-safe-right:env(safe-area-inset-right,0px);--site-safe-bottom:env(safe-area-inset-bottom,0px);--site-safe-left:env(safe-area-inset-left,0px)}
+body.interface-v6{padding-top:var(--site-safe-top);padding-left:var(--site-safe-left);padding-right:var(--site-safe-right);padding-bottom:var(--site-safe-bottom)}
+body.interface-v6 .site-header,body.interface-v6.task-app .workspace-header{flex-shrink:0}
+body.interface-v6.task-app .v2-sync{white-space:normal;min-width:0;max-width:100%}
+body.interface-v6.task-app .v2-sync-dot{flex-shrink:0}
+.interface-v6 .skip-link{top:calc(8px + var(--site-safe-top));left:calc(16px + var(--site-safe-left));transform:translateY(calc(-100% - var(--site-safe-top) - 16px))}
+.interface-v6 .skip-link:focus{transform:none}
+body.interface-v6 .modal-overlay{padding-top:max(16px,var(--site-safe-top));padding-bottom:max(16px,var(--site-safe-bottom));padding-left:max(16px,var(--site-safe-left));padding-right:max(16px,var(--site-safe-right))}
+body.interface-v6 .modal{max-height:calc(100dvh - max(16px,var(--site-safe-top)) - max(16px,var(--site-safe-bottom)))}
+@media(max-width:700px){
+ body.interface-v6.task-app .v2-add-dock{padding-left:calc(14px + var(--site-safe-left));padding-right:calc(14px + var(--site-safe-right))}
+ body.interface-v6.task-app .modal-overlay{padding:max(8px,var(--site-safe-top)) var(--site-safe-right) 0 var(--site-safe-left)}
+ body.interface-v6.task-app .modal{max-height:calc(var(--task-viewport-height,100dvh) - max(8px,var(--site-safe-top)));padding-bottom:max(16px,var(--site-safe-bottom))}
+}

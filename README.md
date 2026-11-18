@@ -1,4 +1,4 @@
-# Ma To-Do List — v6.3.1
+# Ma To-Do List — v6.3.2
 
 Gérez vos tâches depuis un navigateur, sur téléphone ou ordinateur.
 

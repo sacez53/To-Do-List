@@ -1,6 +1,6 @@
 {
   "name": "ma-todo-list-web",
-  "version": "6.3.1",
+  "version": "6.3.2",
   "private": true,
   "description": "Gestionnaire de tâches web",
   "scripts": {

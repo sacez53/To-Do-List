@@ -1130,6 +1130,7 @@ function openModal(id = null, mode = 'edit') {
 
   modalOverlay.classList.add("open");
   document.body.classList.add("modal-open");
+  modalOverlay.querySelector(".modal").scrollTop = 0;
   if (mode === "edit") modalSnapshot = modalValues();
 }
 
