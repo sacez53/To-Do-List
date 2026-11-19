@@ -28,11 +28,14 @@ window.TodoData = (() => {
     if (list.some(t => (t.deletedAt && !validStamp(t.deletedAt)) || (t.purgedAt && !validStamp(t.purgedAt)))) throw new Error("Invalid deletion timestamp");
     if (list.some(t => !t.purgedAt && ((t.due && !/^\d{4}-\d{2}-\d{2}$/.test(t.due)) ||
       (t.dueTime && !/^([01]\d|2[0-3]):[0-5]\d$/.test(t.dueTime))))) throw new Error("Invalid task date/time");
+    if (list.some(t => !t.purgedAt && t.subtasks != null && (!Array.isArray(t.subtasks) || t.subtasks.length > 30 ||
+      t.subtasks.some(s => !s || typeof s.id !== "string" || !s.id || typeof s.text !== "string" || !s.text.trim() || s.text.length > 300 || typeof s.done !== "boolean") ||
+      new Set(t.subtasks.map(s => s.id)).size !== t.subtasks.length))) throw new Error("Invalid subtasks");
     if (new Set(list.map(t => String(t.id))).size !== list.length) throw new Error("Duplicate task IDs");
     return list.map(t => t.purgedAt ? purge(t) : ({ ...t, status: t.status === "in-progress" ? "inprogress" :
       (["todo", "inprogress", "waiting", "done", "cancelled"].includes(t.status) ? t.status : "todo"),
       priority: ["high", "normal", "low"].includes(t.priority) ? t.priority : "normal",
-      notes: typeof t.notes === "string" ? t.notes : "" }));
+      notes: typeof t.notes === "string" ? t.notes : "", subtasks: t.subtasks || [] }));
   }
   function merge(base, local, remote) {
     const byId = arr => new Map(arr.map(t => [String(t.id), t]));

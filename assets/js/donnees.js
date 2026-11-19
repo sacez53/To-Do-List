@@ -52,6 +52,7 @@
         echeanceDate: t.due || "",
         echeanceHeure: t.dueTime || "",
         notes: t.notes || "",
+        sousTaches: (t.subtasks || []).map(s => ({ id: s.id, texte: s.text, terminee: s.done })),
         archivee: !!t.archived,
         creeLe: t.created || t.createdAt || "",
         supprimeLe: t.deletedAt || ""
@@ -67,7 +68,7 @@
     if (!ensureAuth()) return;
     const todos = (await getTodos()).filter(task => !task.purgedAt);
 
-    const headers = ["ID", "Titre", "Statut", "Priorite", "Date echeance", "Heure echeance", "Notes", "Archivee", "Date creation", "Date suppression"];
+    const headers = ["ID", "Titre", "Statut", "Priorite", "Date echeance", "Heure echeance", "Notes", "Archivee", "Date creation", "Date suppression", "Sous-taches"];
     const rows = todos.map(t => [
       escapeCsv(t.id || ""),
       escapeCsv(t.text || ""),
@@ -78,7 +79,8 @@
       escapeCsv(t.notes || ""),
       escapeCsv(t.archived ? "oui" : "non"),
       escapeCsv(t.created || t.createdAt || ""),
-      escapeCsv(t.deletedAt || "")
+      escapeCsv(t.deletedAt || ""),
+      escapeCsv(JSON.stringify(t.subtasks || []))
     ]);
 
     const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(r => r.join(";"))].join("\r\n");

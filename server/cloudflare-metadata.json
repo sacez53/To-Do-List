@@ -1,0 +1,39 @@
+{
+  "main_module": "server/worker.mjs",
+  "compatibility_date": "2026-11-19",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "bindings": [
+    {
+      "type": "d1",
+      "name": "AI_QUOTA",
+      "database_id": "e44f138e-050a-4eb8-86c4-b454224b37bd"
+    },
+    {
+      "type": "plain_text",
+      "name": "ALLOWED_ORIGINS",
+      "text": "https://sacez53.github.io"
+    },
+    {
+      "type": "plain_text",
+      "name": "GEMINI_MODEL",
+      "text": "gemini-4-hydrogen"
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    },
+    "redact_query_string": true
+  },
+  "keep_bindings": [
+    "secret_text"
+  ]
+}

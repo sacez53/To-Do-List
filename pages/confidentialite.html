@@ -2,8 +2,8 @@
 <html lang="fr">
 
 <head>
-  <script src="../assets/js/theme.js?v=35"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=35">
+  <script src="../assets/js/theme.js?v=36"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=36">
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Ma To-Do List — Confidentialité</title>
@@ -14,12 +14,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="../assets/js/transitions.js?v=35"></script>
-  <link rel="stylesheet" href="../assets/css/style2.css?v=35">
-  <script src="../assets/js/runtime.js?v=35"></script>
-  <script src="../assets/js/dialogs.js?v=35"></script>
-  <link rel="stylesheet" href="../assets/css/interface.css?v=35">
-  <link rel="stylesheet" href="../assets/css/pages.css?v=35">
+  <script src="../assets/js/transitions.js?v=36"></script>
+  <link rel="stylesheet" href="../assets/css/style2.css?v=36">
+  <script src="../assets/js/runtime.js?v=36"></script>
+  <script src="../assets/js/dialogs.js?v=36"></script>
+  <link rel="stylesheet" href="../assets/css/interface.css?v=36">
+  <link rel="stylesheet" href="../assets/css/pages.css?v=36">
 </head>
 
 <body class="interface-v6 information-page">
@@ -78,13 +78,21 @@
         </li>
         <li>
           <span class="row-key">Tâches</span>
-          <span class="row-val">Titres, échéances, notes, priorités et statuts. <strong>Ces données sont chiffrées de bout en bout en AES-256-GCM</strong> directement dans votre navigateur avant envoi. La clé de déchiffrement reste sur votre appareil et n'est jamais transmise au serveur.</span>
+          <span class="row-val">Titres, échéances, notes, priorités, statuts et sous-tâches. Ces données sont chiffrées en AES-256-GCM dans votre navigateur avant leur synchronisation avec Firebase. La clé de déchiffrement reste sur votre appareil. Si vous demandez une proposition IA, le titre et les notes du formulaire sont transmis en clair applicatif au serveur IA puis à Google, par une connexion HTTPS.</span>
         </li>
         <li>
           <span class="row-key">Stockage technique</span>
           <span class="row-val"><code>sessionStorage</code> (maintien de session éphémère), <code>localStorage</code> (copie chiffrée des tâches et changements en attente ; déchiffrement pendant la session) et Cache API du Service Worker. Aucun cookie publicitaire. Les polices Google Fonts sont chargées depuis un service externe. La clé de session est accessible au code de l’application pendant la connexion ; le chiffrement ne remplace pas les droits d’accès du serveur.</span>
         </li>
       </ul>
+    </section>
+
+    <section class="block" aria-labelledby="section-ia">
+      <div class="block-header"><h2 class="block-title" id="section-ia">Aide IA facultative</h2></div>
+      <div class="block-body">
+        <p>Les boutons d’aide IA envoient le titre et les notes affichés, la langue, la date locale et le fuseau horaire au serveur IA configuré, puis à Google Gemini. Aucun appel IA ne part pendant la saisie ordinaire. La clé de chiffrement et le reste des tâches ne sont pas transmis. Vous pouvez utiliser les sous-tâches sans IA.</p>
+        <p>Le serveur utilise l’adresse de connexion pour limiter les appels. Le code d’accès IA reste dans l’onglet ouvert. Le service applicatif ne conserve pas le contenu des demandes dans ses journaux ; les traitements de l’hébergeur et de Google dépendent de leur configuration et de leurs conditions. N’envoyez pas de données sensibles. Consultez les <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">conditions de l’API Gemini</a> avant utilisation.</p>
+      </div>
     </section>
 
     <!-- 03 — Finalités et Bases Légales -->
@@ -162,7 +170,7 @@
     <p>© 2026 · Sacha G. Photographe</p>
   </footer>
 
-  <script src="../assets/js/burger-menu.js?v=35"></script>
+  <script src="../assets/js/burger-menu.js?v=36"></script>
 </body>
 
 </html>

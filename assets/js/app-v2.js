@@ -164,7 +164,7 @@ let localRevision = 0;
 let localWrites = 0;
 let modalSnapshot = null;
 let confirmCleanup = null;
-function modalValues() { return JSON.stringify([modalText.value, modalStatus.value, modalPriority.value, modalDue.value, modalDueTime?.value, modalNotes.value]); }
+function modalValues() { return JSON.stringify([modalText.value, modalStatus.value, modalPriority.value, modalDue.value, modalDueTime?.value, modalNotes.value, subtaskDraft]); }
 async function init() {
   fabAdd.disabled = true;
   if (userLabel) userLabel.textContent = currentUser;
@@ -556,6 +556,11 @@ function render() {
     row.querySelector(".v2-item-left,.v2-card-header,.v2-table-text").prepend(control);
   });
   boardEl.querySelectorAll(".v2-item,.v2-card,.v2-table-row").forEach(row => {
+    const task = todos.find(item => String(item.id) === row.dataset.taskId);
+    if (task?.subtasks?.length) {
+      const progress = document.createElement('span'); progress.className = 'subtask-progress'; progress.textContent = subtaskProgress(task);
+      row.querySelector('.v2-item-meta,.v2-card-meta,.v2-table-text')?.append(progress);
+    }
     for (const [selector, action] of [[".v2-complete", "complete"], [".task-summary", "summary"], [".v2-edit-btn", "edit"], ["button.v2-badge", "status"]]) {
       const button = row.querySelector(selector);
       if (button) { button.dataset.taskId = row.dataset.taskId; button.dataset.taskAction = action; }
@@ -1008,6 +1013,7 @@ for (const id of ["agenda-ics", "agenda-apple"]) {
 function openModal(id = null, mode = 'edit') {
   agendaPanel.hidden = true; agendaPanel.open = false; agendaTask = null;
   quickModalDraft = null;
+  resetTaskAssistant();
   if (!taskStore || !sessionStorage.getItem("auth")) return;
   creatingTask = id === null;
   creationStep = 0;
@@ -1050,6 +1056,7 @@ function openModal(id = null, mode = 'edit') {
   const todo = todos.find(t => String(t.id) === String(id));
   if (!todo || todo.purgedAt || (mode !== "view" && todo.deletedAt)) return;
   editingId = todo.id;
+  resetTaskAssistant(todo);
 
   if (mode === "view") {
     if (!todo.deletedAt) {
@@ -1179,6 +1186,7 @@ function openModal(id = null, mode = 'edit') {
 function closeModal(force = false) {
   if (modalSaving && force !== true) return false;
   if (force !== true && modalSnapshot && modalValues() !== modalSnapshot && !confirm(TodoRuntime.message("Abandonner les modifications non enregistrées ?", "Discard unsaved changes?"))) return false;
+  cancelTaskAI();
   modalSnapshot = null;
   quickModalDraft = null;
   modalOverlay.classList.remove("open");
@@ -1354,7 +1362,13 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") { if (shortc
 
 modalSave.addEventListener("click", async () => {
   if (modalSave.disabled || modalSaving || !taskStore || !sessionStorage.getItem("auth")) return;
-  if (!validateModalTitle() || (creatingTask && !validateCreationDate())) return;
+  if (!validateModalTitle() || !validateCreationDate()) return;
+  const existingTask = editingId === null ? null : todos.find(task => String(task.id) === String(editingId));
+  if (editingId !== null && (!existingTask || TodoData.removed(existingTask))) {
+    creationError.textContent = t("creation_save_failed"); return;
+  }
+  const previousTask = existingTask ? JSON.parse(JSON.stringify(existingTask)) : null;
+  cancelTaskAI();
   modalSaving = true;
   modalSave.disabled = true;
   creationNext.disabled = true;
@@ -1367,17 +1381,18 @@ modalSave.addEventListener("click", async () => {
   const newText = modalText.value.trim();
   const dueTimeVal = modalDueTime ? (modalDueTime.value || null) : null;
   if (editingId === null) {
-    createdTask = { id:crypto.randomUUID(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), created:new Date().toISOString() };
+    createdTask = { id:crypto.randomUUID(), text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), subtasks:subtaskValues(), created:new Date().toISOString() };
     todos.push(createdTask);
   } else {
     const idx = todos.findIndex(t => String(t.id) === String(editingId));
-    if (idx !== -1) Object.assign(todos[idx], { text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim() });
+    if (idx !== -1) Object.assign(todos[idx], { text:newText, status:modalStatus.value, priority:modalPriority.value, due:modalDue.value||null, dueTime:dueTimeVal, notes:modalNotes.value.trim(), subtasks:subtaskValues() });
   }
   if (await saveTodos()) {
     if (editingId === null && quickModalDraft !== null && quickTitle.value === quickModalDraft) quickTitle.value = "";
     render(); closeModal(true);
   } else {
     if (createdTask) todos = todos.filter(task => task.id !== createdTask.id);
+    else if (previousTask) todos = todos.map(task => String(task.id) === String(previousTask.id) ? previousTask : task);
     creationError.textContent = t("creation_save_failed");
   }
   } finally {
@@ -1402,6 +1417,7 @@ document.getElementById("v2-logout-btn").addEventListener("click", async () => {
   if (quickTitle.value.trim() && !confirm(t("quick_discard"))) return;
   quickTitle.value = "";
   try { await savingLocal; } catch (_) { return; }
+  aiCode.value = ""; cancelTaskAI();
   sessionStorage.removeItem("auth");
   sessionStorage.removeItem("username");
   sessionStorage.removeItem("encKey");

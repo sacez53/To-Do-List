@@ -24,6 +24,22 @@ function context(local = storage(), server = { account: {password:'hash',todos:[
   return ctx;
 }
 const plain = value => JSON.parse(JSON.stringify(value));
+test('subtasks migrate old tasks, sync encrypted and survive trash/restore without mutating the parent status', async () => {
+  const server = { account: { password: 'hash', todos: [{ id: 'old', text: 'Old task' }] }, version: 0 };
+  const ctx = context(storage(), server), store = await ctx.TodoData.open('alice');
+  await store.sync(); const tasks = store.read(); assert.deepEqual(plain(tasks[0].subtasks), []);
+  tasks[0].subtasks = [{ id: 's1', text: 'First step', done: true }, { id: 's2', text: 'Second step', done: false }];
+  await store.save(tasks); await store.sync();
+  assert(!JSON.stringify(server.account.todos).includes('First step'));
+  const other = await context(storage(), server).TodoData.open('alice'); await other.sync();
+  assert.deepEqual(plain(other.read()[0].subtasks), tasks[0].subtasks);
+  assert.equal(other.read()[0].status, 'todo');
+  const restored = ctx.TodoData.restore(ctx.TodoData.trash(tasks[0])); assert.deepEqual(plain(restored.subtasks), tasks[0].subtasks);
+  const purged = ctx.TodoData.purge(restored); assert.equal(purged.subtasks, undefined);
+  for (const subtasks of [[{ id: 'x', text: '', done: false }], [{ id: 'x', text: 'Step', done: 'false' }], Array(31).fill(tasks[0].subtasks[0]), [{ id: 'x', text: 'Step', done: false }, { id: 'x', text: 'Other', done: false }]]) {
+    assert.throws(() => ctx.TodoData.normalize([{ id: 'x', text: 'Task', subtasks }]));
+  }
+});
 function agenda() {
   const ctx = { window: {}, URL, URLSearchParams, TextEncoder };
   vm.createContext(ctx); vm.runInContext(source('task-agenda'), ctx);
