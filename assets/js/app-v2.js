@@ -1013,7 +1013,7 @@ for (const id of ["agenda-ics", "agenda-apple"]) {
 function openModal(id = null, mode = 'edit') {
   agendaPanel.hidden = true; agendaPanel.open = false; agendaTask = null;
   quickModalDraft = null;
-  resetTaskAssistant();
+  resetSubtasks();
   if (!taskStore || !sessionStorage.getItem("auth")) return;
   creatingTask = id === null;
   creationStep = 0;
@@ -1056,7 +1056,7 @@ function openModal(id = null, mode = 'edit') {
   const todo = todos.find(t => String(t.id) === String(id));
   if (!todo || todo.purgedAt || (mode !== "view" && todo.deletedAt)) return;
   editingId = todo.id;
-  resetTaskAssistant(todo);
+  resetSubtasks(todo);
 
   if (mode === "view") {
     if (!todo.deletedAt) {
@@ -1186,7 +1186,6 @@ function openModal(id = null, mode = 'edit') {
 function closeModal(force = false) {
   if (modalSaving && force !== true) return false;
   if (force !== true && modalSnapshot && modalValues() !== modalSnapshot && !confirm(TodoRuntime.message("Abandonner les modifications non enregistrées ?", "Discard unsaved changes?"))) return false;
-  cancelTaskAI();
   modalSnapshot = null;
   quickModalDraft = null;
   modalOverlay.classList.remove("open");
@@ -1368,7 +1367,6 @@ modalSave.addEventListener("click", async () => {
     creationError.textContent = t("creation_save_failed"); return;
   }
   const previousTask = existingTask ? JSON.parse(JSON.stringify(existingTask)) : null;
-  cancelTaskAI();
   modalSaving = true;
   modalSave.disabled = true;
   creationNext.disabled = true;
@@ -1417,7 +1415,6 @@ document.getElementById("v2-logout-btn").addEventListener("click", async () => {
   if (quickTitle.value.trim() && !confirm(t("quick_discard"))) return;
   quickTitle.value = "";
   try { await savingLocal; } catch (_) { return; }
-  aiCode.value = ""; cancelTaskAI();
   sessionStorage.removeItem("auth");
   sessionStorage.removeItem("username");
   sessionStorage.removeItem("encKey");

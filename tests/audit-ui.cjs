@@ -16,13 +16,6 @@ if(sessionStorage.getItem("__keepFixture"))window.__fixture=JSON.parse(sessionSt
 window.__alerts=[];window.alert=msg=>__alerts.push(msg);window.confirm=()=>true;
 const originalFetch=window.fetch.bind(window);
 window.fetch=async(url,options={})=>{
- if(String(url).includes('ai.json'))return Response.json({endpoint:window.__aiConfigured ? location.origin+'/api/ai' : ''});
- if(String(url).endsWith('/api/ai')){
-  window.__aiRequest=JSON.parse(options.body);window.__aiCalls=(window.__aiCalls||0)+1;
-  if(window.__aiDelay)await new Promise(resolve=>window.__aiResolve=resolve);
-  if(window.__aiStatus)return new Response('{}',{status:window.__aiStatus});
-  return Response.json(window.__aiProposal);
- }
  if(String(url).includes('firebase.json'))return Response.json({url:'https://fixture.invalid'});
  if(String(url).includes('security.json')&&new URLSearchParams(location.search).has('timeout'))return Response.json({timeoutMinutes:0.02});
  if(String(url).includes('fixture.invalid')){
@@ -123,34 +116,16 @@ async function checkCreationWizard() {
   await resize(1040,900);await new Promise(r=>setTimeout(r,100));
   console.log('CREATION PASS: phone steps, optional details, required title/date validation, back navigation, FR/EN, desktop resize, focus trap, exact fields, duplicate guard, save failure/retry and draft cancellation.');
 }
-async function checkAiSubtasks() {
+async function checkSubtasks() {
   await resize(1040,900);
-  await run('window.__aiOriginal=JSON.parse(JSON.stringify(todos));window.__aiCount=todos.length;quickTitle.value="Appeler le garage demain à 14 h"');
-  await page.locator('#quick-add-ai').click();
-  assert.equal(await run('modalText.value'), 'Appeler le garage demain à 14 h');
-  await run('aiCode.value="test-access-code"');
-  await page.locator('[data-ai-mode=phrase]').click();
-  await until('!aiController && aiFeedback.textContent.includes("pas encore configuré")');
-  assert.equal(await run('todos.length'),await run('__aiCount'));
-  await run('window.__aiConfigured=true;window.__aiProposal={text:"Appeler le garage",notes:"Vérifier le tarif",priority:"high",due:"2026-11-20",dueTime:"14:00",subtasks:[]}');
-  await page.locator('[data-ai-mode=phrase]').click();
-  await until('!aiController && !aiResult.hidden');
-  assert.equal(await run('modalText.value'), 'Appeler le garage demain à 14 h');
-  assert.equal(await run('todos.length'),await run('__aiCount'));
-  assert.equal(await run('__aiRequest.text'),'Appeler le garage demain à 14 h');
-  assert.equal(await run('Object.keys(__aiRequest).sort().join(",")'),'language,mode,notes,text,timeZone,today');
-  await page.locator('#ai-result button').click();
-  assert.deepEqual(await run('[modalText.value,modalDue.value,modalDueTime.value,modalPriority.value]'),['Appeler le garage','2026-11-20','14:00','high']);
+  assert.equal(await page.locator('#quick-add-ai,#ai-tools,[data-ai-mode]').count(),0);
+  assert.equal(await run('typeof TaskAI'), 'undefined');
+  await run('window.__subtasksOriginal=JSON.parse(JSON.stringify(todos));openModal(null);modalText.value="Appeler le garage";modalDue.value="2026-11-20";modalDueTime.value="14:00";modalPriority.value="high"');
   await page.locator('#subtask-add').click();
   await page.locator('#subtasks-editor input[type=text]').fill('Trouver le numéro');
   await page.locator('#subtasks-editor input[type=checkbox]').check();
-  await page.locator('#ai-tools summary').click();
-  await run('document.getElementById("ai-tools").open=true;window.__aiProposal.subtasks=["Trouver le numéro","Préparer les questions","Étape à ignorer <b>"]');
-  await page.locator('[data-ai-mode=decompose]').click();await until('!aiController && !aiResult.hidden');
-  await page.locator('#ai-result input').nth(2).uncheck();
-  await page.locator('#ai-result button').click();
-  assert.equal(await run('subtaskDraft.length'),2);
-  assert.equal(await run('subtaskDraft[0].done'),true);
+  await page.locator('#subtask-add').click();
+  await page.locator('#subtasks-editor input[type=text]').nth(1).fill('Préparer les questions');
   await page.locator('#modal-save').click();await until('!modalSaving && !modalOverlay.classList.contains("open") && !syncRunning');
   const id=await run('todos.find(task=>task.text==="Appeler le garage").id');
   await run(`openModal(${JSON.stringify(id)},"view")`);
@@ -177,39 +152,18 @@ async function checkAiSubtasks() {
     await run(`document.querySelector('[data-view=${view}]').click()`);
     assert.equal(await run(`boardEl.querySelector('[data-task-id="${id}"] .subtask-progress').textContent.includes('1/2')`),true);
   }
-  await run(`openModal(${JSON.stringify(id)},"edit");document.getElementById("ai-tools").open=true;window.__aiDelay=true`);
-  await page.locator('[data-ai-mode=decompose]').click();await until('!!window.__aiResolve');
-  await page.locator('#modal-text').fill('Titre changé pendant la requête');
-  await run('__aiResolve()');await until('!aiController');
-  assert.equal(await run('aiResult.hidden && aiFeedback.textContent.includes("formulaire a changé")'),true);
-  await run('window.__aiDelay=false;window.__aiStatus=429');
-  await page.locator('[data-ai-mode=decompose]').click();await until('!aiController');
-  assert.equal(await run('aiFeedback.textContent.includes("limite")'),true);
-  await run('window.__aiStatus=0;window.__aiProposal.due="2026-02-30"');
-  await page.locator('[data-ai-mode=phrase]').click();await until('!aiController');
-  assert.equal(await run('aiResult.hidden && aiFeedback.textContent.includes("pas exploitable")'),true);
-  await run('window.__aiProposal.due="2026-11-20";window.__aiDelay=true;window.__aiResolve=null');
-  await page.locator('[data-ai-mode=phrase]').click();await until('!!window.__aiResolve');
-  await page.locator('#ai-cancel').click();await run('__aiResolve()');
-  await new Promise(r=>setTimeout(r,80));assert.equal(await run('aiResult.hidden'),true);
-  await run('closeModal(true);window.__aiDelay=false');
+
   for(const width of [320,390,1040]){
-    await resize(width,844);await run(`openModal(${JSON.stringify(id)},"edit");document.getElementById("ai-tools").open=true`);
+    await resize(width,844);await run(`openModal(${JSON.stringify(id)},"edit")`);
     await new Promise(r=>setTimeout(r,250));
     assert.equal(await run('[...document.querySelectorAll("#modal-body input,#modal-body button")].filter(el=>el.getClientRects().length).every(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1})'),true);
-    if(width===390){
-      await fs.promises.writeFile(path.join(out,'ai-assistant-phone.png'),await page.screenshot());
-      await run('document.getElementById("ai-tools").open=false');
-      await page.locator('#subtasks-heading').scrollIntoViewIfNeeded();
-      await fs.promises.writeFile(path.join(out,'ai-subtasks-phone.png'),await page.screenshot());
-    }
     await run('closeModal(true)');
   }
-  await run('setLanguage("en");openModal(null);document.getElementById("ai-tools").open=true');
-  assert.equal(await page.locator('[data-ai-mode=decompose]').textContent(),'Suggest subtasks');
-  await run('closeModal(true);setLanguage("fr");aiCode.value="";quickTitle.value="";todos=__aiOriginal;saveTodos();document.querySelector("[data-view=list]").click()');
+  await run('setLanguage("en");openModal(null)');
+  assert.equal(await page.locator('#subtask-add').textContent(),'Add a subtask');
+  await run('closeModal(true);setLanguage("fr");todos=__subtasksOriginal;saveTodos();document.querySelector("[data-view=list]").click()');
   await until('!syncRunning && !localWrites && !taskStore.pending()');await resize(1040,900);
-  console.log('AI/SUBTASKS PASS: manual editing, phrase preview/apply/save, selected decomposition, deduplication, read-only summary, all-view counts, cancel/stale/quota/invalid responses, FR/EN and phone layout.');
+  console.log('SUBTASKS PASS: manual creation, read-only summary, editing/cancellation, save rollback/retry, all-view counts, FR/EN and phone layout.');
 }
 async function checkDesktopLayouts() {
   for(const width of [701,768,1040,1440,1920]) {
@@ -312,7 +266,7 @@ async function checkPhoneLayouts() {
   await run('closeModal(true);document.documentElement.style.removeProperty("--site-safe-top");document.documentElement.style.removeProperty("--site-safe-bottom")');
   await resize(1040,800);
   await checkCreationWizard();
-  await checkAiSubtasks();
+  await checkSubtasks();
   // Calendar export never navigates to a real provider or changes the task.
   await run('openModal("a","view");window.__agendaBefore=JSON.stringify(todos);');
   await page.locator('#task-agenda summary').click();

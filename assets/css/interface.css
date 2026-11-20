@@ -345,19 +345,11 @@ body.interface-v6.task-app .v2-complete[aria-disabled="true"]{opacity:.5;cursor:
 body.interface-v6.task-app .v2-table-text{display:flex;align-items:flex-start;gap:8px}
 body.interface-v6.task-app .v2-table-text .task-summary{min-width:0;flex:1}
 
-/* Task drafts and assistant proposals share the existing form colors. */
-.subtasks-field,.task-ai{border:1px solid var(--line-strong);border-radius:6px;padding:12px;min-width:0}
+/* Manual subtask controls use the task form colors. */
+.subtasks-field{border:1px solid var(--line-strong);border-radius:6px;padding:12px;min-width:0}
 .subtasks-field h3{font-size:1rem;margin:0 0 8px}
-.subtasks-field p,.task-ai p{font-size:.875rem;line-height:1.5;color:var(--text-muted);white-space:pre-wrap;overflow-wrap:anywhere}
-.task-ai summary{cursor:pointer;min-height:44px;align-content:center;font-size:.95rem}
-.task-ai label{display:block;font-size:.875rem;margin-bottom:8px}
-.task-ai input.modal-input{width:100%;box-sizing:border-box;font-size:1rem}
-.ai-actions{display:flex;flex-wrap:wrap;gap:8px}
-.task-ai button,.subtasks-field button{min-height:44px;white-space:normal;font-size:.875rem}
-.task-ai button{max-width:100%}
-.ai-result{margin-top:12px;border-top:1px solid var(--line-strong);padding-top:8px}
-.task-ai .ai-choice{display:flex;align-items:center;gap:10px;min-height:44px;overflow-wrap:anywhere}
-.ai-choice input{flex:0 0 20px;width:20px;height:20px}
+.subtasks-field p{font-size:.875rem;line-height:1.5;color:var(--text-muted);overflow-wrap:anywhere}
+.subtasks-field button{min-height:44px;white-space:normal;font-size:.875rem}
 .subtask-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:8px;margin-bottom:8px}
 .subtask-row input[type=checkbox]{width:20px;height:20px;min-height:44px;margin:0;cursor:pointer}
 .subtask-row .modal-input{width:100%;min-width:0;font-size:1rem;box-sizing:border-box}
@@ -366,5 +358,4 @@ body.interface-v6.task-app .v2-table-text .task-summary{min-width:0;flex:1}
 .subtask-recap li{margin:8px 0;overflow-wrap:anywhere;white-space:pre-wrap;font-size:.95rem}
 .subtask-recap ul{list-style:none;padding:0}
 .subtask-recap:empty{display:none}
-.task-ai [hidden],.ai-result[hidden]{display:none!important}
 @media(max-width:380px){.subtask-row{grid-template-columns:24px minmax(0,1fr)}.subtask-row button{grid-column:2;justify-self:start}}

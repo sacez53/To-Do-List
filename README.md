@@ -1,4 +1,4 @@
-# Ma To-Do List — v6.6.0
+# Ma To-Do List — v6.6.1
 
 Le mode clair ou sombre se choisit dans Paramètres → Affichage. La préférence est enregistrée dans Firebase avec le compte, puis récupérée à la connexion et à l’ouverture des pages connectées. Le mode sombre conserve les couleurs précédentes.
 
@@ -34,19 +34,9 @@ Sur ordinateur, les champs sont affichés ensemble. Sur téléphone, **Continuer
 
 Pour programmer « Appeler le garage demain à 14 h », renseignez la date et l’heure dans les champs prévus. Écrire « demain à 14 h » dans le titre ne programme pas l’échéance.
 
-### Créer avec une phrase ou demander des sous-tâches
-
-Le bouton **Créer avec l’IA** reprend la saisie rapide dans le formulaire. Dans **Aide IA · Gemini**, renseignez le code d’accès fourni par l’administrateur, puis choisissez **Comprendre la phrase du titre**. Une phrase comme « Appeler le garage demain à 14 h » donne une proposition de titre et d’échéance. Vérifiez la date proposée, puis cliquez sur **Appliquer au formulaire** et enregistrez la tâche.
-
-Pour décomposer une tâche, ouvrez **Modifier**, puis **Aide IA · Gemini → Proposer des sous-tâches**. Décochez les étapes que vous ne souhaitez pas ajouter. L’application conserve les sous-tâches existantes et évite d’ajouter une proposition qui porte exactement le même texte. L’application ne change pas le statut de la tâche principale quand toutes les étapes sont cochées.
-
-Les appels IA transmettent uniquement le titre et les notes affichés, avec la langue et la date locale, au serveur configuré puis à Google. Le reste de vos tâches et votre clé de chiffrement ne sont pas envoyés. N’incluez pas de données sensibles. Le code d’accès reste dans l’onglet ouvert ; la clé Gemini reste sur le serveur. Une réponse IA peut contenir des erreurs. Aucun résultat n’est enregistré sans votre validation.
-
-Le service IA doit être configuré par l’administrateur : voir [la configuration du serveur](server/README.md). Si le service est indisponible ou atteint sa limite, la création manuelle reste disponible.
-
 ### Ajouter des sous-tâches manuellement
 
-Dans le formulaire de création ou de modification, utilisez **Ajouter une sous-tâche** dans les détails. Chaque tâche peut contenir jusqu’à 30 étapes de 300 caractères. Cochez les étapes terminées, puis enregistrez. Une ligne vide est ignorée. Les sous-tâches sont synchronisées avec la tâche principale et incluses dans les exports JSON et CSV.
+Dans le formulaire de création ou de modification, utilisez **Ajouter une sous-tâche** dans les détails. Chaque tâche peut contenir jusqu’à 30 étapes de 300 caractères. Cochez les étapes terminées, puis enregistrez. Une ligne vide est ignorée. Cocher toutes les étapes ne change pas le statut de la tâche principale. Les sous-tâches sont synchronisées avec la tâche principale et incluses dans les exports JSON et CSV.
 
 Les vues Liste, Kanban et Tableau affichent le nombre d’étapes terminées. Le résumé affiche leur détail en lecture seule ; utilisez **Modifier** pour les changer.
 
